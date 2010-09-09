@@ -81,7 +81,7 @@ Assigning two listeners to a single function without dismissing the first one is
 
 Patchwork must be told explicitly which code to patch. For this purpose, there are some functions in the `Patchwork` namespace named `include_patched()`, `include_patched_once()`, `require_patched()` and `require_patched_once()` which imitate the native `include[_once]` and `require[_once]` constructs, as well as an `eval_patched()` function which is a wrapper around `eval()`.
 
-All these functions not only insert code for intercepting calls, but also **propagate to further included files and evaluated code**, meaning that `include`/`require` calls and their `_once` counterparts are replaced with their automatically patching equivalents provided by Patchwork.
+All these functions not only insert code for intercepting calls, but also **propagate to further included files and evaluated code**, meaning that `include`/`require` operations, their `_once` counterparts and `eval` calls are replaced with their automatically patching equivalents provided by Patchwork.
 
 This means that only the topmost level of `include`/`require` calls have to be replaced with `include_patched()`/`require_patched()` manually. If the system under test uses autoloading, chances are that only the autoloader needs to be included with an `include_patched()` call.
 

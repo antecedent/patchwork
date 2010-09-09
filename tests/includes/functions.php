@@ -1,11 +1,11 @@
 <?php
 
-function print_foo()
+function print_name()
 {
-	echo "foo\n";
+	echo __FUNCTION__ . "\n";
 }
 
-function get_foo()
+function get_name()
 {
-	return "foo";
+	return __FUNCTION__;
 }

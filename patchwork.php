@@ -55,7 +55,7 @@ function include_patched($file, $require = false, $once = false)
 	return $once ? true : $result;
 }
 
-function include_once_patched($file)
+function include_patched_once($file)
 {
 	return include_patched($file, false, true);
 }
@@ -65,9 +65,8 @@ function require_patched($file)
 	return include_patched($file, true, false);
 }
 
-function require_once_patched($file)
+function require_patched_once($file)
 {
-	# TODO
 	return include_patched($file, true, true);
 }
 

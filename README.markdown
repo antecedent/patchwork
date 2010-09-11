@@ -1,6 +1,6 @@
 # Patchwork
 
-Highly unstable early version (currently suitable for experiments only).
+Version 0.1 (highly unstable)
 
 ## Introduction
 
@@ -44,8 +44,6 @@ Patchwork can also be used to intercept method calls (both instance and static):
 	Patchwork\listen("Class::method", $listener);
 
 However, polymorphism is not obeyed: for example, given that `class ChildClass extends ParentClass`, a listener to `ParentClass::foo` will not intercept calls to `ChildClass::foo`.
-
-!TODO mention that no arguments are passed
 
 ## Skipping and dismissing listeners
 

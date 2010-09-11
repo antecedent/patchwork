@@ -1,20 +1,6 @@
 <?php
 
-/**
- * @author Ignas Rudaitis
- * @todo   this doc block
- */
 namespace Patchwork;
-
-# TODO FREE LISTENING (polymorphism?!), resume_if, resume_unless, dismissal handles, 
-#      semantic patcher function names, doc comment, stack inspection
-
-# Optimize with TokenCollection (or equivalent)
-
-##
-## Call dispatchment
-## 
-
 
 const LISTENERS = 'Patchwork\LISTENERS';
 const DISPATCH_STACK = 'Patchwork\DISPATCH_STACK';
@@ -54,71 +40,50 @@ class ListenerSkippedException extends \Exception
 {
 }
 
-##
-## Patched code inclusion
-##
-
-function include_patched($file, $origin = null, $require = false, $once = false)
+function include_patched($file, $require = false, $once = false)
 {
-	$file = locate_file($file, $origin);
 	static $included = array();
 	if (isset($included[$file]) && $once) {
 		return true;
 	}
-	$source = file_get_contents($file, true);
+	$source = file_get_contents($file);
 	if ($source === false) {
 		return $require ? (require $file) : (include $file);
 	}
 	$included[$file] = true;
-	$result = eval_patched($source, $file, false);
+	$result = eval_patched($source, false);
 	return $once ? true : $result;
 }
 
-function locate_file($file, $origin)
+function include_patched_once($file)
 {
-	$file_in_origin_dir = dirname($origin) . DIRECTORY_SEPARATOR . $file;
-	if (file_exists($file_in_origin_dir)) {
-		return $file_in_origin_dir;
-	}
-	return $file;
+	return include_patched($file, false, true);
 }
 
-function include_patched_once($file, $origin = null)
+function require_patched($file)
 {
-	return include_patched($file, $origin, false, true);
+	return include_patched($file, true, false);
 }
 
-function require_patched($file, $origin = null)
+function require_patched_once($file)
 {
-	return include_patched($file, $origin, true, false);
+	return include_patched($file, true, true);
 }
 
-function require_patched_once($file, $origin = null)
+function eval_patched($source, $inPhpMode = true)
 {
-	return include_patched($file, $origin, true, true);
-}
-
-function eval_patched($source, $file = null, $in_php_mode = true)
-{
-// DEBUG: echo "<hr><h1>$file</h1>";	
-	$tokens = patch($in_php_mode ? php_to_tokens($source) : token_get_all($source), $file);
-	$source = tokens_to_string($tokens);
-// DEBUG: highlight_string($source);
-	if (!$in_php_mode) {
+	if (!$inPhpMode) {
 		$source = "?>" . $source;
 	}
+	$tokens = patch(token_get_all($source));
+	$source = tokens_to_string($tokens);
 	return eval($source);
 }
 
-##
-## Code patching
-##
-
-function patch(array $tokens, $file = null) 
+function patch(array $tokens) 
 {
 	$tokens = inject_intercepting_code($tokens);
-	$tokens = inject_propagating_code($tokens, $file);
-	$tokens = expand_magic_constants($tokens, $file);
+	$tokens = inject_propagating_code($tokens);
 	return $tokens;
 }
 
@@ -139,23 +104,25 @@ function inject_intercepting_code(array $tokens)
 {
 	$pos = BEFORE_FIRST;
 	while (find_next(T_FUNCTION, $pos, $tokens)) {
-		$bracket = $semicolon = $pos;
-		find_next(SEMICOLON, $semicolon, $tokens);
-		if (find_next(LEFT_CURLY_BRACKET, $bracket, $tokens) && $semicolon > $bracket) {
-			array_splice($tokens, $bracket + 1, 0, get_intercepting_segment_tokens());
-		}
+		$tokens = inject_intercepting_code_segment($pos, $tokens);
 	}
 	return $tokens;
 }
 
-function inject_propagating_code(array $tokens, $file = null)
+function inject_intercepting_code_segment($pos, array $tokens)
+{
+	find_next(LEFT_CURLY_BRACKET, $pos, $tokens);
+	return insert(get_intercepting_segment_tokens(), $pos + 1, $tokens);
+}
+
+function inject_propagating_code(array $tokens)
 {
 	foreach (get_propagating_replacements() as $search => $replacement) {
 		$pos = BEFORE_FIRST;
 		while (find_next($search, $pos, $tokens)) {
-			array_splice($tokens, $pos, 1, php_to_tokens($replacement . "("));
-			$end = ", " . var_export($file, true) . ")";
-			array_splice($tokens, find_end_of_statement($pos, $tokens), 0, php_to_tokens($end));
+			$tokens[$pos] = string_to_tokens($replacement);
+			$tokens = insert(string_to_tokens("("), $pos + 1);
+			$tokens = insert(string_to_tokens(")"), find_end_of_statement($pos, $tokens));
 		}
 	}
 	return $tokens;
@@ -172,23 +139,6 @@ function get_propagating_replacements()
 	);
 }
 
-# TODO refactor (function `replace`)
-function expand_magic_constants(array $tokens, $file)
-{
-	if ($file === null) {
-		return $tokens;
-	}
-	$pos = BEFORE_FIRST;
-	while (find_next(T_FILE, $pos, $tokens)) {
-		array_splice($tokens, $pos, 1, php_to_tokens(var_export($file, true)));
-	}
-	$pos = BEFORE_FIRST;
-	while (find_next(T_DIR, $pos, $tokens)) {
-		array_splice($tokens, $pos, 1, php_to_tokens(var_export(dirname($file), true)));
-	}
-	return $tokens;
-}
-
 function find_end_of_statement($pos, array $tokens)
 {
 	# FIXME: Fails when lambdas occur in the current statement
@@ -196,11 +146,26 @@ function find_end_of_statement($pos, array $tokens)
 	return $pos;
 }
 
-function find_next($type, &$pos, array $tokens)
+function insert(array $insertion, $pos, array $tokens)
 {
-	$count = count($tokens);
-	while (++$pos < $count) {
-		if ($tokens[$pos][0] == $type) {
+	return array_merge(array_slice($tokens, 0, $pos), $insertion, array_slice($tokens, $pos));
+}
+
+function get_token_type($token)
+{
+	if (is_array($token)) {
+		return reset($token);
+	}
+	if (is_string($token)) {
+		return $token;
+	}
+}
+
+function find_next($types, &$pos, array $tokens)
+{
+	$types = (array) $types;
+	while (++$pos < count($tokens)) {
+		if (in_array(get_token_type($tokens[$pos]), $types)) {
 			return true;
 		}
 	}
@@ -216,11 +181,22 @@ function get_intercepting_segment_tokens()
 	');
 }
 
+function token_to_string($token)
+{
+	if (is_array($token)) {
+		list($type, $string) = $token;
+		return $string;
+	}
+	if (is_string($token)) {
+		return $token;
+	}
+}
+
 function tokens_to_string(array $tokens)
 {
-	$string = '';
+	$string = "";
 	foreach ($tokens as $token) {
-		$string .= isset($token[1]) ? $token[1] : $token;
+		$string .= token_to_string($token);
 	}
 	return $string;
 }

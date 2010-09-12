@@ -45,7 +45,7 @@ Patchwork can also be used to intercept method calls (both instance and static):
 
 However, polymorphism is not obeyed: for example, given that `class ChildClass extends ParentClass`, a listener to `ParentClass::foo` will not intercept calls to `ChildClass::foo`.
 
-!TODO mention that no arguments are passed
+Note that **no arguments** are passed to the listener callbacks. Neither arguments nor the object that receives the call are intercepted by Patchwork. Currently, the only way to retrieve them is to inspect the backtrace "manually". This functionality will be implemented in later versions of Patchwork.
 
 ## Skipping and dismissing listeners
 
@@ -81,16 +81,19 @@ Assigning two listeners to a single function without dismissing the first one is
 
 ## Patching the code
 
+NOTE: these techniques will very likely be replaced with stream wrappers soon, because this implementation of on-the-fly code patching requires the use of `eval()`, which fails to preserve the identity of patched files. Currently, Patchwork *does* expand `__DIR__` and `__FILE__` constants to reflect the original file name, but there are many more cases where the name of the patched file will unexpectedly appear as "eval()'d code".
+
 Patchwork must be told explicitly which code to patch. For this purpose, there are some functions in the `Patchwork` namespace named `include_patched()`, `include_patched_once()`, `require_patched()` and `require_patched_once()` which imitate the native `include[_once]` and `require[_once]` constructs, as well as an `eval_patched()` function which is a wrapper around `eval()`.
 
-All these functions not only insert code for intercepting calls, but also **propagate to further included files and evaluated code**, meaning that `include`/`require` operations, their `_once` counterparts and `eval` calls are replaced with their automatically patching equivalents provided by Patchwork.
+All these functions not only insert code for intercepting calls, but also **propagate to further included files and evaluated code**, meaning that `include/require` operations, their `_once` counterparts and `eval` calls are replaced with their automatically patching equivalents provided by Patchwork.
 
-This means that only the topmost level of `include`/`require` calls have to be replaced with `include_patched()`/`require_patched()` manually. If the system under test uses autoloading, chances are that only the autoloader needs to be included with an `include_patched()` call.
+This means that only the topmost level of `include/require` calls have to be replaced with `include_patched()` or `require_patched()` manually. If the system under test uses autoloading, chances are that only the autoloader needs to be included with an `include_patched()` call.
 
 Notes:
 
+ * If `include_patched()` or any of its variations is called manually, it should receive an **absolute path** or a path relative to any of the include paths. Paths relative to the file from which the inclusion is done are **not** handled properly.
  * Patchwork does not keep track of the functions that are patched. This means that it will allow you to assign a listener to an unpatched function, but it will not intercept any calls.
- * **ALL** functions are patched when the file that contains them is patched, and this **does** affect performance of the patched code. This is one reason why Patchwork should not be used outside of testing context.
+ * **ALL** functions are patched when the file that contains them is patched, and this **does** affect the performance of the patched code. This is one reason why Patchwork should not be used outside of testing context.
 
 ## Use cases
 

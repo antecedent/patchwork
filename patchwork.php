@@ -245,3 +245,7 @@ function expand_constants($search, $replacement, Source $s)
     }
 }
 
+class Stream
+{
+    
+}

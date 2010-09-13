@@ -6,7 +6,7 @@ Basic use of listeners and their dismissal
 
 require __DIR__ . '/../patchwork.php';
 
-Patchwork\require_patched(__DIR__ . '/includes/functions.php');
+require __DIR__ . '/includes/functions.php';
 
 echo "1:";
 print_name();

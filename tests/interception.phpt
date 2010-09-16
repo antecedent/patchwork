@@ -1,17 +1,21 @@
 --TEST--
-Basic use of listeners and their dismissal
+Basic usage of stubs and their expiration
 
 --FILE--
 <?php
 
+use Patchwork as p;
+
 require __DIR__ . '/../patchwork.php';
+
+p\will_patch("<*>.php");
 
 require __DIR__ . '/includes/functions.php';
 
 echo "1:";
 print_name();
 
-Patchwork\listen("print_name", function() {
+$print_name = p\stub("print_name", function() {
 	echo "not print_name\n";
 });
 
@@ -21,7 +25,7 @@ print_name();
 echo "3:";
 echo get_name() . "\n";
 
-Patchwork\listen("get_name", function() {
+$get_name = p\stub("get_name", function() {
 	return "not get_name";
 });
 
@@ -31,7 +35,7 @@ echo get_name() . "\n";
 echo "5:";
 print_name();
 
-Patchwork\dismiss("print_name");
+$print_name->expire();
 
 echo "6:";
 print_name();
@@ -39,7 +43,7 @@ print_name();
 echo "7:";
 echo get_name() . "\n";
 
-Patchwork\dismiss("get_name");
+$get_name->expire();
 
 echo "8:";
 echo get_name() . "\n";

@@ -24,12 +24,11 @@ class Stream
     function stream_open($path, $mode, $options, &$opened_path)
     {
         $this->unwrap();        
-        if (($options && self::STREAM_OPEN_FOR_INCLUDE) && can_patch($path)) {
+        if (($options && self::STREAM_OPEN_FOR_INCLUDE) && should_patch($path)) {
             $this->resource = patch_file($path);
             $this->wrap();
             return true;
         }   
-        var_dump($path);
         if (isset($this->context)) {
             $this->resource = fopen($path, $mode, $options, $this->context);
         } else {

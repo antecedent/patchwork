@@ -3,7 +3,7 @@
 namespace Patchwork\Preprocessing;
 
 use Patchwork\Common;
-use Patchwork\Exception;
+use Patchwork\Exceptions;
 
 class Source
 {

@@ -85,36 +85,45 @@ function forbid($subject)
     return expect(0, $subject, null);
 }
 
-# TODO refactor ASAP
 function dispatch(Call $call)
 {
     $GLOBALS[DISPATCH_STACK][] = $call;
+    try {
+        $result = execute_filters($call);
+        array_pop($GLOBALS[DISPATCH_STACK]);
+        return $result;
+    } catch (\Exception $e) {
+        array_pop($GLOBALS[DISPATCH_STACK]);
+        throw $e;
+    }
+}
+
+function execute_filters(Call $call)
+{
     $result = null;
     foreach ($GLOBALS[FILTERS][$call->class][$call->function] as $filter) {
         try {
             $new_result = call_user_func($filter, $call);
             if ($new_result !== null && !$new_result instanceof Result) {
-                array_pop($GLOBALS[DISPATCH_STACK]);
                 throw new Exceptions\InvalidFilterReturnValue($new_result);
             }            
         } catch (Exceptions\SkippedFilter $e) {
             $new_result = null;
-        } catch (\Exception $e) {
-            array_pop($GLOBALS[DISPATCH_STACK]);
-            throw $e;
         }
         if ($result && $new_result) {
-            array_pop($GLOBALS[DISPATCH_STACK]);
             throw new Exceptions\FilterConflict($call);
         }
         if (!$result) {
             $result = $new_result;
         }
     }
-    array_pop($GLOBALS[DISPATCH_STACK]);
     return $result;
 }
 
+function top()
+{
+    return end($GLOBALS[DISPATCH_STACK]);
+}
 
 function value($value = null)
 {
@@ -150,7 +159,7 @@ function forward_magic_calls($class, array $methods = array("__call", "__callSta
 
 function match_instance($instance)
 {
-    if (end($GLOBALS[DISPATCH_STACK])->object !== $instance) {
+    if (top()->object !== $instance) {
         skip();
     }
 }

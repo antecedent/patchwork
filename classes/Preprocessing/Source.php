@@ -2,7 +2,7 @@
 
 namespace Patchwork\Preprocessing;
 
-use Patchwork\Common;
+use Patchwork\Utils;
 use Patchwork\Exceptions;
 
 class Source
@@ -11,38 +11,38 @@ class Source
     const STRING_OFFSET = 1;    
     
     public $tokens = array();
-    public $tokens_by_type;
+    public $tokensByType;
     public $splices = array();
-    public $splice_lengths = array();
+    public $spliceLengths = array();
     
     function __construct($tokens)
     {
         $this->tokens = $tokens;
-        $this->tokens_by_type = $this->index_tokens_by_type($this->tokens);
+        $this->tokensByType = $this->indexTokensByType($this->tokens);
     }
     
-    function index_tokens_by_type(array $tokens)
+    function indexTokensByType(array $tokens)
     {
-        $tokens_by_type = array();
+        $tokensByType = array();
         foreach ($tokens as $offset => $token) {
-            $tokens_by_type[$token[self::TYPE_OFFSET]][] = $offset;
+            $tokensByType[$token[self::TYPE_OFFSET]][] = $offset;
         }
-        return $tokens_by_type;
+        return $tokensByType;
     }
     
-    function find_next($type, $offset)
+    function findNext($type, $offset)
     {
-        if (!isset($this->tokens_by_type[$type])) {
+        if (!isset($this->tokensByType[$type])) {
             return INF;
         }
-        $bound = Common\get_upper_bound($this->tokens_by_type[$type], $offset);
-        $pos = &$this->tokens_by_type[$type][$bound];
+        $bound = Utils\upperBound($this->tokensByType[$type], $offset);
+        $pos = &$this->tokensByType[$type][$bound];
         return isset($pos) ? $pos : INF;
     }
     
-    function find_all($type)
+    function findAll($type)
     {
-        $tokens = &$this->tokens_by_type[$type];
+        $tokens = &$this->tokensByType[$type];
         if (!isset($tokens)) {
             $tokens = array();
         }
@@ -55,7 +55,7 @@ class Source
             throw new Exceptions\MultipleSourceSplices;
         }
         $this->splices[$offset] = $splice;
-        $this->splice_lengths[$offset] = $length;
+        $this->spliceLengths[$offset] = $length;
     }
     
     function __toString()
@@ -66,7 +66,7 @@ class Source
             if (isset($this->splices[$offset])) {
                 $string .= $this->splices[$offset];
                 unset($this->splices[$offset]);
-                $offset += $this->splice_lengths[$offset] - 1;
+                $offset += $this->spliceLengths[$offset] - 1;
             } else {
                 $t = $this->tokens[$offset];
                 $string .= isset($t[self::STRING_OFFSET]) ? $t[self::STRING_OFFSET] : $t;

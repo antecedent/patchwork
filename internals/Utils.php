@@ -1,13 +1,13 @@
 <?php
 
-namespace Patchwork\Common;
+namespace Patchwork\Utils;
 
 function condense($string)
 {
-    return preg_replace('/\s*/', '', $string);
+    return preg_replace("/\s*/", "", $string);
 }
 
-function get_upper_bound(array $array, $value)
+function upperBound(array $array, $value)
 {
     $count = count($array);
     $first = 0;
@@ -27,12 +27,12 @@ function get_upper_bound(array $array, $value)
 
 function autoload($namespace, $dir)
 {
-    $namespace = ltrim($namespace, '\\');
+    $namespace = ltrim($namespace, "\\");
     return function($class) use ($namespace, $dir) {
-        $class = ltrim($class, '\\');
+        $class = ltrim($class, "\\");
         if (strpos($class, $namespace) === 0) {
-            $short_name = substr($class, $namespace ? (strlen($namespace) + 1) : 0);
-            $file = $dir . '/' . strtr($short_name, '\\', '/') . '.php';
+            $shortName = substr($class, $namespace ? (strlen($namespace) + 1) : 0);
+            $file = $dir . "/" . strtr($shortName, "\\", "/") . ".php";
             if (is_file($file)) {
                 require $file;
             }
@@ -40,10 +40,10 @@ function autoload($namespace, $dir)
     };
 }
 
-function parse_callback($callback)
+function parseCallback($callback)
 {
     if (is_object($callback)) {
-        return parse_callable(array($callback, "__invoke"));
+        return parseCallback(array($callback, "__invoke"));
     }
     if (is_array($callback)) {
         list($class, $function) = $callback;
@@ -51,8 +51,8 @@ function parse_callback($callback)
             $class = get_class($class);
         }
         return array($class, $function);
-    } elseif (strpos($callback, '::')) {
-        return explode('::', $callback, 2);
+    } elseif (strpos($callback, "::")) {
+        return explode("::", $callback, 2);
     }
     return array(null, $callback);
 }
@@ -64,16 +64,7 @@ function append(&$array, $value)
     return key($array);
 }
 
-function callback_to_string($callback)
-{
-    list($class, $function) = parse_callback($callback);
-    if ($class) {
-        return "$class::$function";
-    }
-    return $function;
-}
-
-function range_to_string($min, $max)
+function rangeToReadableString($min, $max)
 {
     if ($max == INF) {
         return "at least $min";
@@ -83,3 +74,7 @@ function range_to_string($min, $max)
     return "$min to $max";
 }
 
+function normalizePath($path)
+{
+    return strtolower(strtr($path, "\\", "/"));
+}

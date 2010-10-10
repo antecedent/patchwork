@@ -4,28 +4,85 @@ namespace Patchwork;
 
 class Call
 {
-    public $function, $line, $file, $class, $object, $type, $args;
-    
+    public $args, $function, $class, $object, $file, $line, $type;
+
     private $remainder;
+    private $result;
+    private $completed = false;
     
-    function __construct(array $elements, array $remainder = array())
+    function __construct($backtrace, $defaults = array())
     {
-        foreach ($elements as $key => $value) {
-            $this->{$key} = $value;
-        }
-        $this->remainder = $remainder;
-    }
-    
-    function next()
-    {
-        return $this->top($this->remainder);
-    }
-    
-    static function top(array $trace)
-    {
-        if (empty($trace)) {
+        if (empty($backtrace)) {
             throw new Exceptions\EmptyBacktrace;
         }
-        return new self(array_shift($trace), $trace);
+        foreach (array_shift($backtrace) + $defaults as $property => $value) {
+            $this->{$property} = $value;
+        }
+        $this->remainder = $backtrace;
+    }
+
+    function getCallback()
+    {
+        if (isset($this->object)) {
+            return array($this->object, $this->function);
+        }
+        if (isset($this->class)) {
+            return $this->class . "::" . $this->function;
+        }
+        return $this->function;
+    }
+
+    /**
+     * @return Patchwork\Call
+     */
+    function next()
+    {
+        return new self($this->remainder);
+    }
+
+    function complete($result = null)
+    {
+        if ($this->completed) {
+            throw new Exceptions\MultipleCallCompletions;
+        }
+        $this->result = $result;
+        $this->completed = true;
+    }
+
+    function isCompleted()
+    {
+        return $this->completed;
+    }
+
+    function &getResult()
+    {
+        $this->assertResultAvailable();
+        $result = $this->result;
+        if ($result instanceof Reference) {
+            $result = &$result->get();
+        }
+        return $result;
+    }
+
+    function getRawResult()
+    {
+        $this->assertResultAvailable();
+        return $this->result;
+    }
+
+    private function assertResultAvailable()
+    {
+        if (!$this->completed) {
+            throw new Exceptions\CallResultUnavailable;
+        }
+    }
+
+    /**
+     * @return Patchwork\Call
+     */
+    static function top()
+    {
+        $call = new self(debug_backtrace());
+        return $call->next();
     }
 }

@@ -4,43 +4,42 @@ namespace Patchwork;
 
 class CallCountExpectation
 {
-    private static $shutting_down = false;
+    private static $shuttingDown = false;
     
-    private $filter;
-    private $subject;
     private $min, $max;
     private $calls = 0;
+    private $callsOnLastFailure;
+    private $origin;
     
-    function __construct($filter, $subject, $min, $max)
+    function __construct($min, $max, $origin)
     {
-        $this->filter = $filter;
-        $this->subject = $subject;
         $this->min = $min;
         $this->max = $max;
+        $this->origin = $origin;
     }
     
-    function __invoke(Call $call)
+    function __invoke()
     {
-        $result = call_user_func($this->filter, $call);
-        if ($result) {
-            $this->calls++;
-            $this->validate();
-        }
-        return $result;
+        $this->calls++;
+        $this->validate();
     }
     
     private function validate($end = false)
     {
+        if ($this->calls === $this->callsOnLastFailure) {
+            return;
+        }
         if ($this->calls > $this->max || ($end && $this->calls < $this->min)) {
+            $this->callsOnLastFailure = $this->calls;
             throw new Exceptions\UnmetCallCountExpectation(
-                $this->subject, $this->calls, $this->min, $this->max
+                $this->calls, $this->min, $this->max, $this->origin
             );
         }
     }
     
-    static function shut_down()
+    static function shutDown()
     {
-        self::$shutting_down = true;
+        self::$shuttingDown = true;
     }
     
     function __destruct()
@@ -48,7 +47,7 @@ class CallCountExpectation
         try {
             $this->validate(true);
         } catch (Exceptions\UnmetCallCountExpectation $e) {
-            if (self::$shutting_down) {
+            if (self::$shuttingDown) {
                 trigger_error($e->getMessage(), E_USER_ERROR);
             } else {
                 throw $e;
@@ -57,4 +56,4 @@ class CallCountExpectation
     }
 }
 
-register_shutdown_function('Patchwork\CallCountExpectation::shut_down');
+register_shutdown_function('Patchwork\CallCountExpectation::shutDown');

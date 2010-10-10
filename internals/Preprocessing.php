@@ -3,9 +3,11 @@
 namespace Patchwork\Preprocessing;
 
 use Patchwork\Tokens;
+use Patchwork\Exceptions;
+use Patchwork\Utils;
 
-const PREPROCESSORS = 'Patchwork\Preprocessing\PREPROCESSORS';
-const PATHS = 'Patchwork\Preprocessing\PATHS';
+const PREPROCESSORS  = 'Patchwork\Preprocessing\PREPROCESSORS';
+const EXCLUDED_PATHS = 'Patchwork\Preprocessing\EXCLUDED_PATHS';
 
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
@@ -17,20 +19,20 @@ function preprocess(Source $s)
     }
 }
 
-function preprocess_string($code)
+function preprocessString($code)
 {
     $source = new Source(token_get_all($code));
     preprocess($source);
     return (string) $source;
 }
 
-function preprocess_and_eval($code)
+function preprocessAndEval($code)
 {
     $prefix = "<?php ";
-    return eval(substr(preprocess_string($prefix . $code), strlen($prefix)));
+    return eval(substr(preprocessString($prefix . $code), strlen($prefix)));
 }
 
-function preprocess_and_open($file)
+function preprocessAndOpen($file)
 {
     $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
     $code = file_get_contents($file, true);
@@ -41,22 +43,22 @@ function preprocess_and_open($file)
     return $resource;
 }
 
-function should_preprocess($file)
+function shouldPreprocess($file)
 {
-    foreach ($GLOBALS[PATHS] as $path) {
-        if (preg_match($path, $file)) {
-            return true;
+    foreach ($GLOBALS[EXCLUDED_PATHS] as $pattern) {
+        if (strpos(Utils\normalizePath($file), Utils\normalizePath($pattern)) !== false) {
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
-function prepend_code_to_functions($code)
+function prependCodeToFunctions($code)
 {
     return function(Source $s) use ($code) {
-        foreach ($s->find_all(T_FUNCTION) as $function) {
-            $bracket   = $s->find_next(Tokens\LEFT_CURLY_BRACKET, $function);
-            $semicolon = $s->find_next(Tokens\SEMICOLON, $function);
+        foreach ($s->findAll(T_FUNCTION) as $function) {
+            $bracket   = $s->findNext(Tokens\LEFT_CURLY_BRACKET, $function);
+            $semicolon = $s->findNext(Tokens\SEMICOLON, $function);
             if ($bracket < $semicolon) {
                 $s->splice($code, $bracket + 1);
             }
@@ -64,13 +66,13 @@ function prepend_code_to_functions($code)
     };
 }
 
-function replace_tokens($search, $replacement)
+function replaceTokens($search, $replacement)
 {
     return function(Source $s) use ($search, $replacement) {
-        foreach ($s->find_all($search) as $match) {
+        foreach ($s->findAll($search) as $match) {
             $s->splice($replacement, $match, 1);
         }
     };
 }
 
-$GLOBALS[PREPROCESSORS] = $GLOBALS[PATHS] = array();
+$GLOBALS[PREPROCESSORS] = $GLOBALS[EXCLUDED_PATHS] = array();

@@ -1,5 +1,5 @@
 --TEST--
-Patching of eval()'d code
+Preprocessing of eval()'d code
 
 --FILE--
 <?php
@@ -8,15 +8,15 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
 Functions\evaluate('
-    function evalPatchingWorks()
+    function evalPreprocessingWorks()
     {
         return false;
     }
 ');
 
-Patchwork\filter('evalPatchingWorks', Patchwork\returnValue(true));
+Patchwork\filter('evalPreprocessingWorks', Patchwork\returnValue(true));
 
-var_export(evalPatchingWorks());
+var_export(evalPreprocessingWorks());
 
 ?>
 

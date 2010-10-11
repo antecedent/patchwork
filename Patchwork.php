@@ -2,12 +2,12 @@
 
 namespace Patchwork;
 
-require_once __DIR__ . "/internals/Exceptions.php";
-require_once __DIR__ . "/internals/Utils.php";
-require_once __DIR__ . "/internals/Patches.php";
 require_once __DIR__ . "/internals/Filtering.php";
 require_once __DIR__ . "/internals/Preprocessing.php";
+require_once __DIR__ . "/internals/Splices.php";
 require_once __DIR__ . "/internals/Tokens.php";
+require_once __DIR__ . "/internals/Utils.php";
+require_once __DIR__ . "/internals/Exceptions.php";
 
 spl_autoload_register(Utils\autoload(__NAMESPACE__, __DIR__ . "/classes"));
 
@@ -133,8 +133,8 @@ function expectCalls($min, $max = null)
 }
 
 $GLOBALS[Preprocessing\PREPROCESSORS] = array(
-    Preprocessing\prependCodeToFunctions(Utils\condense(Patches\CALL_FILTERING_PATCH)),
-    Preprocessing\replaceTokens(T_EVAL, Patches\EVAL_REPLACEMENT_PATCH),
+    Preprocessing\prependCodeToFunctions(Utils\condense(Splices\CALL_FILTERING_SPLICE)),
+    Preprocessing\replaceTokens(T_EVAL, Splices\EVAL_REPLACEMENT_SPLICE),
 );
 
 Preprocessing\Stream::wrap();

@@ -118,7 +118,7 @@ function dispatchNext()
     };
 }
 
-function emit($string)
+function say($string)
 {
     return function() use ($string) {
         echo $string;

@@ -26,7 +26,7 @@ class Stream
     function stream_open($path, $mode, $options, &$opened_path)
     {
         $this->unwrap();
-        if (($options && self::STREAM_OPEN_FOR_INCLUDE) && shouldPreprocess($path)) {
+        if (($options & self::STREAM_OPEN_FOR_INCLUDE) && shouldPreprocess($path)) {
             $this->resource = preprocessAndOpen($path);
             $this->wrap();
             return true;

@@ -137,4 +137,6 @@ $GLOBALS[Preprocessing\PREPROCESSORS] = array(
     Preprocessing\replaceTokens(T_EVAL, Splices\EVAL_REPLACEMENT_SPLICE),
 );
 
+exclude(__DIR__ . "/classes/");
+
 Preprocessing\Stream::wrap();

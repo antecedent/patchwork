@@ -46,7 +46,7 @@ function preprocessAndOpen($file)
 function shouldPreprocess($file)
 {
     foreach ($GLOBALS[EXCLUDED_PATHS] as $pattern) {
-        if (strpos(Utils\normalizePath($file), Utils\normalizePath($pattern)) !== false) {
+        if (strpos(Utils\normalizePath($file), Utils\normalizePath($pattern)) === 0) {
             return false;
         }
     }

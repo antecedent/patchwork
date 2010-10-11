@@ -76,5 +76,5 @@ function rangeToReadableString($min, $max)
 
 function normalizePath($path)
 {
-    return strtolower(strtr($path, "\\", "/"));
+    return strtr($path, "\\", "/");
 }

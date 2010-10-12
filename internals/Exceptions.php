@@ -11,39 +11,31 @@ namespace Patchwork\Exceptions;
 use Patchwork\Utils;
 use Patchwork\Call;
 
-interface Exception
+abstract class Exception extends \Exception
 {
 }
 
-abstract class LogicException extends \LogicException implements Exception
-{
-}
-
-abstract class RuntimeException extends \RuntimeException implements Exception
-{
-}
-
-class EmptyBacktrace extends RuntimeException
+class EmptyBacktrace extends Exception
 {
     protected $message = "Cannot shift a stack frame from an empty backtrace";
 }
 
-class MultipleSourceSplices extends LogicException
+class MultipleSourceSplices extends Exception
 {
     protected $message = "Multiple splices at the same point of the source are not possible";
 }
 
-class MultipleCallCompletions extends LogicException
+class MultipleCallCompletions extends Exception
 {
     protected $message = "Cannot complete the same call more than once";
 }
 
-class CallResultUnavailable extends RuntimeException
+class CallResultUnavailable extends Exception
 {
     protected $message = "Cannot retrieve the result from an uncompleted call";
 }
 
-class NotImplemented extends LogicException
+class NotImplemented extends Exception
 {
     function __construct($function)
     {
@@ -51,12 +43,12 @@ class NotImplemented extends LogicException
     }
 }
 
-class UnexpectedUncompletedCall extends RuntimeException
+class UnexpectedUncompletedCall extends Exception
 {
     protected $message = "Unexpected uncompleted call (see the backtrace)";
 }
 
-class UnmetCallCountExpectation extends RuntimeException
+class UnmetCallCountExpectation extends Exception
 {
     function __construct($calls, $min, $max, $origin)
     {
@@ -67,12 +59,12 @@ class UnmetCallCountExpectation extends RuntimeException
     }
 }
 
-class IllegalFilterResult extends LogicException
+class IllegalFilterResult extends Exception
 {
     protected $message = "Non-null filter result received";
 }
 
-abstract class Signal extends \Exception implements Exception
+abstract class Signal extends Exception
 {
 }
 

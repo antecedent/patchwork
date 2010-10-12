@@ -48,9 +48,9 @@ function dismiss(array $filterHandle)
 }
 
 /**
- * Combines multiple filters to a single filter, which executes the provided filters in the
- * original order and stops when a SignalToBreakFilterChain is thrown. The filters to be combined
- * must be passed as separate arguments to this funciton.
+ * Combines multiple filters into a single filter, called a filter chain, which tries to execute
+ * all the filters composing it (the order is preserved) and stops when a SignalToBreakFilterChain
+ * is thrown. The filters to be combined must be passed as separate arguments to this function.
  */
 function chain()
 {
@@ -67,7 +67,7 @@ function chain()
 }
 
 /**
- * Throws a SignalToBreakFilterChain.
+ * Throws a SignalToBreakFilterChain, that is, breaks the currently running filter chain.
  */
 function breakChain()
 {

@@ -11,21 +11,21 @@ require __DIR__ . "/includes/Cache.php";
 
 # Handle fetch("first")
 p\filter("Cache::fetch", p\chain(
-    p\requireArgs("first"),
-    p\setArgs(array(1 => "foo")),
+    p\requireArgs(array("first")),
+    p\assignArgs(array(1 => "foo")),
     p\returnValue(true)
 ));
 
 # Handle fetch("second")
 p\filter("Cache::fetch", p\chain(
-    p\requireArgs("second"),
-    p\setArgs(array(1 => "bar")),
+    p\requireArgs(array("second")),
+    p\assignArgs(array(1 => "bar")),
     p\returnValue(true)
 ));
 
 # Handle fetch("inexistent")
 p\filter("Cache::fetch", p\chain(
-    p\requireArgs("inexistent"),
+    p\requireArgs(array("inexistent")),
     p\returnValue(false)
 ));
 

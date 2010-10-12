@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
+ * @copyright  2010 Ignas Rudaitis
+ * @license    http://www.opensource.org/licenses/mit-license.html
+ * @link       http://github.com/antecedent/patchwork
+ */
 namespace Patchwork\Preprocessing;
 
 use Patchwork\Tokens;
@@ -7,7 +13,7 @@ use Patchwork\Exceptions;
 use Patchwork\Utils;
 
 const PREPROCESSORS  = 'Patchwork\Preprocessing\PREPROCESSORS';
-const EXCLUDED_PATHS = 'Patchwork\Preprocessing\EXCLUDED_PATHS';
+const BLACKLIST = 'Patchwork\Preprocessing\BLACKLIST';
 
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
@@ -45,7 +51,7 @@ function preprocessAndOpen($file)
 
 function shouldPreprocess($file)
 {
-    foreach ($GLOBALS[EXCLUDED_PATHS] as $pattern) {
+    foreach ($GLOBALS[BLACKLIST] as $pattern) {
         if (strpos(Utils\normalizePath($file), Utils\normalizePath($pattern)) === 0) {
             return false;
         }
@@ -75,4 +81,4 @@ function replaceTokens($search, $replacement)
     };
 }
 
-$GLOBALS[PREPROCESSORS] = $GLOBALS[EXCLUDED_PATHS] = array();
+$GLOBALS[PREPROCESSORS] = $GLOBALS[BLACKLIST] = array();

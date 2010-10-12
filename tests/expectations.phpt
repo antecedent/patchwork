@@ -10,22 +10,22 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Cache.php";
 
 p\filter("Cache::store", p\chain(
-	p\requireArgs("fail-on-call"),
+	p\requireArgs(array("fail-on-call")),
 	p\expectCalls(0)
 ));
 
 $handle = p\filter("Cache::store", p\chain(
-	p\requireArgs("fail-on-dismiss"),
+	p\requireArgs(array("fail-on-dismiss")),
 	p\expectCalls(1)
 ));
 
 p\filter("Cache::store", p\chain(
-	p\requireArgs("fail-on-shutdown"),
+	p\requireArgs(array("fail-on-shutdown")),
 	p\expectCalls(5, 10)
 ));
 
 p\filter("Cache::store", p\chain(
-	p\requireArgs("ok"),
+	p\requireArgs(array("ok")),
 	p\expectCalls(1, INF)
 ));
 

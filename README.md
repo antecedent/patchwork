@@ -1,35 +1,119 @@
 # Patchwork
 
-Patchwork is a library that allows [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP. Patchwork is implemented in pure userland PHP 5.3 code and does not depend on any non-standard extensions.
-
 ## Notice
 
 **Be sure to disable any opcode caches before using Patchwork!** For an explanation, please refer to the "Implementation" section.
 
-## Purpose
+## Introduction
 
-Patchwork aims to bring the possibility of so-called [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) into the PHP universe. Of course, while it is only a matter of taste as to if monkey patching is an acceptable practice in general, it appears that up to now, there had been no serious experiments to show if it could be implemented in PHP at all, so this is exactly what Patchwork tries to accomplish.
+### Basics
 
-Speaking of monkey patching itself, it is quite a common practice in many dynamic languages, because it brings considerable ease to testing-related tasks. In both unit and functional tests, it is extremely convenient to simply redefine a function, a method or a whole class at runtime, because this allows us to replace it with a test double without any changes to the client code.
+Patchwork is a library that implements a type of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP. Specifically, it makes it possible to attach _filters_ to user-defined functions and methods:
 
-Unfortunately, in the world of PHP, it is not that simple. The default setup of the Zend Engine simply does not allow us to redefine any of these entities at runtime. So, this leaves us with the only option of altering code _before compile-time_. Now, given that (at least from a certain standpoint) PHP is still an _interpreted_ language, this is not only possible but can also be made completely transparent, because an already running piece of PHP code may "include" a file containing another such piece, triggering compilation again. The only thing to do here is to catch all these "includes" and preprocess them before they are actually parsed and compiled.
+	Patchwork\filter("Cache::fetch", function() {
+		echo "Fetching something from cache\n";
+	});
+
+These filters, like the one in the example above, always run before the function they are attached to. This happens every time the function is called:
+
+	$result = Cache::fetch("something"); # prints "Fetching something from cache"
+
+Any valid PHP callback will work as a filter, but since lambdas have finally arrived in PHP 5.3, there is rarely a reason not to use them for this purpose. Additionaly, Patchwork provides some ready-made filters for more expressive power:
+
+	use Patchwork as p;
+	p\filter("Cache::fetch", p\say("Fetching something from the cache\n"));
+	
+Some of these filters may be left unmentioned in this document, but they can always be looked up by viewing the source of `Patchwork.php`.
+
+### Short-Circuiting
+
+Now, we shall make the filter do something actually useful:
+
+	Patchwork\filter("Cache::fetch", function($call) {
+		$call->complete("result");
+	});
+
+This time, it essentially stubs out the method by making it _return_ the string "result" unconditionally. This comes really handy in the context of unit testing, where complex dependencies have to be replaced with test doubles.
+
+And of course, there is also a predefined filter for that:
+
+	p\filter(p\returnValue("result"));
+
+Now, if we call the method, our call will be "short-circuited", meaning that only the filter will run, bypassing the method itself:
+
+	Cache::fetch("something"); # => "result"
+
+### Inspecting the Stack Frame
+
+However, this is still not enough for most testing tasks. This is because at times we will need to know how exactly the filtered call was made, including the arguments that were passed, the object on which the method was called, or even the full stack trace.
+
+That is why each filter receives a `Patchwork\Call` object as an argument. This object is essentially a wrapper for the result of `debug_backtrace`. It represents a single stack frame, but also allows to access the ones "below" it using the `next()` method.
+
+Also, all the properties of a stack frame that are populated by `debug_backtrace` are available as public fields of the `Patchwork\Call` class:
+
+	Patchwork\filter("Cache::fetch", function(Patchwork\Call $call) {
+		
+		$call->function; # => "fetch"
+		$call->class;    # => "Cache"
+		$call->object;   # => null (if the call is static)
+		$call->file;     # ...
+		$call->line;     # ...
+		$call->type;     # => "::" (if the call is static)
+		$call->args;     # => array("something", null)
+		
+		# Retrieves the stack frame from which the filtered call was made
+		$call->next();
+		$call->next()->function; # ...
+		
+		# Reference arguments can be updated from the filter
+		$call->args[1] = true; # Mind zero-based indexing!
+		
+		# See "Short-Circuiting"
+		$call->complete("result");
+		
+	});
+
+### Dismissing Filters
+
+If a filter is no longer needed, it can be dismissed:
+
+	$handle = Patchwork\filter("Cache::fetch", Patchwork\returnValue(42));
+	Patchwork\dismiss($handle);
+
+### Attaching Multiple Filters
+
+It is possible to attach multiple filters to the same function:
+
+	$first  = Patchwork\filter("Cache::fetch", Patchwork\say("Hello World!"));
+	$second = Patchwork\filter("Cache::fetch", Patchwork\returnValue(42));
+	
+As a result, they can now be dismissed independently:
+
+	Patchwork\dismiss($first);
+	Patchwork\dismiss($second);
+
+Note that a call to `Patchwork\Call::complete()` does not affect the execution of further filters. However, this method may only be called once. After a call has been completed, attempting to complete it again results in a `Patchwork\Exceptions\MultipleCallCompletions` exception being thrown.
+
+## Limitations
+
+ - Works on user-defined functions only
+ - Adds a noticeable performance overhead
+ - Does not work on any PHP files that are compiled before Patchwork
 
 ## Implementation
 
-### Preprocessing
+As already mentioned, Patchwork employs code preprocessing in order to allow the interception of function calls. The relatively simple preprocessing layer sits on a stream wrapper that overrides the default `file://` protocol. This wrapper is responsible for catching all `include` and `require` operations (and their `_once` counterparts). So, when a file is about to be included, Patchwork preprocesses it and loads it from an in-memory stream instead, which is also why Patchwork may not (and most probably will not) work if an opcode cache is in use.
 
-### Call Filtering
+## Advanced Usage
 
-## Examples
+### Call Matching
 
-### Pattern Matching
+### Expectations
 
 ### Dealing With Magic Calls
 
 ### PHPUnit Integration
 
 ### Path Exclusion
-
-## Known Limitations
 
 ## Final Notes

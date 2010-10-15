@@ -18,7 +18,7 @@ To start using Patchwork, we have to include `Patchwork.php`:
 
 	require __DIR__ . "/patchwork/Patchwork.php";
 	
-Any code that is included after this point will be patchable using Patchwork. **Any code that has been compiled by PHP earlier, including the script from which Patchwork itself has been included, will, however, be not**.
+Any code that is included after this step will be patchable using Patchwork. **Any code that has been imported earlier, including the script from which Patchwork itself has been included, will, however, be not**.
 
 ### Basics
 
@@ -37,7 +37,7 @@ Any valid PHP callback will work as a filter, but since lambdas have finally arr
 	use Patchwork as p;
 	p\filter("Cache::fetch", p\say("Fetching something from the cache\n"));
 	
-Some of these filters may be left unmentioned in this document, but they can always be looked up by viewing the source of `Patchwork.php`.
+Some of these built-in filters may be left unmentioned in this document, but they can always be looked up by viewing the source of `Patchwork.php`.
 
 ### Short-Circuiting
 
@@ -63,7 +63,7 @@ Simply assigning a constant result to a method is still not enough for most test
 
 That is why each filter receives a `Patchwork\Call` object as an argument. This object is essentially a wrapper for the result of `debug_backtrace`. It represents a single stack frame, but also allows to access the ones "below" it using the `next()` method.
 
-Also, all the properties of a stack frame that are populated by `debug_backtrace` are available as public fields of the `Patchwork\Call` class:
+Also, all the properties of a stack frame that are populated by `debug_backtrace` are also available as public fields of the `Patchwork\Call` class:
 
 	Patchwork\filter("Cache::fetch", function(Patchwork\Call $call) {
 		
@@ -160,7 +160,7 @@ Now, we shall rewrite the code above in a more idiomatic way, using filter chain
 
 Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the currently filtered call.
 
-The built-in `requireArgs` filter, along with the whole `Patchwork\require*` family, is specifically meant for use in chains. As the name suggests, it checks if the arguments of the filtered call match the prespecified ones, and if they do not, it breaks the filter chain. In the example above, this results in neither `p\say` nor `p\returnValue` being executed in the such cases.
+The built-in `requireArgs` filter, along with the whole `Patchwork\require*` family, is specifically meant for use in chains. As the name suggests, it checks if the arguments of the filtered call match the prespecified ones, and if they do not, it breaks the filter chain. In the example above, this results in neither `p\say` nor `p\returnValue` being executed in such cases.
 
 ### Setting Expectations
 

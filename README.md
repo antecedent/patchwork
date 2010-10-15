@@ -1,6 +1,6 @@
 # Patchwork
 
-Released under [the MIT license](http://www.opensource.org/licenses/mit-license.html)
+Probably the first userland implementation of monkey patching in PHP. Released under [the MIT license](http://www.opensource.org/licenses/mit-license.html).
 
 ## Notice
 
@@ -14,7 +14,7 @@ Patchwork is written in pure userland PHP 5.3 code. It does not require any non-
 
 ### Basics
 
-Patchwork is a library that implements a type of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP: it makes it possible to attach _filters_ to user-defined functions and methods:
+Patchwork is a library that implements a kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP: it makes it possible to attach _filters_ to user-defined functions and methods:
 
 	Patchwork\filter("Cache::fetch", function() {
 		echo "Fetching something from cache\n";

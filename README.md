@@ -158,7 +158,7 @@ Now, we shall rewrite the code above in a more idiomatic way, using filter chain
 	
 	p\filter("Cache::filter", p\assertCompleted());
 
-Any filter that appears in a filter chain may "break" it by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the filtered call. This is how the built-in `requireArgs` filter works: if the arguments of the filtered call do not match the prespecified ones, it breaks the filter chain, so in the example above, neither `p\say()` nor `p\returnValue()` runs. Because of that, this filter, along with all the `require*` family, should not be used outside filter chains.
+Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the filtered call. This is how the built-in `requireArgs` filter works: if the arguments of the filtered call do not match the prespecified ones, it breaks the filter chain, so in the example above, neither `p\say()` nor `p\returnValue()` runs. Because of that, this filter, along with all the `require*` family, should not be used outside filter chains.
 
 ### Setting Expectations
 

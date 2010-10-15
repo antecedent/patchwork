@@ -18,7 +18,7 @@ To start using Patchwork, we have to include `Patchwork.php`:
 
 	require __DIR__ . "/patchwork/Patchwork.php";
 	
-Any code that is included after this point will be patchable using Patchwork. **Any code that is compiled by PHP earlier, including the script from which Patchwork itself is included, will not**.
+Any code that is included after this point will be patchable using Patchwork. **Any code that has been compiled by PHP earlier, including the script from which Patchwork itself has been included, will, however, be not**.
 
 ### Basics
 
@@ -89,7 +89,7 @@ Also, all the properties of a stack frame that are populated by `debug_backtrace
 
 ### Dismissing a Filter
 
-If a filter is no longer needed, it can be dismissed:
+When a filter is no longer needed, it can be dismissed:
 
 	$handle = Patchwork\filter("Cache::fetch", Patchwork\returnValue(42));
 	Patchwork\dismiss($handle);
@@ -106,21 +106,21 @@ As a result, they can now be dismissed independently:
 	Patchwork\dismiss($first);
 	Patchwork\dismiss($second);
 
-Note that a call to `Patchwork\Call::complete()` does not affect the execution of further filters. However, this method may only be called once. After a call has been completed, attempting to complete it again results in a `Patchwork\Exceptions\MultipleCallCompletions` exception being thrown.
+Note that a call to `Patchwork\Call::complete()` does not affect the execution of further filters. However, this method may only be called once. After a call has been completed, attempting to complete it again results in a `Patchwork\Exceptions\CallAlreadyCompleted` exception being thrown.
 
 ## Purpose
 
-Patchwork is primarily meant for dealing with hardly testable codebases which still need to be tested. It is a much lower-level solution than most test double frameworks, but as a result, it is also much more flexible. Using Patchwork, it is possible to intercept calls to any user-defined method or function, even static, private and final ones. Because of this, singletons and other non-polymorphic dependencies are no longer a problem in testing.
-
-## Limitations
-
- - Works on user-defined functions only
- - Adds a noticeable performance overhead
- - Cannot filter calls to anything that is defined before including `Patchwork.php`
+Patchwork is primarily meant for dealing with hardly testable codebases that still need to be tested. It is a much lower-level solution than most stubbing or mocking frameworks, but as a result, it is also much more flexible. Using Patchwork, it is possible to intercept calls to any user-defined method or function, even a static, private or final one. This makes it significantly easier to overcome various testability obstacles, such as singletons and other kinds of non-polymorphic dependencies.
 
 ## Implementation
 
 As already mentioned, Patchwork employs code preprocessing in order to allow the interception of function calls. The relatively simple preprocessing layer sits on a stream wrapper that overrides the default `file://` protocol. This wrapper is responsible for catching all `include` and `require` operations (and their `_once` counterparts). So, when a file is about to be included, Patchwork preprocesses it and loads it from an in-memory stream instead, which is also why Patchwork may not (and most probably will not) work if an opcode cache is in use.
+
+## Limitations
+
+Without a doubt, the greatest limitation of Patchwork is that it cannot be applied to internal PHP functions. Unfortunately, this shortcoming is here to stay, because it is simply impossible to inject filtering logic into core PHP code at runtime, which is the way Patchwork works.
+
+Also, another obvious drawback is that such an implementation adds a certain performance overhead. However, in testing environments, which Patchwork is mainly targeted at, this overhead should be low enough to go unnoticed.
 
 ## Advanced Usage
 
@@ -158,7 +158,9 @@ Now, we shall rewrite the code above in a more idiomatic way, using filter chain
 	
 	p\filter("Cache::filter", p\assertCompleted());
 
-Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the filtered call. This is how the built-in `requireArgs` filter works: if the arguments of the filtered call do not match the prespecified ones, it breaks the filter chain, so in the example above, neither `p\say()` nor `p\returnValue()` runs. Because of that, this filter, along with all the `require*` family, should not be used outside filter chains.
+Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the currently filtered call.
+
+The built-in `requireArgs` filter, along with the whole `Patchwork\require*` family, is specifically meant for use in chains. As the name suggests, it checks if the arguments of the filtered call match the prespecified ones, and if they do not, it breaks the filter chain. In the example above, this results in neither `p\say` nor `p\returnValue` being executed in the such cases.
 
 ### Setting Expectations
 
@@ -190,7 +192,7 @@ To make sure that a call has been filtered, we can set a call count expectation:
 	# Expect no calls to Cache::filter with any other arguments:
 	p\filter("Cache::filter", p\expect(0));
 
-The filter returned by `Patchwork\expect` counts how many calls it intercepts, and if that number does not fall into the expected range, it throws a `Patchwork\Exceptions\UnmetCallCountExpectation` exception. Note, however, that this might not happen until all references to this filter are lost.
+The filter returned by `Patchwork\expect` counts how many calls it intercepts, and if that number does not fall into the prespecified range, it throws a `Patchwork\Exceptions\UnmetCallCountExpectation` exception. Note, however, that this might not happen until all references to this filter have been lost.
 
 ### PHPUnit Integration
 
@@ -204,7 +206,7 @@ Since Patchwork uses global variables to store the filters and its own preproces
 	    );
     }
     
-However, for maximum convenience, Patchwork also provides a ready-made specialized class named `Patchwork\TestCase` that has the blacklist already overriden. In addition, it contains a `filter` method, which is essentially an alias for `Patchwork\filter`, except that all filters attached using this alias are automatically dismissed in the `tearDown` method:
+However, for maximum convenience, Patchwork also provides a ready-made specialization of the `PHPUnit_Framework_TestCase` class, which has the blacklist already overridden. In addition, it contains a `filter` method, which is essentially an alias for `Patchwork\filter`, except that all filters attached using this alias are automatically dismissed in the `tearDown` method:
 
 	class TestCase extends Patchwork\TestCase
 	{
@@ -230,13 +232,13 @@ However, for maximum convenience, Patchwork also provides a ready-made specializ
 
 ### Path Exclusion
 
-If we do not want a certain file or directory to be preprocessed, we can instruct Patchwork to exclude it:
+If want a certain file or directory not to be preprocessed, we can instruct Patchwork to exclude it:
 
 	Patchwork\exclude("/home/user/a-php-library/"); # do not forget the trailing slash!
 	Patchwork\exclude("/home/user/another-php-library/file.php");
 
 ## Final Notes
 
-If you happen to discover any bugs in Patchwork, please do not hesitate to report them [here](http://github.com/antecedent/patchwork/issues). Note that this also applies to any grammatical errors, factual discrepancies or invalid code samples that may have appeared in this document. Suggestions are definitely welcome as well.
+If you happen to discover any bugs in Patchwork, please do not hesitate to report them [here](http://github.com/antecedent/patchwork/issues). This also applies to any grammatical errors, factual discrepancies or invalid code samples that may have appeared in this document. And, of course, suggestions are welcome as well.
 
-Thanks for your interest!
+Thank you for your interest!

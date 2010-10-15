@@ -57,9 +57,6 @@ class Source
     
     function splice($splice, $offset, $length = 0)
     {
-        if (isset($this->splices[$offset])) {
-            throw new Exceptions\MultipleSourceSplices;
-        }
         $this->splices[$offset] = $splice;
         $this->spliceLengths[$offset] = $length;
     }

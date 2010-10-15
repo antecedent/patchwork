@@ -49,7 +49,7 @@ class Call
     function complete($result = null)
     {
         if ($this->completed) {
-            throw new Exceptions\MultipleCallCompletions;
+            throw new Exceptions\CallAlreadyCompleted;
         }
         $this->result = $result;
         $this->completed = true;

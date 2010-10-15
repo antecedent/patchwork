@@ -20,12 +20,7 @@ class EmptyBacktrace extends Exception
     protected $message = "Cannot shift a stack frame from an empty backtrace";
 }
 
-class MultipleSourceSplices extends Exception
-{
-    protected $message = "Multiple splices at the same point of the source are not possible";
-}
-
-class MultipleCallCompletions extends Exception
+class CallAlreadyCompleted extends Exception
 {
     protected $message = "Cannot complete the same call more than once";
 }

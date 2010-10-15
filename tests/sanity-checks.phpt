@@ -26,7 +26,7 @@ echo "Can we complete a call twice? ";
     try {
         $call->complete();
         echo "Yes.", PHP_EOL;
-    } catch (Patchwork\Exceptions\MultipleCallCompletions $e) {
+    } catch (Patchwork\Exceptions\CallAlreadyCompleted $e) {
         echo "No.", PHP_EOL;
     }
 }

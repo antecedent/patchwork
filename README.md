@@ -22,7 +22,7 @@ Any code that is included after this step will be patchable using Patchwork. **A
 
 ### Basics
 
-Patchwork implements a particular kind of type of monkey patching that does not actually involve redefining anything at runtime, because there is simply no way to do that in PHP without the help of non-standard core extensions like [runkit](http://php.net/manual/en/book.runkit.php). Instead, Patchwork makes it possible to attach **filters** to **user-defined** functions and methods:
+Patchwork implements a particular type of monkey patching that does not actually involve redefining anything at runtime, since there is simply no way to do that in PHP without the help of non-standard core extensions like [runkit](http://php.net/manual/en/book.runkit.php). Instead, Patchwork makes it possible to attach **filters** to **user-defined** functions and methods:
 
 	Patchwork\filter("Cache::fetch", function() {
 		echo "Fetching something from cache\n";

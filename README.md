@@ -14,24 +14,27 @@ Patchwork is written in pure userland PHP 5.3 code. It does not require any non-
 
 ### Getting started
 
-To start using Patchwork, we have to include `Patchwork.php`:
+In order to start using Patchwork, one has to include `Patchwork.php`:
 
 	require __DIR__ . "/patchwork/Patchwork.php";
 	
-Any code that is included after this step will be patchable using Patchwork. **Any code that has been imported earlier, including the script from which Patchwork itself has been included, will, however, be not**.
+Any code that is included after this step will be patchable using Patchwork. **Any code that has been imported earlier, including the script from which Patchwork itself has been included, will, however, be not.**
 
 ### Basics
 
-Patchwork is a library that implements a kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP: it makes it possible to attach **filters** to user-defined functions and methods:
+Patchwork implements a particular kind of type of monkey patching that does not actually involve redefining anything at runtime, because there is simply no way to do that in PHP without the help of non-standard core extensions like [runkit](http://php.net/manual/en/book.runkit.php). Instead, Patchwork makes it possible to attach **filters** to **user-defined** functions and methods:
 
 	Patchwork\filter("Cache::fetch", function() {
 		echo "Fetching something from cache\n";
 	});
 
-These filters, like the one in the example above, always run before the function they are attached to. This happens every time the function is called:
+These filters, like the one in the example above, always run before the function they are attached to, which in this case is `Cache::fetch`. This happens **every time the function is called**, meaning that every call to the filtered function is intercepted and dispatched by Patchwork:
 
-	$result = Cache::fetch("something"); # prints "Fetching something from cache"
-	var_dump($result); # Cache::fetch still runs and returns a result
+	# Prints "Fetching something from cache"
+	$result = Cache::fetch("something"); 
+	
+	# Cache::fetch still runs and returns something:
+	var_dump($result); 
 	
 When attaching a filter, it does not matter if the subject (the function to which the filter is being attached) is actually defined, nor is it important whether it has been already called. However, it is extremely important to follow the warning that has already been stated in the "Getting Started" section: **filters can only be attached to those functions that are defined after including `Patchwork.php`**.
 
@@ -58,7 +61,10 @@ And of course, there is also a predefined filter for that:
 
 Now, if we call the method, our call will be "short-circuited", meaning that only the filter will run, bypassing the method itself:
 
-	Cache::fetch("something"); # => "result"
+	# Returns "result"
+	Cache::fetch("something");
+	
+	# Cache::fetch does NOT run anymore!
 
 ### Inspecting the Stack Frame
 

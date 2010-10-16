@@ -12,7 +12,7 @@ Probably the first userland implementation of [monkey patching](http://en.wikipe
 
 Patchwork is written in pure userland PHP 5.3 code. It does not require any non-standard PHP extensions.
 
-### Getting started
+### Getting Started
 
 The first and the only step of getting Patchwork running is including `Patchwork.php`:
 

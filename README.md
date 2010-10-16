@@ -1,6 +1,6 @@
 # Patchwork
 
-Probably the first userland implementation of monkey patching in PHP. Released under [the MIT license](http://www.opensource.org/licenses/mit-license.html).
+Probably the first userland implementation of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP. Released under [the MIT license](http://www.opensource.org/licenses/mit-license.html).
 
 ## Notice
 

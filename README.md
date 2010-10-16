@@ -129,7 +129,7 @@ Patchwork employs code preprocessing in order to allow the interception of funct
 
 ## Limitations
 
-Without a doubt, the greatest limitation of Patchwork is that it cannot be applied to internal PHP functions. Unfortunately, this shortcoming is here to stay, because it is simply impossible to inject filtering logic into core PHP code at runtime, which is the way Patchwork works. But it should never be forgotten that there is always the [runkit](http://php.net/manual/en/book.runkit.php) extension for that, as well as [a newer solution](http://github.com/sebastianbergmann/php-test-helpers) by Sebastian Bergmann and Johannes Schlüter.
+Without a doubt, the greatest limitation of Patchwork is that it cannot be applied to internal PHP functions. Unfortunately, this shortcoming is here to stay, because it is simply impossible to inject filtering logic into core PHP code at runtime, which is the way Patchwork works. But it should never be forgotten that there is always the [runkit](http://php.net/manual/en/book.runkit.php) extension for that, as well as [a newer solution](http://github.com/sebastianbergmann/php-test-helpers) by Sebastian Bergmann and Johannes Schlueter.
 
 Also, another obvious drawback is that such an implementation adds a certain performance overhead. However, in testing environments, to which Patchwork is mainly targeted, this overhead should be low enough to go unnoticed.
 

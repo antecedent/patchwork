@@ -14,7 +14,7 @@ Patchwork is written in pure userland PHP 5.3 code. It does not require any non-
 
 ### Getting started
 
-In order to start using Patchwork, one has to include `Patchwork.php`:
+The first and the only step of getting Patchwork running is including `Patchwork.php`:
 
 	require __DIR__ . "/patchwork/Patchwork.php";
 	
@@ -22,7 +22,7 @@ Any code that is included after this step will be patchable using Patchwork. **A
 
 ### Basics
 
-Patchwork implements a particular type of monkey patching that does not actually involve redefining anything at runtime, since there is simply no way to do that in PHP without the help of non-standard core extensions like [runkit](http://php.net/manual/en/book.runkit.php). Instead, Patchwork makes it possible to attach **filters** to **user-defined** functions and methods:
+Patchwork implements a particular type of monkey patching that does not actually involve redefining anything at runtime, since there is simply no way to do that in PHP without the help of non-standard core extensions like [runkit](http://php.net/manual/en/book.runkit.php). Instead, Patchwork makes it possible to attach **filters** to user-defined functions and methods:
 
 	Patchwork\filter("Cache::fetch", function() {
 		echo "Fetching something from cache\n";
@@ -36,7 +36,7 @@ These filters, like the one in the example above, always run before the function
 	# Cache::fetch still runs and returns something:
 	var_dump($result); 
 	
-When attaching a filter, it does not matter if the subject (the function to which the filter is being attached) is actually defined, nor is it important whether it has been already called. However, it is extremely important to follow the warning that has already been stated in the "Getting Started" section: **filters can only be attached to those functions that are defined after including `Patchwork.php`**.
+When attaching a filter, it does not matter if the subject (the function to which the filter is being attached) is actually defined, nor is it important whether it has been already called. However, it is extremely important to keep in mind, that, as already mentioned, **filters can only be attached to those functions that are defined after including `Patchwork.php`**.
 
 Any valid PHP callback will work as a filter, but since lambdas have finally arrived in PHP 5.3, there is rarely a reason not to use them for this purpose. Additionaly, Patchwork provides some ready-made filters for more expressive power:
 

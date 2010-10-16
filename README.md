@@ -31,6 +31,9 @@ Patchwork is a library that implements a kind of [monkey patching](http://en.wik
 These filters, like the one in the example above, always run before the function they are attached to. This happens every time the function is called:
 
 	$result = Cache::fetch("something"); # prints "Fetching something from cache"
+	var_dump($result); # Cache::fetch still runs and returns a result
+	
+When attaching a filter, it does not matter if the subject (the function to which the filter is being attached) is actually defined, nor is it important whether it has been already called. However, it is extremely important to follow the warning that has already been stated in the "Getting Started" section: **filters can only be attached to those functions that are defined after including `Patchwork.php`**.
 
 Any valid PHP callback will work as a filter, but since lambdas have finally arrived in PHP 5.3, there is rarely a reason not to use them for this purpose. Additionaly, Patchwork provides some ready-made filters for more expressive power:
 

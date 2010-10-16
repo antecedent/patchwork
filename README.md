@@ -22,7 +22,7 @@ Any code that is included after this step will be patchable using Patchwork. **A
 
 ### Basics
 
-Patchwork is a library that implements a kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP: it makes it possible to attach _filters_ to user-defined functions and methods:
+Patchwork is a library that implements a kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch) in PHP: it makes it possible to attach **filters** to user-defined functions and methods:
 
 	Patchwork\filter("Cache::fetch", function() {
 		echo "Fetching something from cache\n";
@@ -36,8 +36,8 @@ Any valid PHP callback will work as a filter, but since lambdas have finally arr
 
 	use Patchwork as p;
 	p\filter("Cache::fetch", p\say("Fetching something from the cache\n"));
-	
-Some of these built-in filters may be left unmentioned in this document, but they can always be looked up by viewing the source of `Patchwork.php`.
+
+Only some of these built-in filters will be mentioned in this document, the rest are left to the reader to discover by browsing the source of `Patchwork.php`, where they are also documented individually.
 
 ### Short-Circuiting
 
@@ -47,7 +47,7 @@ Now, we shall make the filter do something actually useful:
 		$call->complete("result");
 	});
 
-This time, it essentially stubs out the method by making it _return_ the string "result" unconditionally. This comes really handy in the context of unit testing, where complex dependencies have to be replaced with test doubles.
+This time, it essentially stubs out the method by making it **return** the string "result" unconditionally. This comes in handy in the context of unit testing, where complex dependencies have to be replaced with test doubles.
 
 And of course, there is also a predefined filter for that:
 
@@ -96,17 +96,19 @@ When a filter is no longer needed, it can be dismissed:
 
 ### Attaching Multiple Filters
 
-It is possible to attach multiple filters to the same function:
+It is possible to attach multiple filters to the same function and have them execute in the order of attachment:
 
-	$first  = Patchwork\filter("Cache::fetch", Patchwork\say("Hello World!"));
-	$second = Patchwork\filter("Cache::fetch", Patchwork\returnValue(42));
+	$first  = Patchwork\filter("Cache::fetch", Patchwork\say("Hello "));
+	$second = Patchwork\filter("Cache::fetch", Patchwork\say("World!"));
 	
-As a result, they can now be dismissed independently:
+	Cache::fetch("something"); # prints "Hello World!"
+
+Also, these filters can now be dismissed independently:
 
 	Patchwork\dismiss($first);
 	Patchwork\dismiss($second);
 
-Note that a call to `Patchwork\Call::complete()` does not affect the execution of further filters. However, this method may only be called once. After a call has been completed, attempting to complete it again results in a `Patchwork\Exceptions\CallAlreadyCompleted` exception being thrown.
+Note that a call to `Patchwork\Call::complete()` does not affect the execution of further filters, so Patchwork always attempts to execute all relevant filters. However, this method may only be called once. After a call has been completed, attempting to complete it again results in a `Patchwork\Exceptions\CallAlreadyCompleted` exception being thrown.
 
 ## Purpose
 
@@ -114,13 +116,13 @@ Patchwork is primarily meant for dealing with hardly testable codebases that sti
 
 ## Implementation
 
-As already mentioned, Patchwork employs code preprocessing in order to allow the interception of function calls. The relatively simple preprocessing layer sits on a stream wrapper that overrides the default `file://` protocol. This wrapper is responsible for catching all `include` and `require` operations (and their `_once` counterparts). So, when a file is about to be included, Patchwork preprocesses it and loads it from an in-memory stream instead, which is also why Patchwork may not (and most probably will not) work if an opcode cache is in use.
+Patchwork employs code preprocessing in order to allow the interception of function calls. The relatively simple preprocessing layer sits on a stream wrapper that overrides the default `file://` protocol. This wrapper is responsible for catching all `include` and `require` operations (and their `_once` counterparts). So, when a file is about to be included, Patchwork preprocesses it and loads it from an in-memory stream instead, which is also why Patchwork may not (and most probably will not) work if an opcode cache is in use.
 
 ## Limitations
 
-Without a doubt, the greatest limitation of Patchwork is that it cannot be applied to internal PHP functions. Unfortunately, this shortcoming is here to stay, because it is simply impossible to inject filtering logic into core PHP code at runtime, which is the way Patchwork works.
+Without a doubt, the greatest limitation of Patchwork is that it cannot be applied to internal PHP functions. Unfortunately, this shortcoming is here to stay, because it is simply impossible to inject filtering logic into core PHP code at runtime, which is the way Patchwork works. But it should never be forgotten that there is always the [runkit](http://php.net/manual/en/book.runkit.php) extension for that, as well as [a newer solution](http://github.com/sebastianbergmann/php-test-helpers) by Sebastian Bergmann and Johannes Schlüter.
 
-Also, another obvious drawback is that such an implementation adds a certain performance overhead. However, in testing environments, which Patchwork is mainly targeted at, this overhead should be low enough to go unnoticed.
+Also, another obvious drawback is that such an implementation adds a certain performance overhead. However, in testing environments, to which Patchwork is mainly targeted, this overhead should be low enough to go unnoticed.
 
 ## Advanced Usage
 
@@ -141,7 +143,7 @@ By inspecting the stack frame, it is possible to make the filter react different
 		}
 	});
 	
-Now, we shall rewrite the code above in a more idiomatic way, using filter chains:
+Now, we shall rewrite the code above in a more idiomatic way, using **filter chains**:
 
 	use Patchwork as p;
 	
@@ -158,45 +160,43 @@ Now, we shall rewrite the code above in a more idiomatic way, using filter chain
 	
 	p\filter("Cache::filter", p\assertCompleted());
 
-Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining chained filters from being applied to the currently filtered call.
+Any filter that appears in a filter chain is allowed to "break" it at any time by calling `Patchwork\breakChain()`. Breaking it forbids any remaining filters **in the same chain** from being applied to the currently filtered call.
 
-The built-in `requireArgs` filter, along with the whole `Patchwork\require*` family, is specifically meant for use in chains. As the name suggests, it checks if the arguments of the filtered call match the prespecified ones, and if they do not, it breaks the filter chain. In the example above, this results in neither `p\say` nor `p\returnValue` being executed in such cases.
+The built-in `requireArgs` filter, along with the whole `Patchwork\require*` family, is specifically meant for use in chains. As the name suggests, it checks if the arguments of the filtered call match the prespecified ones, and if they do not, it breaks the filter chain. In the example above, this results in neither `p\say` nor `p\returnValue` being executed in such cases (do not forget that filters are always executed in the same order they are attached in).
 
 ### Setting Expectations
 
-To make sure that a call has been filtered, we can set a call count expectation:
+To make sure that a filtered function has been called a specific number of times, we can set a call count expectation:
 
 	use Patchwork as p;
 	
-	# Expect exactly one call with "foo" as the argument:
+	# Expect one to three calls with "foo" as the argument:
 	p\filter("Cache::filter", p\chain(
 		p\requireArgs(array("foo")),
-		p\expect(1), 
+		p\expectCalls(1, 3), 
 		p\returnValue("a value")
 	));
 	
-	# Expect one to three calls to Cache::filter("bar"):
+	# Expect at least two calls to Cache::filter("bar"):
 	p\filter("Cache::filter", p\chain(
 		p\requireArgs(array("bar")),
-		p\expect(1, 3), 
-		p\returnValue("another value")
-	));
-	
-	# Expect at least 2 calls to Cache::filter("baz"):
-	p\filter("Cache::filter", p\chain(
-		p\requireArgs(array("baz")),
-		p\expect(2, INF),
+		p\expectCalls(2, INF), 
 		p\returnValue("another value")
 	));
 	
 	# Expect no calls to Cache::filter with any other arguments:
-	p\filter("Cache::filter", p\expect(0));
+	p\filter("Cache::filter", p\chain(
+		p\requireUncompleted(),
+		p\expectCalls(0)
+	);
 
-The filter returned by `Patchwork\expect` counts how many calls it intercepts, and if that number does not fall into the prespecified range, it throws a `Patchwork\Exceptions\UnmetCallCountExpectation` exception. Note, however, that this might not happen until all references to this filter have been lost.
+The filter returned by `Patchwork\expectCalls` counts how many calls it intercepts, and if that number does not fall into the prespecified range, it throws a `Patchwork\Exceptions\UnmetCallCountExpectation` exception. Note, however, that this might not happen until all references to this filter have been lost.
+
+Also note that because of the nature of filter chains, the exact position of the `Patchwork\expectCalls` filters makes a great difference. For example, if we had placed them before `requireArgs` instead, they would not be argument-specific anymore and would therefore count every call to `Cache::fetch`.
 
 ### PHPUnit Integration
 
-Since Patchwork uses global variables to store the filters and its own preprocessing callbacks, it breaks the global state backup feature of PHPUnit. One solution to this is manually blacklisting these variables:
+Since Patchwork uses global variables to store the filters and its own preprocessing callbacks, it breaks the global state backup feature of [PHPUnit](http://www.phpunit.de/). One solution to this is to manually blacklist these variables:
 
 	class TestCase extends PHPUnit_Framework_TestCase
 	{
@@ -232,7 +232,7 @@ However, for maximum convenience, Patchwork also provides a ready-made specializ
 
 ### Path Exclusion
 
-If want a certain file or directory not to be preprocessed, we can instruct Patchwork to exclude it:
+In cases when a certain file or directory should be ignored by the preprocessor, Patchwork can be instructed to exclude it:
 
 	Patchwork\exclude("/home/user/a-php-library/"); # do not forget the trailing slash!
 	Patchwork\exclude("/home/user/another-php-library/file.php");

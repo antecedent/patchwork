@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://github.com/antecedent/patchwork
  */
-namespace Patchwork\Tokens;
+namespace Patchwork\Preprocessor\Tokens;
 
 const SEMICOLON = ";";
 

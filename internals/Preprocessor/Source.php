@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://github.com/antecedent/patchwork
  */
-namespace Patchwork\Preprocessing;
+namespace Patchwork\Preprocessor;
 
 use Patchwork\Utils;
 use Patchwork\Exceptions;
@@ -41,7 +41,7 @@ class Source
         if (!isset($this->tokensByType[$type])) {
             return INF;
         }
-        $bound = Utils\upperBound($this->tokensByType[$type], $offset);
+        $bound = Utils\getUpperBound($this->tokensByType[$type], $offset);
         $pos = &$this->tokensByType[$type][$bound];
         return isset($pos) ? $pos : INF;
     }

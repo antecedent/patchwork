@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://github.com/antecedent/patchwork
  */
-namespace Patchwork\Preprocessing;
+namespace Patchwork\Preprocessor;
 
 use Patchwork\Exceptions;
 
@@ -20,16 +20,16 @@ class Stream
 
     static function wrap()
     {
-        stream_wrapper_unregister(static::PROTOCOL);
-        stream_wrapper_register(static::PROTOCOL, __CLASS__);
+        stream_wrapper_unregister(self::PROTOCOL);
+        stream_wrapper_register(self::PROTOCOL, __CLASS__);
     }
     
     static function unwrap()
     {
-        stream_wrapper_restore(static::PROTOCOL);
+        stream_wrapper_restore(self::PROTOCOL);
     }
 
-    function stream_open($path, $mode, $options, &$opened_path)
+    function stream_open($path, $mode, $options, &$openedPath)
     {
         $this->unwrap();
         if (($options & self::STREAM_OPEN_FOR_INCLUDE) && shouldPreprocess($path)) {

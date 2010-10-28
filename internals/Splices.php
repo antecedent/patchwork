@@ -8,15 +8,14 @@
  */
 namespace Patchwork\Splices;
 
-const CALL_FILTERING_SPLICE = '
+const CALL_HANDLING_SPLICE = '
     $pwClass = __CLASS__ ? \get_called_class() : null;
-    if (!empty($GLOBALS[\Patchwork\Filtering\FILTERS][$pwClass][__FUNCTION__])) {
-        $pwCall = new \Patchwork\Call(\debug_backtrace(), array("class" => $pwClass));
-        if (\Patchwork\Filtering\dispatch($pwCall)) {
-            return $pwCall->getResult();
+    if (!empty($GLOBALS[\Patchwork\Patches\CALLBACKS][$pwClass][__FUNCTION__])) {
+        if (\Patchwork\Patches\handle($pwClass, __FUNCTION__, \debug_backtrace(), $pwResult)) {
+        	return $pwResult;
         }
     }
-    unset($pwClass, $pwCall);
+    unset($pwClass, $pwResult);
 ';
 
-const EVAL_REPLACEMENT_SPLICE = '\Patchwork\Preprocessing\preprocessAndEval';
+const EVAL_REPLACEMENT_SPLICE = '\Patchwork\Preprocessor\preprocessAndEval';

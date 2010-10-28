@@ -6,22 +6,26 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://github.com/antecedent/patchwork
  */
-namespace Patchwork\Preprocessing;
+namespace Patchwork\Preprocessor;
 
-use Patchwork\Tokens;
+require __DIR__ . "/Preprocessor/Source.php";
+require __DIR__ . "/Preprocessor/Stream.php";
+require __DIR__ . "/Preprocessor/Tokens.php";
+
 use Patchwork\Exceptions;
 use Patchwork\Utils;
 
-const PREPROCESSORS  = 'Patchwork\Preprocessing\PREPROCESSORS';
-const BLACKLIST = 'Patchwork\Preprocessing\BLACKLIST';
+const CALLBACKS = 'Patchwork\Preprocessor\CALLBACKS';
+const BLACKLIST = 'Patchwork\Preprocessor\BLACKLIST';
+const PREPROCESSED_FILES = 'Patchwork\Preprocessor\PREPROCESSED_FILES';
 
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
 
 function preprocess(Source $s)
 {
-    foreach ($GLOBALS[PREPROCESSORS] as $preprocessor) {
-        call_user_func($preprocessor, $s);
+    foreach ($GLOBALS[CALLBACKS] as $callback) {
+        call_user_func($callback, $s);
     }
 }
 
@@ -46,13 +50,19 @@ function preprocessAndOpen($file)
     preprocess($source);
     fwrite($resource, $source);
     rewind($resource);
+    $GLOBALS[PREPROCESSED_FILES][$file] = true;
     return $resource;
+}
+
+function hasPreprocessed($file)
+{
+	return !empty($GLOBALS[PREPROCESSED_FILES][$file]);
 }
 
 function shouldPreprocess($file)
 {
     foreach ($GLOBALS[BLACKLIST] as $pattern) {
-        if (strpos(Utils\normalizePath($file), Utils\normalizePath($pattern)) === 0) {
+        if (strpos(Utils\normalizePath($file), Utils\normalizePath($path)) === 0) {
             return false;
         }
     }
@@ -81,4 +91,4 @@ function replaceTokens($search, $replacement)
     };
 }
 
-$GLOBALS[PREPROCESSORS] = $GLOBALS[BLACKLIST] = array();
+$GLOBALS[CALLBACKS] = $GLOBALS[BLACKLIST] = $GLOBALS[PREPROCESSED_FILES] = array();

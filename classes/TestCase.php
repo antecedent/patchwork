@@ -10,22 +10,25 @@ namespace Patchwork;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
-    private $filterHandles = array();
+    private $handles = array();
 
     protected $backupGlobalsBlacklist = array(
-        Filtering\FILTERS,
-        Preprocessing\PREPROCESSORS,
+        Patches\CALLBACKS,
+        Patches\CALL_STACK,
+        Preprocessor\CALLBACKS,
+        Preprocessor\BLACKLIST,
+        Preprocessor\PREPROCESSED_FILES,
     );
   
-    function filter($subject, $filter)
+    function patch($function, $patch)
     {
-        $this->filterHandles[] = filter($subject, $filter);
+    	$this->handles[] = patch($function, $patch);
     }
 
     function tearDown()
     {
-        foreach ($this->filterHandles as $handle) {
-            dismiss($handle);
-        }
+    	foreach ($this->handles as $handle) {
+    		unpatch($handle);
+    	}
     }
 }

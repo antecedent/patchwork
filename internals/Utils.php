@@ -13,7 +13,22 @@ function condense($string)
     return preg_replace("/\s*/", "", $string);
 }
 
-function upperBound(array $array, $value)
+function autoload($namespace, $dir)
+{
+    $namespace = ltrim($namespace, "\\");
+    return function($class) use ($namespace, $dir) {
+        $class = ltrim($class, "\\");
+        if (strpos($class, $namespace) === 0) {
+            $shortName = substr($class, $namespace ? (strlen($namespace) + 1) : 0);
+            $file = $dir . "/" . strtr($shortName, "\\", "/") . ".php";
+            if (is_file($file)) {
+                require $file;
+            }
+        }
+    };
+}
+
+function getUpperBound(array $array, $value)
 {
     $count = count($array);
     $first = 0;
@@ -29,21 +44,6 @@ function upperBound(array $array, $value)
           }
     }
     return $first; 
-}
-
-function autoload($namespace, $dir)
-{
-    $namespace = ltrim($namespace, "\\");
-    return function($class) use ($namespace, $dir) {
-        $class = ltrim($class, "\\");
-        if (strpos($class, $namespace) === 0) {
-            $shortName = substr($class, $namespace ? (strlen($namespace) + 1) : 0);
-            $file = $dir . "/" . strtr($shortName, "\\", "/") . ".php";
-            if (is_file($file)) {
-                require $file;
-            }
-        }
-    };
 }
 
 function parseCallback($callback)
@@ -70,17 +70,38 @@ function append(&$array, $value)
     return key($array);
 }
 
-function rangeToReadableString($min, $max)
-{
-    if ($max == INF) {
-        return "at least $min";
-    } elseif ($min == $max) {
-        return $min;
-    }
-    return "$min to $max";
-}
-
 function normalizePath($path)
 {
     return strtr($path, "\\", "/");
 }
+
+function reflectCallback($callback)
+{
+	if ($callback instanceof \Closure) {
+		return new \ReflectionFunction($callback);
+	}
+	list($class, $method) = parseCallback($callback);
+	if (isset($class)) {
+		return new \ReflectionMethod($class, $method);
+	}
+	return new \ReflectionFunction($method);
+}
+
+function callbackToString($callback)
+{
+	list($class, $method) = parseCallback($callback);
+	if (isset($class)) {
+		return $class . "::" . $method;
+	}
+	return $method;
+}
+
+function chop($string, $ending)
+{
+	$choppedLength = strlen($string) - strlen($ending);
+	if (strpos($string, $ending) === $choppedLength) {
+		$string = substr($string, 0, $choppedLength);
+	}
+	return $string;
+}
+

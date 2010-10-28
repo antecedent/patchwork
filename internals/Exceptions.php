@@ -15,54 +15,29 @@ abstract class Exception extends \Exception
 {
 }
 
-class EmptyBacktrace extends Exception
-{
-    protected $message = "Cannot shift a stack frame from an empty backtrace";
-}
-
-class CallAlreadyCompleted extends Exception
-{
-    protected $message = "Cannot complete the same call more than once";
-}
-
-class CallResultUnavailable extends Exception
-{
-    protected $message = "Cannot retrieve the result from an uncompleted call";
-}
-
-class NotImplemented extends Exception
-{
-    function __construct($function)
-    {
-        parent::__construct("$function is not implemented");
-    }
-}
-
-class UnexpectedUncompletedCall extends Exception
-{
-    protected $message = "Unexpected uncompleted call (see the backtrace)";
-}
-
-class UnmetCallCountExpectation extends Exception
-{
-    function __construct($calls, $min, $max, $origin)
-    {
-        parent::__construct(sprintf(
-            "Unmet call count expectation: %s expected, %d received (set in %s)",
-            Utils\rangeToReadableString($min, $max), $calls, $origin
-        ));
-    }
-}
-
-class IllegalFilterResult extends Exception
-{
-    protected $message = "Non-null filter result received";
-}
-
-abstract class Signal extends Exception
+class CallResumed extends Exception
 {
 }
 
-class SignalToBreakFilterChain extends Signal
+abstract class CallbackException extends Exception
 {
+	function __construct($callback)
+	{
+		parent::__construct(sprintf($this->message, Utils\callbackToString($callback)));
+	}
+}
+
+class NotImplemented extends CallbackException
+{
+	protected $message = "%s is not implemented";
+}
+
+class NotDefined extends CallbackException
+{
+	protected $message = "%s is not defined";
+}
+
+class NotPreprocessed extends CallbackException
+{
+	protected $message = "%s is not defined in a preprocessed file";
 }

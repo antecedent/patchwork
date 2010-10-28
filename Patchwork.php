@@ -17,32 +17,32 @@ require_once __DIR__ . "/internals/CacheCheck.php";
 
 function patch($function, $patch)
 {
-	return Patches\register($function, $patch);
+    return Patches\register($function, $patch);
 }
 
 function unpatch(array $handle)
 {
-	Patches\unregister($handle);
+    Patches\unregister($handle);
 }
 
 function resume()
 {
-	throw new Exceptions\CallResumed;
+    throw new Exceptions\CallResumed;
 }
 
 function traceCall()
 {
-	return Patches\traceCall();
+    return Patches\traceCall();
 }
 
 function getCallProperty($property)
 {
-	return Patches\getCallProperty($property);
+    return Patches\getCallProperty($property);
 }
 
 function getCallProperties()
 {
-	return Patches\getCallProperties();
+    return Patches\getCallProperties();
 }
 
 CacheCheck\run();

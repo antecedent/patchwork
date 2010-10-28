@@ -77,31 +77,31 @@ function normalizePath($path)
 
 function reflectCallback($callback)
 {
-	if ($callback instanceof \Closure) {
-		return new \ReflectionFunction($callback);
-	}
-	list($class, $method) = parseCallback($callback);
-	if (isset($class)) {
-		return new \ReflectionMethod($class, $method);
-	}
-	return new \ReflectionFunction($method);
+    if ($callback instanceof \Closure) {
+        return new \ReflectionFunction($callback);
+    }
+    list($class, $method) = parseCallback($callback);
+    if (isset($class)) {
+        return new \ReflectionMethod($class, $method);
+    }
+    return new \ReflectionFunction($method);
 }
 
 function callbackToString($callback)
 {
-	list($class, $method) = parseCallback($callback);
-	if (isset($class)) {
-		return $class . "::" . $method;
-	}
-	return $method;
+    list($class, $method) = parseCallback($callback);
+    if (isset($class)) {
+        return $class . "::" . $method;
+    }
+    return $method;
 }
 
 function chop($string, $ending)
 {
-	$choppedLength = strlen($string) - strlen($ending);
-	if (strpos($string, $ending) === $choppedLength) {
-		$string = substr($string, 0, $choppedLength);
-	}
-	return $string;
+    $choppedLength = strlen($string) - strlen($ending);
+    if (strpos($string, $ending) === $choppedLength) {
+        $string = substr($string, 0, $choppedLength);
+    }
+    return $string;
 }
 

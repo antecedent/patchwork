@@ -12,7 +12,7 @@ const CALL_HANDLING_SPLICE = '
     $pwClass = __CLASS__ ? \get_called_class() : null;
     if (!empty($GLOBALS[\Patchwork\Patches\CALLBACKS][$pwClass][__FUNCTION__])) {
         if (\Patchwork\Patches\handle($pwClass, __FUNCTION__, \debug_backtrace(), $pwResult)) {
-        	return $pwResult;
+            return $pwResult;
         }
     }
     unset($pwClass, $pwResult);

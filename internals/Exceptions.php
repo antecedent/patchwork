@@ -21,23 +21,23 @@ class CallResumed extends Exception
 
 abstract class CallbackException extends Exception
 {
-	function __construct($callback)
-	{
-		parent::__construct(sprintf($this->message, Utils\callbackToString($callback)));
-	}
+    function __construct($callback)
+    {
+        parent::__construct(sprintf($this->message, Utils\callbackToString($callback)));
+    }
 }
 
 class NotImplemented extends CallbackException
 {
-	protected $message = "%s is not implemented";
+    protected $message = "%s is not implemented";
 }
 
 class NotDefined extends CallbackException
 {
-	protected $message = "%s is not defined";
+    protected $message = "%s is not defined";
 }
 
 class NotPreprocessed extends CallbackException
 {
-	protected $message = "%s is not defined in a preprocessed file";
+    protected $message = "%s is not defined in a preprocessed file";
 }

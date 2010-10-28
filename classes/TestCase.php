@@ -22,13 +22,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
   
     function patch($function, $patch)
     {
-    	$this->handles[] = patch($function, $patch);
+        $this->handles[] = patch($function, $patch);
     }
 
     function tearDown()
     {
-    	foreach ($this->handles as $handle) {
-    		unpatch($handle);
-    	}
+        foreach ($this->handles as $handle) {
+            unpatch($handle);
+        }
     }
 }

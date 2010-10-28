@@ -56,7 +56,7 @@ function preprocessAndOpen($file)
 
 function hasPreprocessed($file)
 {
-	return !empty($GLOBALS[PREPROCESSED_FILES][$file]);
+    return !empty($GLOBALS[PREPROCESSED_FILES][$file]);
 }
 
 function shouldPreprocess($file)

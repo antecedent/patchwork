@@ -11,6 +11,15 @@ require __DIR__ . "/includes/functions.php";
 # whose original definition just throws a NotImplemented exception.
 Patchwork\patch("setArrayElement", function(array &$array, $key, $value) {
     $array[$key] = $value;
+    # A hopefully unsuccessful attempt to overwrite value arguments
+    $key = null;
+    $value = null;
+});
+
+Patchwork\patch("setArrayElement", function(array &$array, $key, $value) {
+    # Was the attempt to overwrite value arguments really unsuccessful?
+    assert($key === "foo");
+    assert($value === "bar");
 });
 
 $array = array(0, 1, "foo" => 2, 3);

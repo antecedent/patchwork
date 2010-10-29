@@ -25,9 +25,9 @@ function unpatch(array $handle)
     Patches\unregister($handle);
 }
 
-function resume()
+function skip()
 {
-    throw new Exceptions\CallResumed;
+    throw new Exceptions\PatchSkipped;
 }
 
 function traceCall()

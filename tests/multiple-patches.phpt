@@ -14,7 +14,7 @@ Patchwork\patch("getInteger", function() {
 
 Patchwork\patch("getInteger", function() {
     echo "Patch #2\n";
-    Patchwork\resume();
+    Patchwork\skip();
 });
 
 Patchwork\patch("getInteger", function() {

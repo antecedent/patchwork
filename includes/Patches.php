@@ -58,7 +58,7 @@ function bindToInstance($instance, $patch)
 {
     return function() use ($instance, $patch) {
         if (getCallProperty("object") !== $instance) {
-            throw new Exceptions\CallResumed;
+            throw new Exceptions\PatchSkipped;
         }
         return execute($patch);
     };
@@ -69,7 +69,8 @@ function execute($patch)
     $arguments = getCallProperty("args");
     $parameters = Utils\reflectCallback($patch)->getParameters();
     foreach ($arguments as $offset => $argument) {
-        if (isset($parameters[$offset]) && !$parameters[$offset]->isPassedByReference()) {
+        if (!isset($parameters[$offset]) || !$parameters[$offset]->isPassedByReference()) {
+            unset($arguments[$offset]);
             $arguments[$offset] = $argument;
         }
     }
@@ -106,7 +107,7 @@ function handle($class, $method, $trace, &$result)
             try {
                 $result = execute($patch);
                 $resultReceived = true;
-            } catch (Exceptions\CallResumed $e) {
+            } catch (Exceptions\PatchSkipped $e) {
                 continue;
             }
         }

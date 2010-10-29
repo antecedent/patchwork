@@ -17,7 +17,7 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 require "PHPUnit/Autoload.php";
 
-class CacheTest extends Patchwork\TestCase
+class Test extends Patchwork\TestCase
 {
     function testSomething()
     {
@@ -25,7 +25,7 @@ class CacheTest extends Patchwork\TestCase
         $this->assertEquals(42, getInteger());
     }
     
-    function testThePreviousPatchIsNoLongerInEffect()
+    function testThePatchIsNoLongerInEffect()
     {
         $this->assertEquals(0, getInteger());
     }

@@ -20,7 +20,7 @@ class NoCallToTrace extends Exception
     protected $message = "There is currently no call to trace";
 }
 
-class CallResumed extends Exception
+class PatchSkipped extends Exception
 {
 }
 

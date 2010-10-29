@@ -4,8 +4,8 @@ Automatic binding of patches to object instances
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/NamedObject.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/NamedObject.php";
 
 $foo = new NamedObject("foo");
 $bar = new NamedObject("bar");

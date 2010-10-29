@@ -13,8 +13,8 @@ if (file_get_contents("PHPUnit/Autoload.php", true) === false) {
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/Functions.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/Functions.php";
 require "PHPUnit/Autoload.php";
 
 class CacheTest extends Patchwork\TestCase

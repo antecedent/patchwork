@@ -4,7 +4,7 @@ Not allowing to patch functions that are not defined or not preprocessed
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
+require __DIR__ . "/../Patchwork.php";
 
 function functionThatIsNotPreprocessed()
 {

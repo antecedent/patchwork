@@ -4,8 +4,8 @@ Applying and removing patches
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/Singleton.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/Singleton.php";
 
 $real = Singleton::getInstance();
 $fake = new Singleton;

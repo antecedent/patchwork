@@ -4,8 +4,8 @@ Retrieving call details from a patch
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/NamedObject.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/NamedObject.php";
 
 $foo = new NamedObject("foo");
 

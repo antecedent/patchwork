@@ -4,8 +4,8 @@ Applying multiple patches to the same function
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/Functions.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/Functions.php";
 
 Patchwork\patch("getInteger", function() {
     echo "Patch #1\n";

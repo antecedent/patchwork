@@ -4,8 +4,8 @@ Accessing and altering arguments from patches
 --FILE--
 <?php
 
-require __DIR__ . "/../../Patchwork.php";
-require __DIR__ . "/../includes/functions.php";
+require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/functions.php";
 
 # NOTE: This patch IS the implementation of setArrayElement,
 # whose original definition just throws a NotImplemented exception.

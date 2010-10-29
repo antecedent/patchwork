@@ -16,12 +16,15 @@ const CALLBACKS  = 'Patchwork\Patches\CALLBACKS';
 const CALL_STACK = 'Patchwork\Patches\CALL_STACK';
 
 const HANDLE_REFERENCE_OFFSET = 3;
-const EVALUATED_CODE_FILE_NAME_SUFFIX = " : eval'd code";
+const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
 
 function register($function, $patch)
 {
     assertPatchable($function);
     list($class, $method) = Utils\parseCallback($function);
+    if (is_array($function) && is_object(reset($function))) {
+        $patch = bindToInstance(reset($function), $patch);
+    }    
     $patches = &$GLOBALS[CALLBACKS][$class][$method];
     $offset = Utils\append($patches, $patch);
     return array($class, $method, $offset, &$patches[$offset]);
@@ -44,9 +47,10 @@ function assertPatchable($function)
     } catch (\ReflectionException $e) {
         throw new Exceptions\NotDefined($function);
     }
-    $file = Utils\chop($reflection->getFileName(), EVALUATED_CODE_FILE_NAME_SUFFIX);
-    if (!Preprocessor\hasPreprocessed($file)) {
-        throw Exceptions\NotPreprocessed($function);
+    $file = $reflection->getFileName();
+    $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
+    if (!$evaluated && !Preprocessor\hasPreprocessed($file)) {
+        throw new Exceptions\NotPreprocessed($function);
     }
 }
 
@@ -54,7 +58,7 @@ function bindToInstance($instance, $patch)
 {
     return function() use ($instance, $patch) {
         if (getCallProperty("object") !== $instance) {
-            throw new Exceptions\ResumedCall;
+            throw new Exceptions\CallResumed;
         }
         return execute($patch);
     };
@@ -75,7 +79,7 @@ function execute($patch)
 function traceCall()
 {
     if (empty($GLOBALS[CALL_STACK])) {
-        throw new Exceptions\NoCallBeingHandled;
+        throw new Exceptions\NoCallToTrace;
     }
     return reset($GLOBALS[CALL_STACK]);
 }
@@ -102,7 +106,7 @@ function handle($class, $method, $trace, &$result)
             try {
                 $result = execute($patch);
                 $resultReceived = true;
-            } catch (Exceptions\ResumedCall $e) {
+            } catch (Exceptions\CallResumed $e) {
                 continue;
             }
         }

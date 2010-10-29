@@ -8,12 +8,12 @@
  */
 namespace Patchwork;
 
-require_once __DIR__ . "/internals/Exceptions.php";
-require_once __DIR__ . "/internals/Patches.php";
-require_once __DIR__ . "/internals/Preprocessor.php";
-require_once __DIR__ . "/internals/Splices.php";
-require_once __DIR__ . "/internals/Utils.php";
-require_once __DIR__ . "/internals/CacheCheck.php";
+require_once __DIR__ . "/includes/Exceptions.php";
+require_once __DIR__ . "/includes/Patches.php";
+require_once __DIR__ . "/includes/Preprocessor.php";
+require_once __DIR__ . "/includes/Splices.php";
+require_once __DIR__ . "/includes/Utils.php";
+require_once __DIR__ . "/includes/CacheCheck.php";
 
 function patch($function, $patch)
 {

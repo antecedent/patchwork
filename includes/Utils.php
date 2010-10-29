@@ -95,13 +95,3 @@ function callbackToString($callback)
     }
     return $method;
 }
-
-function chop($string, $ending)
-{
-    $choppedLength = strlen($string) - strlen($ending);
-    if (strpos($string, $ending) === $choppedLength) {
-        $string = substr($string, 0, $choppedLength);
-    }
-    return $string;
-}
-

@@ -6,31 +6,31 @@ An implementation of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patch
 
 ## Introduction
 
-Being able to **redefine a function or a method at runtime** is something that would make many testing tasks noticeably easier, especially those involving hardly testable code. Function redefinition, which is a particular kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patching), is a very simple answer to such testability obstacles as singletons or dependencies on static methods. However, in the PHP world, it is a not an easy thing to do without the help of non-standard core extensions (like [runkit]() or [php-test-helpers]()).
+Being able to **redefine a function or a method at runtime** is something that would make most testing tasks noticeably easier, especially those involving hardly testable code. Function redefinition, which is a particular kind of [monkey patching](http://en.wikipedia.org/wiki/Monkey_patching), is a simple and straightforward answer to such testability obstacles as singletons or dependencies on static methods. However, in the PHP world, it is a not an easy thing to do without the help of non-standard core extensions (like [runkit](http://php.net/manual/en/book.runkit.php) or [php-test-helpers](http://github.com/sebastianbergmann/php-test-helpers)).
 
-Nevertheless, an userland implementation is still possible, albeit requiring us to resort to such dirty tricks as code preprocessing. These "tricks" are lacking in performance and general reliability, so they have no place in production code, but they should generally be plausible in testing environments.
+Nevertheless, an userland implementation is still possible, albeit requiring us to resort to such dirty tricks as **preprocessing code** on the fly. Such "tricks" are lacking in performance and general reliability, so they definitely have no place in production code. However, they should generally be plausible in testing environments.
 
-This brings us to the aim of Patchwork: providing a pure userland implementation of runtime function redefinition for use in various kinds of software testing.
+This brings us to the aim of Patchwork: to provide a pure userland implementation of runtime function redefinition, meant for use in various kinds of software testing.
 
-Unfortunately, this implementation has a very grave limitation: it can **only** be used to redefine **user-defined** functions and methods.
+Unfortunately, such an implementation has a very grave limitation: it can **only** be used to redefine **user-defined** functions and methods.
 
 ## Terminology
 
-From this point on, this readme does not refer to the functionality of Patchwork as "function redefinition", because "patching" would be a more technically correct term. This is mainly because of the possibility to apply multiple patches to a single function and remove them when needed, which hardly qualifies as "redefinition". However, these two terms are still very closely related and often interchangeable.
+From this point on, this readme does not refer to the functionality of Patchwork as "function redefinition", as "patching" would be a more technically correct term. This is mainly because of the possibility to apply multiple patches to a single function and remove them when needed, which hardly qualifies as "redefinition". Nevertheless, these two terms are still very closely related and often interchangeable.
 
 ## Getting Started
 
-To start using Patchwork, we have to include `Patchwork.php`:
+In order to start using Patchwork, we have to include `Patchwork.php`:
 
     require __DIR__ . "/patchwork/Patchwork.php";
     
-All functions and methods that may need to be patched should be defined **after** this step, and **not in the same file** from which `Patchwork.php` has been included.
+Note that all functions and methods that may need to be patched should be defined **after** this step, and **not in the same file** from which `Patchwork.php` has been included.
 
 ## Usage
 
 ### Applying Patches
 
-To apply a patch to a function or a method, we use `Patchwork\patch`:
+Functions and methods can be patched (i.e., redefined) by calling `Patchwork\patch`:
 
     function patchingWorks()
     {
@@ -49,20 +49,9 @@ To apply a patch to a function or a method, we use `Patchwork\patch`:
     # Returns TRUE without printing anything
     patchingWorks();
 
-Like in the example above, returning a value from a patch makes the patched function return it as well, before any of the original statements inside it are executed, so it can be said that in such cases the patched function does not run at all. This occurs even when the return is implicit:
-
-    Patchwork\patch("patchingWorks", function()
-    {
-        echo "It does.";
-        # Returns NULL implicitly
-    });
-    
-    # Returns NULL and prints "It does.";
-    patchingWorks();
-
 ### Handling Methods
 
-In both of the above examples, we are patching a global function. However, we may also do that to a method, be it instance or static:
+In both of the above examples, we are patching a global function. However, we may also do it the same way with a method, be it instance or static:
 
     Patchwork\patch("Database::getInstance", function() use ($fakeDb)
     {
@@ -87,7 +76,7 @@ A function can also be "unpatched" when the patch is no longer needed:
 
 ### Applying Multiple Patches
 
-Although that is rarely necessary, any number of patches can be applied to the same function or method:
+Although this is barely ever necessary, any number of patches can be applied to the same function or method. This is exactly what makes patching different from simple redefinition:
 
     function aFunctionCanHaveMultiplePatches()
     {
@@ -130,7 +119,7 @@ If a function receives arguments, its patches receive them too:
 
 A patch is not required to yield a result. Instead, it may ask to be skipped.
 
-When a patch is skipped, Patchwork acts as if it did not exist at all. This means that if a function has no other patches applied to it, or if all of them are skipped, then the patched function runs as usual:
+When a patch is skipped, Patchwork acts as if it did not exist at all. This means that if a function has no other patches applied to it, or if all of them are skipped, then Patchwork falls back to the original implementation of the patched function:
 
     Patchwork\patch("HashTable::offsetGet", function($offset) 
     {
@@ -156,7 +145,7 @@ Note that **every** call to `Patchwork\skip` throws an exception, which immediat
 
 A function call can be said to have many "properties", including the arguments, the function name, the class name, the object which received the call, or the file from which the call was made.
 
-As already demonstrated, the first of these properties, that is, the arguments, can be accessed from a patch in the "traditional" way. However, it would not be the same if we were to retrieve the object on which the patched method was called. We would have to inspect the call stack manually, for example, by using `debug_backtrace`. Alternatively, we can use these shortcuts provided by Patchwork:
+As already demonstrated, the first of these properties, that is, the arguments, can be accessed from a patch in the "traditional" way. However, it would not be the same if we were to retrieve the object on which the patched method was called. We would have to inspect the call stack manually. The most obvious way to do this is to use `debug_backtrace`, either directly or through the shortcut functions provided by Patchwork:
 
     Patchwork\patch("HashTable::offsetGet", function($offset)
     {
@@ -174,13 +163,13 @@ As already demonstrated, the first of these properties, that is, the arguments, 
         return $ht->offsetGet($offset);
     });
     
-For the complete list of properties that can be retrieved using `getCallProperty`, refer to the documentation for [debug_backtrace]().
+For the complete list of properties that can be retrieved using `getCallProperty`, refer to the documentation for [debug_backtrace](http://php.net/debug_backtrace).
 
 ### PHPUnit Integration
 
-Internally, Patchwork uses global variables to store its state (parts of which are not serializable), so it interferes with the global state backup feature of PHPUnit. To solve this problem, we can blacklist these variables manually, or we can also use a ready-made specialization of the `PHPUnit_Framework_TestCase` class, named `Patchwork\TestCase`.
+Internally, Patchwork uses global variables to store its state (parts of which are not serializable), which interferes with the global state backup feature of PHPUnit. To solve this problem, we can blacklist these variables manually, or we can also use a ready-made specialization of the `PHPUnit_Framework_TestCase` class, named `Patchwork\TestCase`.
 
-Additionally, this specialization provides a `patch` method, which can be used to apply patches that only last for the lifetime of a single test method:
+Aside from the global state backup fix, this specialization also provides a `patch` method, which can be used to apply patches that only last for the lifetime of a single test method:
 
     function getInteger()
     {

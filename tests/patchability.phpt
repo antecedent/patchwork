@@ -24,6 +24,13 @@ try {
     assert(true);
 }
 
+try {
+    Patchwork\patch("str_replace", function() {});
+    assert(false);
+} catch (Patchwork\Exceptions\NotPreprocessed $e) {
+    assert(true);
+}
+
 ?>
 ===DONE===
 

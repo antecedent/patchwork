@@ -14,15 +14,20 @@ use Patchwork\Exceptions;
 class Source
 {
     const TYPE_OFFSET = 0;
-    const STRING_OFFSET = 1;    
+    const STRING_OFFSET = 1;
     
-    public $tokens = array();
+    public $tokens;
     public $tokensByType;
     public $splices = array();
     public $spliceLengths = array();
-    
+    public $code;
+    public $file;
+
     function __construct($tokens)
     {
+        if (!is_array($tokens)) {
+            $tokens = token_get_all($tokens);
+        }
         $this->tokens = $tokens;
         $this->tokensByType = $this->indexTokensByType($this->tokens);
     }
@@ -59,23 +64,32 @@ class Source
     {
         $this->splices[$offset] = $splice;
         $this->spliceLengths[$offset] = $length;
+        $this->code = null;
     }
     
-    function __toString()
+    function createCodeFromTokens()
     {
-        $string = "";
+        $splices = $this->splices;
+        $code = "";
         $count = count($this->tokens);
         for ($offset = 0; $offset < $count; $offset++) {
-            if (isset($this->splices[$offset])) {
-                $string .= $this->splices[$offset];
-                unset($this->splices[$offset]);
+            if (isset($splices[$offset])) {
+                $code .= $splices[$offset];
+                unset($splices[$offset]);
                 $offset += $this->spliceLengths[$offset] - 1;
             } else {
                 $t = $this->tokens[$offset];
-                $string .= isset($t[self::STRING_OFFSET]) ? $t[self::STRING_OFFSET] : $t;
+                $code .= isset($t[self::STRING_OFFSET]) ? $t[self::STRING_OFFSET] : $t;
             }
         }
-        return $string;
+        $this->code = $code;
+    }
+
+    function __toString()
+    {
+        if ($this->code === null) {
+            $this->createCodeFromTokens();
+        }
+        return $this->code;
     }
 }
-

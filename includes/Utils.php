@@ -95,3 +95,15 @@ function callbackToString($callback)
     }
     return $method;
 }
+
+function callBySignature($callback, array $arguments)
+{
+    $parameters = reflectCallback($callback)->getParameters();
+    foreach ($arguments as $offset => $argument) {
+        if (!isset($parameters[$offset]) || !$parameters[$offset]->isPassedByReference()) {
+            unset($arguments[$offset]);
+            $arguments[$offset] = $argument;
+        }
+    }
+    return call_user_func_array($callback, $arguments);
+}

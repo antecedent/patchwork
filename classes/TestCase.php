@@ -13,11 +13,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
     private $handles = array();
 
     protected $backupGlobalsBlacklist = array(
-        Patches\CALLBACKS,
-        Patches\CALL_STACK,
-        Preprocessor\CALLBACKS,
+        Stack\OFFSETS,
+        Preprocessor\DRIVERS,
         Preprocessor\BLACKLIST,
-        Preprocessor\PREPROCESSED_FILES,
+        Interceptor\PATCHES,
+        Interceptor\PREPROCESSED_FILES,
     );
   
     function patch($function, $patch)

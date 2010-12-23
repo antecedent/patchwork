@@ -15,13 +15,13 @@ abstract class Exception extends \Exception
 {
 }
 
-class NoCallToTrace extends Exception
+class PatchEscaped extends Exception
 {
-    protected $message = "There is currently no call to trace";
 }
 
-class PatchSkipped extends Exception
+class StackEmpty extends Exception
 {
+    protected $message = "There are no calls in the dispatch stack";
 }
 
 abstract class CallbackException extends Exception

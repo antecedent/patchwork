@@ -31,7 +31,7 @@ class Test extends Patchwork\TestCase
     }
 }
 
-$test = new PHPUnit_Framework_TestSuite("CacheTest");
+$test = new PHPUnit_Framework_TestSuite("Test");
 
 $result = $test->run();
 

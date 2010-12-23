@@ -8,7 +8,7 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
 Patchwork\patch("getInteger", function() {
-    Patchwork\skip();
+    Patchwork\escape();
     echo "This should not be printed\n";
 });
 

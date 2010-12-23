@@ -37,11 +37,7 @@ Preprocessor\Stream::wrap();
 spl_autoload_register(Utils\autoload(__NAMESPACE__, __DIR__ . "/classes/"));
 
 $GLOBALS[Preprocessor\DRIVERS] = array(
-    Preprocessor\Drivers\Interceptor\flush(),
     Preprocessor\Drivers\Interceptor\markPreprocessedFiles(),
-    Preprocessor\Drivers\Interceptor\flush(),
     Preprocessor\Drivers\Interceptor\injectCallHandlingCode(),
-    Preprocessor\Drivers\Interceptor\flush(),
     Preprocessor\Drivers\Interceptor\propagateThroughEval(),
-    Preprocessor\Drivers\Interceptor\flush(),
 );

@@ -44,7 +44,7 @@ function replaceTokens($search, $replacement)
 
 function flush()
 {
-    return function(Source &$s) {
-        $s = new Source($s);
+    return function(Source $s) {
+        $s->flush();
     };
 }

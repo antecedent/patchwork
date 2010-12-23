@@ -18,18 +18,21 @@ class Source
     
     public $tokens;
     public $tokensByType;
-    public $splices = array();
-    public $spliceLengths = array();
+    public $splices;
+    public $spliceLengths;
     public $code;
     public $file;
 
     function __construct($tokens)
     {
-        if (!is_array($tokens)) {
-            $tokens = token_get_all($tokens);
-        }
+        $this->initialize(is_array($tokens) ? $tokens : token_get_all($tokens));
+    }
+    
+    function initialize(array $tokens)
+    {
         $this->tokens = $tokens;
         $this->tokensByType = $this->indexTokensByType($this->tokens);
+        $this->splices = $this->spliceLengths = array();
     }
     
     function indexTokensByType(array $tokens)
@@ -91,5 +94,10 @@ class Source
             $this->createCodeFromTokens();
         }
         return $this->code;
+    }
+    
+    function flush()
+    {
+        $this->initialize(token_get_all($this));
     }
 }

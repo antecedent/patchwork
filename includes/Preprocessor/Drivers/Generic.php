@@ -41,10 +41,3 @@ function replaceTokens($search, $replacement)
         }
     };
 }
-
-function flush()
-{
-    return function(Source $s) {
-        $s->flush();
-    };
-}

@@ -15,14 +15,19 @@ require_once __DIR__ . "/includes/Utils.php";
 require_once __DIR__ . "/includes/Stack.php";
 require_once __DIR__ . "/includes/CacheCheck.php";
 
-function patch($function, $patch)
+function replace($function, $patch)
 {
     return Interceptor\patch($function, $patch);
 }
 
-function unpatch(array $handle)
+function undo(array $handle)
 {
     Interceptor\unpatch($handle);
+}
+
+function undoAll()
+{
+    $GLOBALS[Interceptor\PATCHES] = array();
 }
 
 function escape()
@@ -37,7 +42,7 @@ Preprocessor\Stream::wrap();
 spl_autoload_register(Utils\autoload(__NAMESPACE__, __DIR__ . "/classes/"));
 
 $GLOBALS[Preprocessor\DRIVERS] = array(
+    Preprocessor\Drivers\Preprocessor\propagateThroughEval(),
     Preprocessor\Drivers\Interceptor\markPreprocessedFiles(),
     Preprocessor\Drivers\Interceptor\injectCallHandlingCode(),
-    Preprocessor\Drivers\Interceptor\propagateThroughEval(),
 );

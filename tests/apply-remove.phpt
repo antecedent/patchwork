@@ -12,18 +12,18 @@ $fake = new Singleton;
 
 assert(Singleton::getInstance() === $real);
 
-$handle = Patchwork\patch("Singleton::getInstance", function() use ($fake) {
+$handle = Patchwork\replace("Singleton::getInstance", function() use ($fake) {
     return $fake;
 });
 
 assert(Singleton::getInstance() === $fake);
 
-Patchwork\unpatch($handle);
+Patchwork\undo($handle);
 
 assert(Singleton::getInstance() === $real);
 
 # This call should have no effect, as the patch is already removed
-Patchwork\unpatch($handle);    
+Patchwork\undo($handle);    
 
 assert(Singleton::getInstance() === $real);
     

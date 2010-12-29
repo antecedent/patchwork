@@ -9,7 +9,7 @@ require __DIR__ . "/includes/NamedObject.php";
 
 $foo = new NamedObject("foo");
 
-Patchwork\patch("NamedObject::getName", function() {
+Patchwork\replace("NamedObject::getName", function() {
     $trace = Patchwork\Stack\all();
     assert(count($trace) === 2);
     $properties = Patchwork\Stack\top();

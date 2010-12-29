@@ -11,21 +11,21 @@ function functionThatIsNotPreprocessed()
 }
 
 try {
-    Patchwork\patch("functionThatIsNotDefined", function() {});
+    Patchwork\replace("functionThatIsNotDefined", function() {});
     assert(false);
 } catch (Patchwork\Exceptions\NotDefined $e) {
     assert(true);
 }
 
 try {
-    Patchwork\patch("functionThatIsNotPreprocessed", function() {});
+    Patchwork\replace("functionThatIsNotPreprocessed", function() {});
     assert(false);
 } catch (Patchwork\Exceptions\NotPreprocessed $e) {
     assert(true);
 }
 
 try {
-    Patchwork\patch("str_replace", function() {});
+    Patchwork\replace("str_replace", function() {});
     assert(false);
 } catch (Patchwork\Exceptions\NotPreprocessed $e) {
     assert(true);

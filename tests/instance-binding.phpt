@@ -13,7 +13,7 @@ $bar = new NamedObject("bar");
 assert($foo->getName() === "foo");
 assert($bar->getName() === "bar");
 
-Patchwork\patch(array($foo, "getName"), function() {
+Patchwork\replace(array($foo, "getName"), function() {
     return "patched foo";
 });
 

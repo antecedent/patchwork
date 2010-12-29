@@ -23,8 +23,6 @@ const CALL_HANDLING_CODE = '
     unset($pwClass, $pwResult, $pwClosureName, $pwFrame);
 ';
 
-const EVAL_REPLACEMENT_CODE = '\Patchwork\Preprocessor\preprocessAndEval';
-
 function markPreprocessedFiles()
 {
     return Generic\markPreprocessedFiles($GLOBALS[Interceptor\PREPROCESSED_FILES]);
@@ -33,9 +31,4 @@ function markPreprocessedFiles()
 function injectCallHandlingCode()
 {
     return Generic\prependCodeToFunctions(CALL_HANDLING_CODE);
-}
-
-function propagateThroughEval()
-{
-    return Generic\replaceTokens(T_EVAL, EVAL_REPLACEMENT_CODE);
 }

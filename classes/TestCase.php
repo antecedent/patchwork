@@ -20,15 +20,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
         Interceptor\PREPROCESSED_FILES,
     );
   
-    function patch($function, $patch)
+    function replace($function, $patch)
     {
-        $this->handles[] = patch($function, $patch);
+        $this->handles[] = replace($function, $patch);
     }
 
     function tearDown()
     {
         foreach ($this->handles as $handle) {
-            unpatch($handle);
+            undo($handle);
         }
     }
 }

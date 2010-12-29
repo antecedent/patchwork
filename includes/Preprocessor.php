@@ -12,6 +12,7 @@ require __DIR__ . "/Preprocessor/Source.php";
 require __DIR__ . "/Preprocessor/Stream.php";
 require __DIR__ . "/Preprocessor/Drivers/Generic.php";
 require __DIR__ . "/Preprocessor/Drivers/Interceptor.php";
+require __DIR__ . "/Preprocessor/Drivers/Preprocessor.php";
 
 use Patchwork\Exceptions;
 use Patchwork\Utils;

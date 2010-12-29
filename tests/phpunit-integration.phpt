@@ -21,7 +21,7 @@ class Test extends Patchwork\TestCase
 {
     function testSomething()
     {
-        $this->patch('getInteger', function() { return 42; });
+        $this->replace('getInteger', function() { return 42; });
         $this->assertEquals(42, getInteger());
     }
     

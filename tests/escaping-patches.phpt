@@ -7,14 +7,14 @@ Leaving a patch without yielding a result
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
-Patchwork\patch("getInteger", function() {
+Patchwork\replace("getInteger", function() {
     Patchwork\escape();
     echo "This should not be printed\n";
 });
 
 assert(getInteger() === 0);
 
-Patchwork\patch("getInteger", function() {
+Patchwork\replace("getInteger", function() {
     return 42;
 });
 

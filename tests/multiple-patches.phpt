@@ -7,24 +7,28 @@ Applying multiple patches to the same function
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
-Patchwork\patch("getInteger", function() {
+Patchwork\replace("getInteger", function() {
     echo "Patch #1\n";
     return 1;
 });
 
-Patchwork\patch("getInteger", function() {
+Patchwork\replace("getInteger", function() {
     echo "Patch #2\n";
-    Patchwork\escape();
+    return 2;    
 });
 
-Patchwork\patch("getInteger", function() {
+Patchwork\replace("getInteger", function() {
     echo "Patch #3\n";
-    return 2;
+    Patchwork\escape();    
 });
 
 echo "Calling getInteger()\n";
 
 assert(getInteger() === 2);
+
+Patchwork\undoAll();
+
+assert(getInteger() === 0);
  
 ?>
 ===DONE===

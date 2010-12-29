@@ -14,7 +14,7 @@ evaluate('
     }
 ');
 
-Patchwork\patch("evalPreprocessingWorks", function() {
+Patchwork\replace("evalPreprocessingWorks", function() {
     return true;
 });
 

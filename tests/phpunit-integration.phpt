@@ -24,6 +24,7 @@ class Test extends Patchwork\TestCase
             return 41; 
         });
         require __DIR__ . "/includes/Functions.php";
+        $this->assertEquals(41, getInteger());
         $this->replace('getInteger', function() {
             return 42;
         });

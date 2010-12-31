@@ -31,7 +31,7 @@ class Test extends Patchwork\TestCase
         $this->assertEquals(42, getInteger());
     }
     
-    function testThePatchIsNoLongerInEffect()
+    function testThePatchesAreNoLongerInEffect()
     {
         $this->assertEquals(0, getInteger());
     }

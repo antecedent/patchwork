@@ -20,9 +20,11 @@ const PREPROCESSED_FILES = 'Patchwork\Interceptor\PATCHABLE_FILES';
 const HANDLE_REFERENCE_OFFSET = 3;
 const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
 
-function patch($function, $patch)
+function patch($function, $patch, $shouldVerify = true)
 {
-    assertPatchable($function);
+    if ($shouldVerify) {
+        assertPatchable($function);
+    }
     list($class, $method) = Utils\parseCallback($function);
     if (is_array($function) && is_object(reset($function))) {
         $patch = bindPatchToInstance(reset($function), $patch);

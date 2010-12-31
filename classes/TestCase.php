@@ -25,6 +25,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $this->handles[] = replace($function, $patch);
     }
 
+    function replaceLater($function, $patch)
+    {
+        $this->handles[] = replaceLater($function, $patch);
+    }
+
     function tearDown()
     {
         foreach ($this->handles as $handle) {

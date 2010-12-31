@@ -31,6 +31,14 @@ try {
     assert(true);
 }
 
+Patchwork\replaceLater("getInteger", function() {
+    return 42;
+});
+
+require __DIR__ . "/includes/Functions.php";
+
+assert(getInteger() === 42);
+
 ?>
 ===DONE===
 

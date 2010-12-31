@@ -20,6 +20,11 @@ function replace($function, $patch)
     return Interceptor\patch($function, $patch);
 }
 
+function replaceLater($function, $patch)
+{
+    return Interceptor\patch($function, $patch, false);
+}
+
 function undo(array $handle)
 {
     Interceptor\unpatch($handle);

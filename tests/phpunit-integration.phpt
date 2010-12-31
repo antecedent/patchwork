@@ -14,14 +14,19 @@ if (file_get_contents("PHPUnit/Autoload.php", true) === false) {
 <?php
 
 require __DIR__ . "/../Patchwork.php";
-require __DIR__ . "/includes/Functions.php";
 require "PHPUnit/Autoload.php";
 
 class Test extends Patchwork\TestCase
 {
     function testSomething()
     {
-        $this->replace('getInteger', function() { return 42; });
+        $this->replaceLater('getInteger', function() {
+            return 41; 
+        });
+        require __DIR__ . "/includes/Functions.php";
+        $this->replace('getInteger', function() {
+            return 42;
+        });
         $this->assertEquals(42, getInteger());
     }
     

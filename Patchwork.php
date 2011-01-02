@@ -15,14 +15,29 @@ require_once __DIR__ . "/includes/Utils.php";
 require_once __DIR__ . "/includes/Stack.php";
 require_once __DIR__ . "/includes/CacheCheck.php";
 
-function replace($function, $patch)
+function replace($function, $replacement)
 {
-    return Interceptor\patch($function, $patch);
+    return Interceptor\patch($function, $replacement);
 }
 
-function replaceLater($function, $patch)
+function replaceLater($function, $replacement)
 {
-    return Interceptor\patch($function, $patch, false);
+    return Interceptor\patch($function, $replacement, true);
+}
+
+function shift()
+{
+    throw new Exceptions\NoResult;
+}
+
+function top($property = null)
+{
+    return Stack\top($property);
+}
+
+function topOffset()
+{
+    return Stack\topOffset();
 }
 
 function undo(array $handle)
@@ -32,12 +47,7 @@ function undo(array $handle)
 
 function undoAll()
 {
-    $GLOBALS[Interceptor\PATCHES] = array();
-}
-
-function escape()
-{
-    throw new Exceptions\PatchEscaped;
+    Interceptor\unpatchAll();
 }
 
 CacheCheck\run();

@@ -45,13 +45,18 @@ function top($property = null)
     return $frame;
 }
 
-function all()
+function topOffset()
 {
     if (empty($GLOBALS[OFFSETS])) {
         throw new Exceptions\StackEmpty;
     }
+    return end($GLOBALS[OFFSETS]);
+}
+
+function all()
+{
     $backtrace = debug_backtrace();
-    return array_slice($backtrace, count($backtrace) - end($GLOBALS[OFFSETS]));
+    return array_slice($backtrace, count($backtrace) - topOffset());
 }
 
 $GLOBALS[OFFSETS] = array();

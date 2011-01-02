@@ -25,16 +25,19 @@ class Test extends Patchwork\TestCase
         });
         require __DIR__ . "/includes/Functions.php";
         $this->assertEquals(41, getInteger());
-        $this->replace('getInteger', function() {
-            return 42;
-        });
+        $this->replace('getInteger', array($this, "getSomeOtherInteger"));
         $this->assertEquals(42, getInteger());
     }
-    
+
     function testThePatchesAreNoLongerInEffect()
     {
         $this->assertEquals(0, getInteger());
     }
+
+    function getSomeOtherInteger()
+    {
+        return 42;
+    }    
 }
 
 $test = new PHPUnit_Framework_TestSuite("Test");

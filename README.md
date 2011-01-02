@@ -12,7 +12,7 @@ Patchwork requires PHP **5.3.0** or higher to run. Furthermore, **no opcode cach
 
 Patchwork loosely replicates the functionality of [runkit_function_redefine](http://php.net/manual/en/function.runkit-function-redefine.php) in plain PHP code, with no dependencies on non-standard PHP extensions.
 
-However, that also makes this library incapable of redefining internal PHP functions, which is possible with Runkit.
+However, that also makes this library incapable of redefining internal PHP functions, which is possible with [Runkit](http://php.net/manual/en/book.runkit.php) or [ext/test_helpers](https://github.com/sebastianbergmann/php-test-helpers).
 
 ## Example
 

@@ -5,31 +5,27 @@ Not allowing to patch functions that are not defined or not preprocessed
 <?php
 
 require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/TestUtils.php";
 
 function functionThatIsNotPreprocessed()
 {
 }
 
-try {
-    Patchwork\replace("functionThatIsNotDefined", function() {});
-    assert(false);
-} catch (Patchwork\Exceptions\NotDefined $e) {
-    assert(true);
-}
-
-try {
+expectException('Patchwork\Exceptions\NotPreprocessed', function() {
     Patchwork\replace("functionThatIsNotPreprocessed", function() {});
-    assert(false);
-} catch (Patchwork\Exceptions\NotPreprocessed $e) {
-    assert(true);
-}
+});
 
-try {
+expectException('Patchwork\Exceptions\NotDefined', function() {
+    Patchwork\replace("functionThatIsNotDefined", function() {});
+});
+
+expectException('Patchwork\Exceptions\NotPreprocessed', function() {
     Patchwork\replace("str_replace", function() {});
-    assert(false);
-} catch (Patchwork\Exceptions\NotPreprocessed $e) {
-    assert(true);
-}
+});
+
+expectException('Patchwork\Exceptions\NotPreprocessed', function() {
+    Patchwork\replaceLater("functionThatIsNotPreprocessed", function() {});
+});
 
 Patchwork\replaceLater("getInteger", function() {
     return 42;

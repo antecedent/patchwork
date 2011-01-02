@@ -15,7 +15,7 @@ abstract class Exception extends \Exception
 {
 }
 
-class PatchEscaped extends Exception
+class NoResult extends Exception
 {
 }
 

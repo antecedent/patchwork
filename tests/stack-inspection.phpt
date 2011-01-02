@@ -5,17 +5,25 @@ Retrieving call details from inside a patch
 <?php
 
 require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/TestUtils.php";
 require __DIR__ . "/includes/NamedObject.php";
 
 $foo = new NamedObject("foo");
 
 Patchwork\replace("NamedObject::getName", function() {
-    $trace = Patchwork\Stack\all();
-    assert(count($trace) === 2);
-    $properties = Patchwork\Stack\top();
-    assert($properties === reset($trace));
-    assert($properties["function"] === Patchwork\Stack\top("function"));
-    assert(Patchwork\Stack\top("function") === "getName");
+    throw new RuntimeException;
+});
+
+expectException('RuntimeException', array($foo, "getName"));
+
+Patchwork\undoAll();
+
+expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\top');
+
+Patchwork\replace("NamedObject::getName", function() {
+    $properties = Patchwork\top();
+    assert($properties["function"] === Patchwork\top("function"));
+    assert(Patchwork\top("function") === "getName");
     return "bar";
 });
 
@@ -27,12 +35,7 @@ function getNameOfNamedObject()
 
 assert(getNameOfNamedObject() === "bar");
 
-try {
-    Patchwork\Stack\all();
-    assert(false);
-} catch (Patchwork\Exceptions\StackEmpty $e) {
-    assert(true);
-}
+expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\top');
     
 ?>
 ===DONE===

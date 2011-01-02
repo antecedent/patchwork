@@ -20,11 +20,9 @@ const PREPROCESSED_FILES = 'Patchwork\Interceptor\PATCHABLE_FILES';
 const HANDLE_REFERENCE_OFFSET = 3;
 const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
 
-function patch($function, $patch, $shouldVerify = true)
+function patch($function, $patch, $allowUndefined = false)
 {
-    if ($shouldVerify) {
-        assertPatchable($function);
-    }
+    assertPatchable($function, $allowUndefined);
     list($class, $method) = Utils\parseCallback($function);
     if (is_array($function) && is_object(reset($function))) {
         $patch = bindPatchToInstance(reset($function), $patch);
@@ -44,12 +42,20 @@ function unpatch(array $handle)
     }
 }
 
-function assertPatchable($function)
+function unpatchAll()
+{
+    $GLOBALS[PATCHES] = array();
+}
+
+function assertPatchable($function, $allowUndefined = false)
 {
     try {
         $reflection = Utils\reflectCallback($function);
     } catch (\ReflectionException $e) {
-        throw new Exceptions\NotDefined($function);
+        if (!$allowUndefined) {
+            throw new Exceptions\NotDefined($function);
+        }
+        return;
     }
     $file = $reflection->getFileName();
     $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
@@ -67,7 +73,7 @@ function bindPatchToInstance($instance, $patch)
 {
     return function() use ($instance, $patch) {
         if (Stack\top("object") !== $instance) {
-            Patchwork\escape();
+            Patchwork\shift();
         }
         return runPatch($patch);
     };
@@ -81,7 +87,7 @@ function intercept($class, $method, $frame, &$result)
             try {
                 $result = runPatch($patch);
                 $success = true;
-            } catch (Exceptions\PatchEscaped $e) {
+            } catch (Exceptions\NoResult $e) {
                 continue;
             }
         }

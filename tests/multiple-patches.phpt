@@ -19,7 +19,7 @@ Patchwork\replace("getInteger", function() {
 
 Patchwork\replace("getInteger", function() {
     echo "Patch #3\n";
-    Patchwork\escape();    
+    Patchwork\shift();    
 });
 
 echo "Calling getInteger()\n";

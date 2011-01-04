@@ -10,16 +10,14 @@ namespace Patchwork\Stack;
 
 use Patchwork\Exceptions;
 
-const OFFSETS = 'Patchwork\Stack\OFFSETS';
-
 function push($offset)
 {
-    $GLOBALS[OFFSETS][] = $offset;
+    State::$offsets[] = $offset;
 }
 
 function pop()
 {
-    array_pop($GLOBALS[OFFSETS]);
+    array_pop(State::$offsets);
 }
 
 function pushFor($offset, $callback)
@@ -47,10 +45,10 @@ function top($property = null)
 
 function topOffset()
 {
-    if (empty($GLOBALS[OFFSETS])) {
+    if (empty(State::$offsets)) {
         throw new Exceptions\StackEmpty;
     }
-    return end($GLOBALS[OFFSETS]);
+    return end(State::$offsets);
 }
 
 function all()
@@ -59,4 +57,7 @@ function all()
     return array_slice($backtrace, count($backtrace) - topOffset());
 }
 
-$GLOBALS[OFFSETS] = array();
+class State
+{
+    static $offsets = array();
+}

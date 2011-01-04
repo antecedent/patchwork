@@ -6,15 +6,15 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor\Drivers\Interceptor;
+namespace Patchwork\Preprocessor\Callbacks\Interceptor;
 
-use Patchwork\Preprocessor\Drivers\Generic;
+use Patchwork\Preprocessor\Callbacks\Generic;
 use Patchwork\Interceptor;
 
-const CALL_HANDLING_CODE = '
+const CALL_INTERCEPTION_CODE = '
     $pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\{closure}" : "{closure}";
     $pwClass = (__CLASS__ && __FUNCTION__ !== $pwClosureName) ? \get_called_class() : null;
-    if (!empty($GLOBALS[\Patchwork\Interceptor\PATCHES][$pwClass][__FUNCTION__])) {
+    if (!empty(\Patchwork\Interceptor\State::$patches[$pwClass][__FUNCTION__])) {
         $pwFrame = \count(\debug_backtrace(false));
         if (\Patchwork\Interceptor\intercept($pwClass, __FUNCTION__, $pwFrame, $pwResult)) {
             return $pwResult;
@@ -25,10 +25,10 @@ const CALL_HANDLING_CODE = '
 
 function markPreprocessedFiles()
 {
-    return Generic\markPreprocessedFiles($GLOBALS[Interceptor\PREPROCESSED_FILES]);
+    return Generic\markPreprocessedFiles(Interceptor\State::$preprocessedFiles);
 }
 
-function injectCallHandlingCode()
+function injectCallInterceptionCode()
 {
-    return Generic\prependCodeToFunctions(CALL_HANDLING_CODE);
+    return Generic\prependCodeToFunctions(CALL_INTERCEPTION_CODE);
 }

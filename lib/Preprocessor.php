@@ -10,23 +10,20 @@ namespace Patchwork\Preprocessor;
 
 require __DIR__ . "/Preprocessor/Source.php";
 require __DIR__ . "/Preprocessor/Stream.php";
-require __DIR__ . "/Preprocessor/Drivers/Generic.php";
-require __DIR__ . "/Preprocessor/Drivers/Interceptor.php";
-require __DIR__ . "/Preprocessor/Drivers/Preprocessor.php";
+require __DIR__ . "/Preprocessor/Callbacks/Generic.php";
+require __DIR__ . "/Preprocessor/Callbacks/Interceptor.php";
+require __DIR__ . "/Preprocessor/Callbacks/Preprocessor.php";
 
 use Patchwork\Exceptions;
 use Patchwork\Utils;
-
-const DRIVERS = 'Patchwork\Preprocessor\DRIVERS';
-const BLACKLIST = 'Patchwork\Preprocessor\BLACKLIST';
 
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
 
 function preprocess(Source $s)
 {
-    foreach ($GLOBALS[DRIVERS] as $driver) {
-        $driver($s);
+    foreach (State::$callbacks as $callback) {
+        $callback($s);
     }
 }
 
@@ -57,12 +54,26 @@ function preprocessAndOpen($file)
 
 function shouldPreprocess($file)
 {
-    foreach ($GLOBALS[BLACKLIST] as $pattern) {
-        if (strpos(Utils\normalizePath($file), Utils\normalizePath($path)) === 0) {
+    foreach (State::$blacklist as $path) {
+        if (strpos(Utils\normalizePath($file), $path) === 0) {
             return false;
         }
     }
     return true;
 }
 
-$GLOBALS[DRIVERS] = $GLOBALS[BLACKLIST] = array();
+function attach($callbacks)
+{
+    State::$callbacks = array_merge(State::$callbacks, (array) $callbacks);
+}
+
+function exclude($path)
+{
+    State::$blacklist[] = Utils\normalizePath($path);
+}
+
+class State
+{
+    static $callbacks = array();
+    static $blacklist = array();
+}

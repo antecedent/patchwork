@@ -18,12 +18,12 @@ expectException('RuntimeException', array($foo, "getName"));
 
 Patchwork\undoAll();
 
-expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\top');
+expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 
 Patchwork\replace("NamedObject::getName", function() {
-    $properties = Patchwork\top();
-    assert($properties["function"] === Patchwork\top("function"));
-    assert(Patchwork\top("function") === "getName");
+    $properties = Patchwork\Stack\top();
+    assert($properties["function"] === Patchwork\Stack\top("function"));
+    assert(Patchwork\Stack\top("function") === "getName");
     return "bar";
 });
 
@@ -35,7 +35,7 @@ function getNameOfNamedObject()
 
 assert(getNameOfNamedObject() === "bar");
 
-expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\top');
+expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
     
 ?>
 ===DONE===

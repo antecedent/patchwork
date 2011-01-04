@@ -1,5 +1,5 @@
 --TEST--
-Scoped patches for PHPUnit
+Using Patchwork with PHPUnit
 
 --SKIPIF--
 <?php
@@ -14,22 +14,23 @@ if (file_get_contents("PHPUnit/Autoload.php", true) === false) {
 <?php
 
 require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/includes/Functions.php";
 require "PHPUnit/Autoload.php";
 
-class Test extends Patchwork\TestCase
+class Test extends PHPUnit_Framework_TestCase
 {
+    function tearDown()
+    {
+        Patchwork\undoAll();
+    }
+
     function testSomething()
     {
-        $this->replaceLater('getInteger', function() {
-            return 41; 
-        });
-        require __DIR__ . "/includes/Functions.php";
-        $this->assertEquals(41, getInteger());
-        $this->replace('getInteger', array($this, "getSomeOtherInteger"));
+        Patchwork\replace('getInteger', array($this, "getSomeOtherInteger"));
         $this->assertEquals(42, getInteger());
     }
 
-    function testThePatchesAreNoLongerInEffect()
+    function testTheReplacementIsNoLongerInEffect()
     {
         $this->assertEquals(0, getInteger());
     }
@@ -37,7 +38,7 @@ class Test extends Patchwork\TestCase
     function getSomeOtherInteger()
     {
         return 42;
-    }    
+    }
 }
 
 $test = new PHPUnit_Framework_TestSuite("Test");

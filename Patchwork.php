@@ -8,12 +8,12 @@
  */
 namespace Patchwork;
 
-require_once __DIR__ . "/includes/Exceptions.php";
-require_once __DIR__ . "/includes/Interceptor.php";
-require_once __DIR__ . "/includes/Preprocessor.php";
-require_once __DIR__ . "/includes/Utils.php";
-require_once __DIR__ . "/includes/Stack.php";
-require_once __DIR__ . "/includes/CacheCheck.php";
+require_once __DIR__ . "/lib/Exceptions.php";
+require_once __DIR__ . "/lib/Interceptor.php";
+require_once __DIR__ . "/lib/Preprocessor.php";
+require_once __DIR__ . "/lib/Utils.php";
+require_once __DIR__ . "/lib/Stack.php";
+require_once __DIR__ . "/lib/CacheCheck.php";
 
 function replace($function, $replacement)
 {
@@ -30,19 +30,9 @@ function shift()
     throw new Exceptions\NoResult;
 }
 
-function top($property = null)
+function undo(array $result)
 {
-    return Stack\top($property);
-}
-
-function topOffset()
-{
-    return Stack\topOffset();
-}
-
-function undo(array $handle)
-{
-    Interceptor\unpatch($handle);
+    Interceptor\unpatch($result);
 }
 
 function undoAll()
@@ -54,10 +44,8 @@ CacheCheck\run();
 
 Preprocessor\Stream::wrap();
 
-spl_autoload_register(Utils\autoload(__NAMESPACE__, __DIR__ . "/classes/"));
-
-$GLOBALS[Preprocessor\DRIVERS] = array(
-    Preprocessor\Drivers\Preprocessor\propagateThroughEval(),
-    Preprocessor\Drivers\Interceptor\markPreprocessedFiles(),
-    Preprocessor\Drivers\Interceptor\injectCallHandlingCode(),
-);
+Preprocessor\attach(array(
+    Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
+    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
+    Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
+));

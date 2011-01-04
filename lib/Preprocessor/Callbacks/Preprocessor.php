@@ -6,9 +6,9 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor\Drivers\Preprocessor;
+namespace Patchwork\Preprocessor\Callbacks\Preprocessor;
 
-use Patchwork\Preprocessor\Drivers\Generic;
+use Patchwork\Preprocessor\Callbacks\Generic;
 use Patchwork\Preprocessor\Source;
 use Patchwork\Interceptor;
 

@@ -42,7 +42,12 @@ class NotDefined extends CallbackException
     protected $message = "%s is not defined";
 }
 
-class NotPreprocessed extends CallbackException
+class NotUserDefined extends CallbackException
 {
-    protected $message = "%s is not defined in a preprocessed file";
+    protected $message = "%s is not a user-defined function or method";
+}
+
+class DefinedTooEarly extends CallbackException
+{
+    protected $message = "The file that defines %s was included earlier than Patchwork";
 }

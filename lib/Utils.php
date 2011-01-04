@@ -13,21 +13,6 @@ function condense($string)
     return preg_replace("/\s*/", "", $string);
 }
 
-function autoload($namespace, $dir)
-{
-    $namespace = ltrim($namespace, "\\");
-    return function($class) use ($namespace, $dir) {
-        $class = ltrim($class, "\\");
-        if (strpos($class, $namespace) === 0) {
-            $shortName = substr($class, $namespace ? (strlen($namespace) + 1) : 0);
-            $file = $dir . "/" . strtr($shortName, "\\", "/") . ".php";
-            if (is_file($file)) {
-                require $file;
-            }
-        }
-    };
-}
-
 function getUpperBound(array $array, $value)
 {
     $count = count($array);
@@ -94,16 +79,4 @@ function callbackToString($callback)
         return $class . "::" . $method;
     }
     return $method;
-}
-
-function callBySignature($callback, array $arguments)
-{
-    $parameters = reflectCallback($callback)->getParameters();
-    foreach ($arguments as $offset => $argument) {
-        if (!isset($parameters[$offset]) || !$parameters[$offset]->isPassedByReference()) {
-            unset($arguments[$offset]);
-            $arguments[$offset] = $argument;
-        }
-    }
-    return call_user_func_array($callback, $arguments);
 }

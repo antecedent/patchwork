@@ -11,11 +11,7 @@ namespace Patchwork\Interceptor;
 use Patchwork;
 use Patchwork\Utils;
 use Patchwork\Exceptions;
-use Patchwork\Preprocessor;
 use Patchwork\Stack;
-
-const PATCHES = 'Patchwork\Interceptor\PATCHES';
-const PREPROCESSED_FILES = 'Patchwork\Interceptor\PATCHABLE_FILES';
 
 const HANDLE_REFERENCE_OFFSET = 3;
 const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
@@ -27,7 +23,7 @@ function patch($function, $patch, $allowUndefined = false)
     if (is_array($function) && is_object(reset($function))) {
         $patch = bindPatchToInstance(reset($function), $patch);
     }    
-    $patches = &$GLOBALS[PATCHES][$class][$method];
+    $patches = &State::$patches[$class][$method];
     $offset = Utils\append($patches, $patch);
     return array($class, $method, $offset, &$patches[$offset]);
 }
@@ -38,13 +34,13 @@ function unpatch(array $handle)
     $reference = &$handle[HANDLE_REFERENCE_OFFSET];
     if (isset($reference)) {
         $reference = null;
-        unset($GLOBALS[PATCHES][$class][$method][$offset]);
+        unset(State::$patches[$class][$method][$offset]);
     }
 }
 
 function unpatchAll()
 {
-    $GLOBALS[PATCHES] = array();
+    State::$patches = array();
 }
 
 function assertPatchable($function, $allowUndefined = false)
@@ -57,16 +53,19 @@ function assertPatchable($function, $allowUndefined = false)
         }
         return;
     }
+    if ($reflection->isInternal()) {
+        throw new Exceptions\NotUserDefined($function);
+    }
     $file = $reflection->getFileName();
     $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
-    if (!$evaluated && empty($GLOBALS[PREPROCESSED_FILES][$file])) {
-        throw new Exceptions\NotPreprocessed($function);
+    if (!$evaluated && empty(State::$preprocessedFiles[$file])) {
+        throw new Exceptions\DefinedTooEarly($function);
     }
 }
 
 function runPatch($patch)
 {
-    return Utils\callBySignature($patch, Stack\top("args"));
+    return call_user_func_array($patch, Stack\top("args"));
 }
 
 function bindPatchToInstance($instance, $patch)
@@ -83,7 +82,7 @@ function intercept($class, $method, $frame, &$result)
 {
     $success = false;
     Stack\pushFor($frame, function() use ($class, $method, &$result, &$success) {
-        foreach ($GLOBALS[PATCHES][$class][$method] as $patch) {
+        foreach (State::$patches[$class][$method] as $patch) {
             try {
                 $result = runPatch($patch);
                 $success = true;
@@ -95,4 +94,8 @@ function intercept($class, $method, $frame, &$result)
     return $success;
 }
 
-$GLOBALS[PATCHES] = $GLOBALS[PREPROCESSED_FILES] = array();
+class State
+{
+    static $patches = array();
+    static $preprocessedFiles = array();
+}

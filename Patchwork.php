@@ -25,7 +25,7 @@ function replaceLater($function, $replacement)
     return Interceptor\patch($function, $replacement, true);
 }
 
-function shift()
+function pass()
 {
     throw new Exceptions\NoResult;
 }

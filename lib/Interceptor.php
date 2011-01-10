@@ -72,7 +72,7 @@ function bindPatchToInstance($instance, $patch)
 {
     return function() use ($instance, $patch) {
         if (Stack\top("object") !== $instance) {
-            Patchwork\shift();
+            Patchwork\pass();
         }
         return runPatch($patch);
     };

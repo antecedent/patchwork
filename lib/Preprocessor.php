@@ -34,10 +34,10 @@ function preprocessString($code)
     return (string) $source;
 }
 
-function preprocessAndEval($code)
+function preprocessForEval($code)
 {
     $prefix = "<?php ";
-    return eval(substr(preprocessString($prefix . $code), strlen($prefix)));
+    return substr(preprocessString($prefix . $code), strlen($prefix));
 }
 
 function preprocessAndOpen($file)

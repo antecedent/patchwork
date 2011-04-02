@@ -10,6 +10,8 @@ namespace Patchwork\Preprocessor\Callbacks\Generic;
 
 use Patchwork\Preprocessor\Source;
 
+const LEFT_PARENTHESIS = "(";
+const RIGHT_PARENTHESIS = ")";
 const LEFT_CURLY_BRACKET = "{";
 const SEMICOLON = ";";
 
@@ -33,11 +35,25 @@ function prependCodeToFunctions($code)
     };
 }
 
-function replaceTokens($search, $replacement)
+function wrapUnaryConstructArguments($construct, $wrapper)
 {
-    return function(Source $s) use ($search, $replacement) {
-        foreach ($s->findAll($search) as $match) {
-            $s->splice($replacement, $match, 1);
+    return function(Source $s) use ($construct, $wrapper) {
+        foreach ($s->findAll($construct) as $match) {
+            $pos = $s->findNext(LEFT_PARENTHESIS, $match);
+            $s->splice($wrapper . LEFT_PARENTHESIS, $pos + 1);
+            $level = 0;
+            while (isset($s->tokens[$pos])) {
+                if ($s->tokens[$pos] == LEFT_PARENTHESIS) {
+                    $level++;
+                } elseif ($s->tokens[$pos] == RIGHT_PARENTHESIS) {
+                    $level--;
+                }
+                if ($level == 0) {
+                    $s->splice(RIGHT_PARENTHESIS, $pos);
+                    break;
+                }
+                $pos++;
+            } 
         }
     };
 }

@@ -10,6 +10,7 @@ namespace Patchwork\Preprocessor\Callbacks\Interceptor;
 
 use Patchwork\Preprocessor\Callbacks\Generic;
 use Patchwork\Interceptor;
+use Patchwork\Utils;
 
 const CALL_INTERCEPTION_CODE = '
     $pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\{closure}" : "{closure}";
@@ -30,5 +31,5 @@ function markPreprocessedFiles()
 
 function injectCallInterceptionCode()
 {
-    return Generic\prependCodeToFunctions(CALL_INTERCEPTION_CODE);
+    return Generic\prependCodeToFunctions(Utils\condense(CALL_INTERCEPTION_CODE));
 }

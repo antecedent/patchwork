@@ -12,11 +12,11 @@ use Patchwork\Preprocessor\Callbacks\Generic;
 use Patchwork\Preprocessor\Source;
 use Patchwork\Interceptor;
 
-const EVAL_REPLACEMENT_CODE = '\Patchwork\Preprocessor\preprocessAndEval';
+const EVAL_ARGUMENT_WRAPPER = '\Patchwork\Preprocessor\preprocessForEval';
 
 function propagateThroughEval()
 {
-    return Generic\replaceTokens(T_EVAL, EVAL_REPLACEMENT_CODE);
+    return Generic\wrapUnaryConstructArguments(T_EVAL, EVAL_ARGUMENT_WRAPPER);
 }
 
 function flush()

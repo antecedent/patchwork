@@ -7,7 +7,7 @@ function setArrayElement(array &$array, $offset, $value)
 
 function evaluate($code)
 {
-    eval($code);
+    eval('' . ('') . ((string) null) . $code);
 }
 
 function getInteger()

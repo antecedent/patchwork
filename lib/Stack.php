@@ -36,7 +36,8 @@ function pushFor($offset, $callback)
 
 function top($property = null)
 {
-    $frame = reset(all());
+    $all = all();
+    $frame = reset($all);
     if ($property) {
         return isset($frame[$property]) ? $frame[$property] : null;
     }

@@ -4,6 +4,8 @@ Automatic binding of patches to object instances
 --FILE--
 <?php
 
+error_reporting(E_ALL | E_STRICT);
+
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/NamedObject.php";
 

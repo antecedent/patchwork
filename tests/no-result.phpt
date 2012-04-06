@@ -4,6 +4,8 @@ Leaving a patch without yielding a result
 --FILE--
 <?php
 
+error_reporting(E_ALL | E_STRICT);
+
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 

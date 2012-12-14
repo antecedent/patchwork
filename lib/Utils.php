@@ -41,8 +41,11 @@ function parseCallback($callback)
         if (is_object($class)) {
             $class = get_class($class);
         }
+        $class = ltrim($class, "\\");
         return array($class, $function);
-    } elseif (strpos($callback, "::")) {
+    }
+    $callback = ltrim($callback, "\\");
+    if (strpos($callback, "::")) {
         return explode("::", $callback, 2);
     }
     return array(null, $callback);

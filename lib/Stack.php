@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -10,19 +10,19 @@ namespace Patchwork\Stack;
 
 use Patchwork\Exceptions;
 
-function push($offset)
+function push($offset, $calledClass)
 {
-    State::$offsets[] = $offset;
+    State::$items[] = array($offset, $calledClass);
 }
 
 function pop()
 {
-    array_pop(State::$offsets);
+    array_pop(State::$items);
 }
 
-function pushFor($offset, $callback)
+function pushFor($offset, $calledClass, $callback)
 {
-    push($offset);
+    push($offset, $calledClass);
     try {
         $callback();
     } catch (\Exception $e) {
@@ -46,10 +46,20 @@ function top($property = null)
 
 function topOffset()
 {
-    if (empty(State::$offsets)) {
+    if (empty(State::$items)) {
         throw new Exceptions\StackEmpty;
     }
-    return end(State::$offsets);
+    list($offset, $calledClass) = end(State::$items);
+    return $offset;
+}
+
+function topCalledClass()
+{
+    if (empty(State::$items)) {
+        throw new Exceptions\StackEmpty;
+    }
+    list($offset, $calledClass) = end(State::$items);
+    return $calledClass;   
 }
 
 function all()
@@ -58,7 +68,15 @@ function all()
     return array_slice($backtrace, count($backtrace) - topOffset());
 }
 
+function allCalledClasses()
+{
+    return array_map(function($item) {
+        list($offset, $calledClass) = $item;
+        return $calledClass;
+    }, State::$items);
+}
+
 class State
 {
-    static $offsets = array();
+    static $items = array();
 }

@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -31,7 +31,9 @@ class Source
     function initialize(array $tokens)
     {
         $this->tokens = $tokens;
+        $this->tokens[] = array(T_WHITESPACE, "");
         $this->tokensByType = $this->indexTokensByType($this->tokens);
+        $this->matchingBrackets = $this->matchBrackets($this->tokens);
         $this->splices = $this->spliceLengths = array();
     }
     
@@ -42,6 +44,32 @@ class Source
             $tokensByType[$token[self::TYPE_OFFSET]][] = $offset;
         }
         return $tokensByType;
+    }
+
+    function matchBrackets(array $tokens)
+    {
+        $matches = array();
+        $stack = array();
+        foreach ($tokens as $offset => $token) {
+            $type = $token[self::TYPE_OFFSET];
+            switch ($type) {
+                case '(':
+                case '[':
+                case '{':
+                case T_CURLY_OPEN:
+                case T_DOLLAR_OPEN_CURLY_BRACES:
+                    $stack[] = $offset;
+                    break;
+                case ')':
+                case ']':
+                case '}':
+                    $top = array_pop($stack);
+                    $matches[$top] = $offset;
+                    $matches[$offset] = $top;
+                    break;
+            }
+        }
+        return $matches;
     }
     
     function findNext($type, $offset)
@@ -63,6 +91,12 @@ class Source
         return $tokens;
     }
     
+    function findMatchingBracket($offset)
+    {
+        $pos = &$this->matchingBrackets[$offset];
+        return isset($pos) ? $pos : INF;
+    }
+
     function splice($splice, $offset, $length = 0)
     {
         $this->splices[$offset] = $splice;

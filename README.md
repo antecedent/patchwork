@@ -1,6 +1,6 @@
 # Patchwork
 
-### Version 1.1
+### Version 1.2.0
 
 A pure PHP library that lets you redefine user-defined functions at runtime. Released under the terms of the [MIT license](http://www.opensource.org/licenses/mit-license.php).
 
@@ -20,27 +20,33 @@ All these steps occur at the same runtime:
 
 ### 1. Define a function
 
-    function size($x)
-    {
-        return count($x);
-    }
-    
-    size(array(1, 2)); # => 2
+```php
+function size($x)
+{
+    return count($x);
+}
+
+size(array(1, 2)); # => 2
+```
 
 ### 2. Replace it with something else
-    
-    Patchwork\replace("size", function($x)
-    {
-        return "huge";
-    });
-    
-    size(array(1, 2)); # => "huge"
+
+```php   
+Patchwork\replace("size", function($x)
+{
+    return "huge";
+});
+
+size(array(1, 2)); # => "huge"
+```
 
 ### 3. Undo the replacement
-        
-    p\undoAll();
-    
-    size(array(1, 2)); # => 2
+ 
+```php       
+p\undoAll();
+
+size(array(1, 2)); # => 2
+```
 
 ## Further Reading
 

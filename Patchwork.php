@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -30,9 +30,9 @@ function pass()
     throw new Exceptions\NoResult;
 }
 
-function undo(array $result)
+function undo(Interceptor\PatchHandle $handle)
 {
-    Interceptor\unpatch($result);
+    $handle->removePatches();
 }
 
 function undoAll()
@@ -48,4 +48,5 @@ Preprocessor\attach(array(
     Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
     Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
     Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
+    Preprocessor\Callbacks\Interceptor\injectScheduledPatchApplicationCode(),
 ));

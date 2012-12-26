@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -41,19 +41,53 @@ function wrapUnaryConstructArguments($construct, $wrapper)
         foreach ($s->findAll($construct) as $match) {
             $pos = $s->findNext(LEFT_PARENTHESIS, $match);
             $s->splice($wrapper . LEFT_PARENTHESIS, $pos + 1);
-            $level = 0;
-            while (isset($s->tokens[$pos])) {
-                if ($s->tokens[$pos] == LEFT_PARENTHESIS) {
-                    $level++;
-                } elseif ($s->tokens[$pos] == RIGHT_PARENTHESIS) {
-                    $level--;
-                }
-                if ($level == 0) {
-                    $s->splice(RIGHT_PARENTHESIS, $pos);
-                    break;
-                }
-                $pos++;
-            } 
+            $s->splice(RIGHT_PARENTHESIS, $s->findMatchingBracket($pos));
+        }
+    };
+}
+
+function chain(array $callbacks)
+{
+    return function(Source $s) use ($callbacks) {
+        foreach ($callbacks as $callback) {
+            $callback($s);
+        }
+    };
+}
+
+function injectFalseExpressionAtBeginnings($expression)
+{
+    return function(Source $s) use ($expression) {
+        $openingTags = $s->findAll(T_OPEN_TAG);
+        $openingTagsWithEcho = $s->findAll(T_OPEN_TAG_WITH_ECHO);
+        if (empty($openingTags) && empty($openingTagsWithEcho)) {
+            return;
+        }
+        if (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho)) {
+            $pos = reset($openingTags);
+            $namespaceKeyword = $s->findNext(T_NAMESPACE, $pos);
+            if ($namespaceKeyword !== INF) {
+                $semicolon = $s->findNext(SEMICOLON, $namespaceKeyword);
+                $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $namespaceKeyword);
+                $pos = min($semicolon, $leftBracket);
+            }
+            $s->splice(' ' . $expression . ";", $pos + 1);
+        } else {
+            $openingTag = reset($openingTagsWithEcho);
+            $closingTag = $s->findNext(T_CLOSE_TAG, $openingTag);
+            $s->splice(' (' . $expression . ') ?: (', $openingTag + 1);
+            $s->splice(') ', $closingTag);
+        }
+    };
+}
+
+function injectCodeAfterClassDefinitions($code)
+{
+    return function(Source $s) use ($code) {
+        foreach ($s->findAll(T_CLASS) as $match) {
+            $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $match);
+            $rightBracket = $s->findMatchingBracket($leftBracket);
+            $s->splice($code, $rightBracket + 1);
         }
     };
 }

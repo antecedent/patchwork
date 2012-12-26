@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -37,18 +37,44 @@ function parseCallback($callback)
         return parseCallback(array($callback, "__invoke"));
     }
     if (is_array($callback)) {
-        list($class, $function) = $callback;
+        list($class, $method) = $callback;
+        $instance = null;
         if (is_object($class)) {
+            $instance = $class;
             $class = get_class($class);
         }
         $class = ltrim($class, "\\");
-        return array($class, $function);
+        return array($class, $method, $instance);
     }
     $callback = ltrim($callback, "\\");
     if (strpos($callback, "::")) {
-        return explode("::", $callback, 2);
+        list($class, $method) = explode("::", $callback);
+        return array($class, $method, null);
     }
-    return array(null, $callback);
+    return array(null, $callback, null);
+}
+
+function callbackTargetDefined($callback, $shouldAutoload = false)
+{
+    list($class, $method, $instance) = parseCallback($callback);
+    if ($instance !== null) {
+        return true;
+    }
+    if (isset($class)) {
+        return classOrTraitExists($class, $shouldAutoload) &&
+               method_exists($class, $method);
+    }
+    return function_exists($method);
+}
+
+function classOrTraitExists($classOrTrait, $shouldAutoload = true)
+{
+    if (version_compare(PHP_VERSION, "5.4", ">=")) {
+        if (trait_exists($classOrTrait, $shouldAutoload)) {
+            return true;
+        }
+    }
+    return class_exists($classOrTrait, $shouldAutoload);
 }
 
 function append(&$array, $value)

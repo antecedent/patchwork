@@ -2,56 +2,44 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010 Ignas Rudaitis
+ * @copyright  2010-2013 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Interceptor;
+
+require __DIR__ . "/Interceptor/PatchHandle.php";
+require __DIR__ . "/Interceptor/RestrictivePatchDecorator.php";
 
 use Patchwork;
 use Patchwork\Utils;
 use Patchwork\Exceptions;
 use Patchwork\Stack;
 
-const HANDLE_REFERENCE_OFFSET = 3;
 const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
 
 function patch($function, $patch, $allowUndefined = false)
 {
     assertPatchable($function, $allowUndefined);
     list($class, $method) = Utils\parseCallback($function);
-    if (is_array($function) && is_object(reset($function))) {
-        $patch = bindPatchToInstance(reset($function), $patch);
-    }    
-    $patches = &State::$patches[$class][$method];
-    $offset = Utils\append($patches, $patch);
-    return array($class, $method, $offset, &$patches[$offset]);
-}
-
-function unpatch(array $handle)
-{
-    list($class, $method, $offset) = $handle;
-    $reference = &$handle[HANDLE_REFERENCE_OFFSET];
-    if (isset($reference)) {
-        $reference = null;
-        unset(State::$patches[$class][$method][$offset]);
+    if (empty($class)) {
+        return patchFunction($method, $patch);
     }
+    if (Utils\callbackTargetDefined($function)) {
+        return patchMethod($function, $patch);
+    }
+    return scheduleMethodPatch($function, $patch);
 }
 
-function unpatchAll()
+function assertPatchable($function, $allowUndefined)
 {
-    State::$patches = array();
-}
-
-function assertPatchable($function, $allowUndefined = false)
-{
+    if ($allowUndefined && !Utils\callbackTargetDefined($function)) {
+        return;
+    }
     try {
         $reflection = Utils\reflectCallback($function);
     } catch (\ReflectionException $e) {
-        if (!$allowUndefined) {
-            throw new Exceptions\NotDefined($function);
-        }
-        return;
+        throw new Exceptions\NotDefined($function);
     }
     if ($reflection->isInternal()) {
         throw new Exceptions\NotUserDefined($function);
@@ -63,28 +51,85 @@ function assertPatchable($function, $allowUndefined = false)
     }
 }
 
+function patchFunction($function, $patch)
+{
+    $handle = new PatchHandle;
+    $patches = &State::$patches[null][$function];
+    $offset = Utils\append($patches, array($patch, $handle));
+    $handle->addReference($patches[$offset]);
+    return $handle;
+}
+
+function scheduleMethodPatch($function, $patch)
+{
+    $handle = new PatchHandle;
+    $scheduledPatch = array($function, $patch, $handle);
+    $offset = Utils\append(State::$scheduledPatches, $scheduledPatch);
+    $handle->addReference(State::$scheduledPatches[$offset]);
+    return $handle;
+}
+
+function applyScheduledPatches()
+{
+    foreach (State::$scheduledPatches as $offset => $scheduledPatch) {
+        if (empty($scheduledPatch)) {
+            unset(State::$scheduledPatches[$offset]);
+            continue;
+        }
+        list($function, $patch, $handle) = $scheduledPatch;
+        if (Utils\callbackTargetDefined($function)) {
+            assertPatchable($function, false);
+            patchMethod($function, $patch, $handle);
+        }
+    }
+}
+
+function patchMethod($function, $patch, PatchHandle $handle = null)
+{
+    if ($handle === null) {
+        $handle = new PatchHandle;
+    }
+    list($class, $method, $instance) = Utils\parseCallback($function);
+    $patch = new RestrictivePatchDecorator($patch);
+    $patch->superclass = $class;
+    $patch->method = $method;
+    $patch->instance = $instance;
+    $reflection = new \ReflectionMethod($class, $method);
+    $declaringClass = $reflection->getDeclaringClass();
+    $class = $declaringClass->getName();
+    if (version_compare(PHP_VERSION, "5.4", ">=")) {
+        $aliases = $declaringClass->getTraitAliases();
+        if (isset($aliases[$method])) {
+            list($trait, $method) = explode("::", $aliases[$method]);
+        }
+    }
+    $patches = &State::$patches[$class][$method];
+    $offset = Utils\append($patches, array($patch, $handle));
+    $handle->addReference($patches[$offset]);
+    return $handle;
+}
+
+function unpatchAll()
+{
+    State::$patches = array();
+}
+
 function runPatch($patch)
 {
     return call_user_func_array($patch, Stack\top("args"));
 }
 
-function bindPatchToInstance($instance, $patch)
-{
-    return function() use ($instance, $patch) {
-        if (Stack\top("object") !== $instance) {
-            Patchwork\pass();
-        }
-        return runPatch($patch);
-    };
-}
-
-function intercept($class, $method, $frame, &$result)
+function intercept($class, $calledClass, $method, $frame, &$result)
 {
     $success = false;
-    Stack\pushFor($frame, function() use ($class, $method, &$result, &$success) {
-        foreach (State::$patches[$class][$method] as $patch) {
+    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
+        foreach (State::$patches[$class][$method] as $offset => $patch) {
+            if (empty($patch)) {
+                unset(State::$patches[$class][$method][$offset]);
+                continue;
+            }
             try {
-                $result = runPatch($patch);
+                $result = runPatch(reset($patch));
                 $success = true;
             } catch (Exceptions\NoResult $e) {
                 continue;
@@ -97,5 +142,6 @@ function intercept($class, $method, $frame, &$result)
 class State
 {
     static $patches = array();
+    static $scheduledPatches = array();
     static $preprocessedFiles = array();
 }

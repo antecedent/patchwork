@@ -1,5 +1,5 @@
 --TEST--
-Referring to namespaced functions with and without a leading backslash
+Referring to namespaced functions with and without a leading backslash (https://github.com/antecedent/patchwork/issues/4)
 
 --FILE--
 <?php

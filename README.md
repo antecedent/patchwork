@@ -43,7 +43,7 @@ size(array(1, 2)); # => "huge"
 ### 3. Undo the replacement
  
 ```php       
-p\undoAll();
+Patchwork\undoAll();
 
 size(array(1, 2)); # => 2
 ```

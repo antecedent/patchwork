@@ -78,8 +78,7 @@ class Source
             return INF;
         }
         $bound = Utils\getUpperBound($this->tokensByType[$type], $offset);
-        $pos = &$this->tokensByType[$type][$bound];
-        return isset($pos) ? $pos : INF;
+        return isset($this->tokensByType[$type][$bound]) ? $this->tokensByType[$type][$bound] : INF;
     }
     
     function findAll($type)
@@ -93,8 +92,7 @@ class Source
     
     function findMatchingBracket($offset)
     {
-        $pos = &$this->matchingBrackets[$offset];
-        return isset($pos) ? $pos : INF;
+        return isset($this->matchingBrackets[$offset]) ? $this->matchingBrackets[$offset] : INF;
     }
 
     function splice($splice, $offset, $length = 0)

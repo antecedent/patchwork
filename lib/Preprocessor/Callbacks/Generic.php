@@ -75,8 +75,9 @@ function injectFalseExpressionAtBeginnings($expression)
         } else {
             $openingTag = reset($openingTagsWithEcho);
             $closingTag = $s->findNext(T_CLOSE_TAG, $openingTag);
+            $semicolon = $s->findNext(SEMICOLON, $openingTag);
             $s->splice(' (' . $expression . ') ?: (', $openingTag + 1);
-            $s->splice(') ', $closingTag);
+            $s->splice(') ', min($closingTag, $semicolon));
         }
     };
 }
@@ -86,7 +87,13 @@ function injectCodeAfterClassDefinitions($code)
     return function(Source $s) use ($code) {
         foreach ($s->findAll(T_CLASS) as $match) {
             $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $match);
+            if ($leftBracket === INF) {
+                continue;
+            }
             $rightBracket = $s->findMatchingBracket($leftBracket);
+            if ($rightBracket === INF) {
+                continue;
+            }
             $s->splice($code, $rightBracket + 1);
         }
     };

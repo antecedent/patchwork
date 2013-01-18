@@ -6,7 +6,7 @@ Referring to namespaced functions with and without a leading backslash (https://
 
 error_reporting(E_ALL | E_STRICT);
 
-require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/../patchwork.phar";
 require __DIR__ . "/includes/NamespacedFunctions.php";
 
 assert(Foo\identify() === "Foo");

@@ -6,7 +6,7 @@ Applying multiple patches to the same function
 
 error_reporting(E_ALL | E_STRICT);
 
-require __DIR__ . "/../Patchwork.php";
+require __DIR__ . "/../patchwork.phar";
 require __DIR__ . "/includes/Functions.php";
 
 Patchwork\replace("getInteger", function() {

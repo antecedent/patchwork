@@ -11,7 +11,7 @@ namespace Patchwork\Interceptor;
 use Patchwork;
 use Patchwork\Stack;
 
-class RestrictivePatchDecorator
+class PatchDecorator
 {
     public $superclass;
     public $instance;
@@ -31,7 +31,13 @@ class RestrictivePatchDecorator
         $instanceMatches = $this->instanceMatches($top);
         $methodMatches = $this->methodMatches($top);
         if ($superclassMatches && $instanceMatches && $methodMatches) {
-            return runPatch($this->patch);
+            $patch = $this->patch;
+            if (version_compare(PHP_VERSION, "5.4", ">=")) {
+                if (isset($top["object"]) && $patch instanceof \Closure) {
+                    $patch = $patch->bindTo($top["object"], $this->superclass);
+                }
+            }
+            return runPatch($patch);
         }
         Patchwork\pass();
     }

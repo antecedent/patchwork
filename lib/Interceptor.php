@@ -9,7 +9,7 @@
 namespace Patchwork\Interceptor;
 
 require __DIR__ . "/Interceptor/PatchHandle.php";
-require __DIR__ . "/Interceptor/RestrictivePatchDecorator.php";
+require __DIR__ . "/Interceptor/PatchDecorator.php";
 
 use Patchwork;
 use Patchwork\Utils;
@@ -90,7 +90,7 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
         $handle = new PatchHandle;
     }
     list($class, $method, $instance) = Utils\parseCallback($function);
-    $patch = new RestrictivePatchDecorator($patch);
+    $patch = new PatchDecorator($patch);
     $patch->superclass = $class;
     $patch->method = $method;
     $patch->instance = $instance;

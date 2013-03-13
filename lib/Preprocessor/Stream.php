@@ -162,7 +162,18 @@ class Stream
     
     function stream_set_option($option, $arg1, $arg2)
     {
-        throw new Exceptions\NotImplemented(__METHOD__);
+        switch ($option) {
+            case STREAM_OPTION_BLOCKING:
+                return stream_set_blocking($this->resource, $arg1);
+            case STREAM_OPTION_READ_TIMEOUT:
+                return stream_set_timeout($this->resource, $arg1, $arg2);
+            case STREAM_OPTION_WRITE_BUFFER:
+                return stream_set_write_buffer($this->resource, $arg1);
+            case STREAM_OPTION_READ_BUFFER:
+                return stream_set_read_buffer($this->resource, $arg1);
+            case STREAM_OPTION_CHUNK_SIZE:
+                return stream_set_chunk_size($this->resource, $arg1);
+        }
     }
     
     function stream_write($data)

@@ -32,11 +32,6 @@ abstract class CallbackException extends Exception
     }
 }
 
-class NotImplemented extends CallbackException
-{
-    protected $message = "%s is not implemented";
-}
-
 class NotDefined extends CallbackException
 {
     protected $message = "%s is not defined";

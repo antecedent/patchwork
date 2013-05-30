@@ -145,9 +145,13 @@ class Stream
     function rmdir($path, $options)
     {
         $this->unwrap();
-        rmdir($path, $options);
+        if (isset($this->context)) {
+            $result = rmdir($path, $this->context);
+        } else {
+            $result = rmdir($path);
+        }
         $this->wrap();
-        return true;
+        return $result;
     }
     
     function stream_cast($cast_as)
@@ -191,5 +195,37 @@ class Stream
         }
         $this->wrap();
         return $result;
+    }
+
+    function stream_metadata($path, $option, $value)
+    {
+        $this->unwrap();
+        switch ($option) {
+            case STREAM_META_TOUCH:
+                if (empty($value)) {
+                    $result = touch($path);
+                } else {
+                    $result = touch($path, $value[0], $value[1]);
+                }
+                break;
+            case STREAM_META_OWNER_NAME:
+            case STREAM_META_OWNER:
+                $result = chown($path, $value);
+                break;
+            case STREAM_META_GROUP_NAME:
+            case STREAM_META_GROUP:
+                $result = chgrp($path, $value);
+                break;
+            case STREAM_META_ACCESS:
+                $result = chmod($path, $value);
+                break;
+        }
+        $this->wrap();
+        return $result;
+    }
+
+    function stream_truncate($new_size)
+    {
+        return ftruncate($this->resource, $new_size);
     }
 }

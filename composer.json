@@ -1,0 +1,15 @@
+{
+    "name": "antecedent/patchwork",
+    "description": "A pure PHP library that lets you redefine user-defined functions at runtime.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ignas Rudaitis",
+            "email": "ignas.rudaitis@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+
+    }
+}

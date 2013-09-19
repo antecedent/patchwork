@@ -29,9 +29,16 @@ function size($x)
 size(array(1, 2)); # => 2
 ```
 
-### 2. Replace its definition
+### 2. Load Patchwork, then load the function
 
-```php   
+```php
+require __DIR__ . '/Patchwork.php';
+require __DIR__ . '/size.php';
+```
+
+### 3. Redefine the function
+
+```php
 Patchwork\replace("size", function($x)
 {
     return "huge";
@@ -40,7 +47,7 @@ Patchwork\replace("size", function($x)
 size(array(1, 2)); # => "huge"
 ```
 
-### 3. Undo the redefinition
+### 4. Undo the redefinition
  
 ```php       
 Patchwork\undoAll();

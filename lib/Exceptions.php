@@ -44,5 +44,12 @@ class NotUserDefined extends CallbackException
 
 class DefinedTooEarly extends CallbackException
 {
-    protected $message = "The file that defines %s was included earlier than Patchwork";
+    
+    function __construct($callback)
+    {
+        $this->message = "The file that defines %s was included earlier than Patchwork. " .
+                         "This is likely a result of an improper setup; see " .
+                         "http://antecedent.github.io/patchwork/docs/setup.html for details.";
+        parent::__construct($callback);
+    }
 }

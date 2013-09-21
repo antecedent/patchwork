@@ -10,7 +10,7 @@ Patching methods imported from traits using Patchwork\replaceLater (https://gith
 
 error_reporting(E_ALL | E_STRICT);
 
-require __DIR__ . "/../patchwork.phar";
+require __DIR__ . "/../Patchwork.php";
 
 Patchwork\replaceLater("FooTrait::speak", function() {
     return "spam";

@@ -1,12 +1,12 @@
 # Patchwork
 
-### Version 1.2.6
+### Version 1.2.7
 
 A pure PHP library that lets you redefine user-defined functions at runtime. Released under the terms of the [MIT license](http://www.opensource.org/licenses/mit-license.php).
 
 ## Requirements
 
-Patchwork requires PHP **5.3.0** or higher to run. It should also be noted that **opcode caches** might cause Patchwork to behave incorrectly due to possible interference with its [preprocessing mechanism](http://antecedent.github.com/patchwork/docs/implementation.html#preprocessing-code).
+Patchwork requires PHP **5.3.0** or higher to run. It should also be noted that **opcode caches** might cause Patchwork to behave incorrectly due to possible interference with its [preprocessing mechanism](http://antecedent.github.io/patchwork/docs/implementation.html#preprocessing-code).
 
 ## Functionality
 
@@ -17,6 +17,8 @@ However, that also makes this library incapable of redefining internal PHP funct
 ## Example
 
 All these steps occur at the same runtime:
+
+(Note, however, that this example actually requires at least two separate files to run, one of them being a dummy entry script that just includes `Patchwork.php` and the other file, which, in turn, actually contains the example. Please see [Setup](http://antecedent.github.io/patchwork/docs/setup.html) for details.)
 
 ### 1. Define a function
 
@@ -50,7 +52,7 @@ size(array(1, 2)); # => 2
 
 ## Further Reading
 
-For more information, please refer to the online documentation, which can be accessed and navigated using the top menu of [Patchwork's website](http://antecedent.github.com/patchwork/).
+For more information, please refer to the online documentation, which can be accessed and navigated using the top menu of [Patchwork's website](http://antecedent.github.io/patchwork/).
 
 ## Issues
 

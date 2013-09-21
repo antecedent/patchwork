@@ -6,7 +6,7 @@ Accessing and altering arguments from patches
 
 error_reporting(E_ALL | E_STRICT);
 
-require __DIR__ . "/../patchwork.phar";
+require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
 Patchwork\replace("setArrayElement", function(array &$array, $key, $value) {

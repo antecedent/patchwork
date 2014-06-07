@@ -63,7 +63,8 @@ function injectFalseExpressionAtBeginnings($expression)
         if (empty($openingTags) && empty($openingTagsWithEcho)) {
             return;
         }
-        if (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho)) {
+        if (!empty($openingTags) &&
+            (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho))) {
             $pos = reset($openingTags);
             $namespaceKeyword = $s->findNext(T_NAMESPACE, $pos);
             if ($namespaceKeyword !== INF) {

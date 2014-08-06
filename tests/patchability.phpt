@@ -48,7 +48,8 @@ Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
 ===DONE===
 
 --EXPECTF--
-Warning: anotherUndefinedFunction was never defined during the lifetime of its redefinition in %s
+Warning: anotherUndefinedFunction was never defined during the lifetime of its redefinition in %s on line %d
 ===DONE===
 
-Warning: functionThatIsNotDefined was never defined during the lifetime of its redefinition in %s
+
+Warning: functionThatIsNotDefined was never defined during the lifetime of its redefinition in %s on line %d

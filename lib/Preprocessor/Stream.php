@@ -8,6 +8,8 @@
  */
 namespace Patchwork\Preprocessor;
 
+use Patchwork\Utils;
+
 class Stream
 {
     const PROTOCOL = "file";
@@ -30,7 +32,9 @@ class Stream
     public function stream_open($path, $mode, $options, &$openedPath)
     {
         $this->unwrap();
-        if (($options & self::STREAM_OPEN_FOR_INCLUDE) && shouldPreprocess($path)) {
+        $including = $options & self::STREAM_OPEN_FOR_INCLUDE;
+        $including |= Utils\runningOnHHVM();
+        if ($including && shouldPreprocess($path)) {
             $this->resource = preprocessAndOpen($path);
             $this->wrap();
             return true;

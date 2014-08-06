@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -87,6 +87,10 @@ function injectCodeAfterClassDefinitions($code)
 {
     return function(Source $s) use ($code) {
         foreach ($s->findAll(T_CLASS) as $match) {
+            if ($s->findNext(T_DOUBLE_COLON, $match - 3) < $match) {
+                # ::class syntax, not a class definition
+                continue;
+            }
             $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $match);
             if ($leftBracket === INF) {
                 continue;

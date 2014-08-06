@@ -16,12 +16,12 @@ Patchwork\replace("getInteger", function() {
 
 Patchwork\replace("getInteger", function() {
     echo "Patch #2\n";
-    return 2;    
+    return 2;
 });
 
 Patchwork\replace("getInteger", function() {
     echo "Patch #3\n";
-    Patchwork\pass();    
+    Patchwork\pass();
 });
 
 echo "Calling getInteger()\n";
@@ -31,7 +31,7 @@ assert(getInteger() === 2);
 Patchwork\undoAll();
 
 assert(getInteger() === 0);
- 
+
 ?>
 ===DONE===
 

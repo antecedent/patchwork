@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -10,11 +10,17 @@ namespace Patchwork\Interceptor;
 
 class PatchHandle
 {
-    private $references;
+    private $references = array();
+    private $expirationHandlers = array();
 
-    public function addReference(&$references)
+    public function __destruct()
     {
-        $this->references[] = &$references;
+        $this->removePatches();
+    }
+
+    public function addReference(&$reference)
+    {
+        $this->references[] = &$reference;
     }
 
     public function removePatches()
@@ -22,5 +28,14 @@ class PatchHandle
         foreach ($this->references as &$reference) {
             $reference = null;
         }
+        foreach ($this->expirationHandlers as $expirationHandler) {
+            $expirationHandler();
+        }
+        $this->expirationHandlers = array();
+    }
+
+    public function addExpirationHandler($expirationHandler)
+    {
+        $this->expirationHandlers[] = $expirationHandler;
     }
 }

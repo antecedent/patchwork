@@ -2,34 +2,32 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Preprocessor;
 
-use Patchwork\Exceptions;
-
 class Stream
 {
     const PROTOCOL = "file";
     const STREAM_OPEN_FOR_INCLUDE = 128;
-    
+
     public $context;
     public $resource;
 
-    static function wrap()
+    public static function wrap()
     {
         stream_wrapper_unregister(self::PROTOCOL);
         stream_wrapper_register(self::PROTOCOL, __CLASS__);
     }
-    
-    static function unwrap()
+
+    public static function unwrap()
     {
         stream_wrapper_restore(self::PROTOCOL);
     }
 
-    function stream_open($path, $mode, $options, &$openedPath)
+    public function stream_open($path, $mode, $options, &$openedPath)
     {
         $this->unwrap();
         if (($options & self::STREAM_OPEN_FOR_INCLUDE) && shouldPreprocess($path)) {
@@ -45,57 +43,57 @@ class Stream
         $this->wrap();
         return $this->resource !== false;
     }
-    
-    function stream_close()
+
+    public function stream_close()
     {
         return fclose($this->resource);
     }
-    
-    function stream_eof()
+
+    public function stream_eof()
     {
         return feof($this->resource);
     }
-    
-    function stream_flush()
+
+    public function stream_flush()
     {
         return fflush($this->resource);
     }
 
-    function stream_read($count)
+    public function stream_read($count)
     {
         return fread($this->resource, $count);
     }
-    
-    function stream_seek($offset, $whence = SEEK_SET)
+
+    public function stream_seek($offset, $whence = SEEK_SET)
     {
         return fseek($this->resource, $offset, $whence) === 0;
     }
-    
-    function stream_stat()
+
+    public function stream_stat()
     {
         return fstat($this->resource);
     }
-    
-    function stream_tell()
+
+    public function stream_tell()
     {
         return ftell($this->resource);
     }
-    
-    function url_stat($path, $flags)
+
+    public function url_stat($path, $flags)
     {
         $this->unwrap();
         $result = @stat($path);
         $this->wrap();
         return $result;
     }
-  
-    function dir_closedir()
+
+    public function dir_closedir()
     {
         closedir($this->resource);
         return true;
     }
-    
-    function dir_opendir($path, $options)
+
+    public function dir_opendir($path, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -106,19 +104,19 @@ class Stream
         $this->wrap();
         return $this->resource !== false;
     }
-    
-    function dir_readdir()
+
+    public function dir_readdir()
     {
         return readdir($this->resource);
     }
-    
-    function dir_rewinddir()
+
+    public function dir_rewinddir()
     {
         rewinddir($this->resource);
         return true;
     }
-    
-    function mkdir($path, $mode, $options)
+
+    public function mkdir($path, $mode, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -129,8 +127,8 @@ class Stream
         $this->wrap();
         return $result;
     }
-    
-    function rename($path_from, $path_to)
+
+    public function rename($path_from, $path_to)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -141,8 +139,8 @@ class Stream
         $this->wrap();
         return $result;
     }
-    
-    function rmdir($path, $options)
+
+    public function rmdir($path, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -153,18 +151,18 @@ class Stream
         $this->wrap();
         return $result;
     }
-    
-    function stream_cast($cast_as)
+
+    public function stream_cast($cast_as)
     {
         return $this->resource;
     }
-    
-    function stream_lock($operation)
+
+    public function stream_lock($operation)
     {
         return flock($this->resource, $operation);
     }
-    
-    function stream_set_option($option, $arg1, $arg2)
+
+    public function stream_set_option($option, $arg1, $arg2)
     {
         switch ($option) {
             case STREAM_OPTION_BLOCKING:
@@ -179,13 +177,13 @@ class Stream
                 return stream_set_chunk_size($this->resource, $arg1);
         }
     }
-    
-    function stream_write($data)
+
+    public function stream_write($data)
     {
         return fwrite($this->resource, $data);
     }
-    
-    function unlink($path)
+
+    public function unlink($path)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -197,7 +195,7 @@ class Stream
         return $result;
     }
 
-    function stream_metadata($path, $option, $value)
+    public function stream_metadata($path, $option, $value)
     {
         $this->unwrap();
         switch ($option) {
@@ -224,7 +222,7 @@ class Stream
         return $result;
     }
 
-    function stream_truncate($new_size)
+    public function stream_truncate($new_size)
     {
         return ftruncate($this->resource, $new_size);
     }

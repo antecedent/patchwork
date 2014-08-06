@@ -18,7 +18,7 @@ $array = array(0, 1, "foo" => 2, 3);
 setArrayElement($array, "foo", "bar");
 
 assert($array == array(0, 1, "foo" => "bar", 3));
-    
+
 ?>
 ===DONE===
 

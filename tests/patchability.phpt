@@ -3,7 +3,6 @@ Not allowing to patch functions that are not defined or not preprocessed
 
 --FILE--
 <?php
-
 error_reporting(E_ALL | E_STRICT);
 
 require __DIR__ . "/../Patchwork.php";
@@ -19,9 +18,7 @@ expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
     Patchwork\replace("functionThatIsNotPreprocessed", function() {});
 });
 
-expectException('Patchwork\Exceptions\NotDefined', function() {
-    Patchwork\replace("functionThatIsNotDefined", function() {});
-});
+Patchwork\replace("functionThatIsNotDefined", function() {});
 
 expectException('Patchwork\Exceptions\NotUserDefined', function() {
     Patchwork\replace("str_replace", function() {});
@@ -45,8 +42,13 @@ expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
     Patchwork\replace("Singleton::getInstance", function() {});
 });
 
+Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
+
 ?>
 ===DONE===
 
---EXPECT--
+--EXPECTF--
+Warning: anotherUndefinedFunction was never defined during the lifetime of its redefinition in %s
 ===DONE===
+
+Warning: functionThatIsNotDefined was never defined during the lifetime of its redefinition in %s

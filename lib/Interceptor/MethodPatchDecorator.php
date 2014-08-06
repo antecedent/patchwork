@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -10,8 +10,9 @@ namespace Patchwork\Interceptor;
 
 use Patchwork;
 use Patchwork\Stack;
+use Patchwork\Utils;
 
-class PatchDecorator
+class MethodPatchDecorator
 {
     public $superclass;
     public $instance;
@@ -19,12 +20,12 @@ class PatchDecorator
 
     private $patch;
 
-    function __construct($patch)
+    public function __construct($patch)
     {
         $this->patch = $patch;
     }
-   
-    function __invoke()
+
+    public function __invoke()
     {
         $top = Stack\top();
         $superclassMatches = $this->superclassMatches();
@@ -32,7 +33,7 @@ class PatchDecorator
         $methodMatches = $this->methodMatches($top);
         if ($superclassMatches && $instanceMatches && $methodMatches) {
             $patch = $this->patch;
-            if (version_compare(PHP_VERSION, "5.4", ">=")) {
+            if (Utils\traitsSupported()) {
                 if (isset($top["object"]) && $patch instanceof \Closure) {
                     $patch = $patch->bindTo($top["object"], $this->superclass);
                 }

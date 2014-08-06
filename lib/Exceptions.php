@@ -32,11 +32,6 @@ abstract class CallbackException extends Exception
     }
 }
 
-class NotDefined extends CallbackException
-{
-    protected $message = "%s is not defined";
-}
-
 class NotUserDefined extends CallbackException
 {
     protected $message = "%s is not a user-defined function or method";
@@ -44,12 +39,23 @@ class NotUserDefined extends CallbackException
 
 class DefinedTooEarly extends CallbackException
 {
-    
+
     function __construct($callback)
     {
         $this->message = "The file that defines %s was included earlier than Patchwork. " .
                          "This is likely a result of an improper setup; see " .
                          "http://antecedent.github.io/patchwork/docs/setup.html for details.";
         parent::__construct($callback);
+    }
+}
+
+class CacheLocationReadOnly extends Exception
+{
+    public function __construct($location)
+    {
+        parent::__construct(sprintf(
+            "The specified cache location is read-only: %s",
+            $location
+        ));
     }
 }

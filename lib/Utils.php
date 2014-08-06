@@ -2,39 +2,46 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Utils;
+
+function traitsSupported()
+{
+    return version_compare(PHP_VERSION, "5.4", ">=");
+}
+
+function runningOnHHVM()
+{
+    return defined("HHVM_VERSION");
+}
 
 function condense($string)
 {
     return preg_replace("/\s*/", "", $string);
 }
 
-function getUpperBound(array $array, $value)
+function findFirstGreaterThan(array $array, $value)
 {
-    $count = count($array);
-    $first = 0;
-    while ($count > 0) {
-        $i = $first;
-        $step = $count >> 1;
-        $i += $step;
-        if ($value >= $array[$i]) {
-               $first = ++$i;
-               $count -= $step + 1;
-          } else {
-              $count = $step;
-          }
+    $low = 0;
+    $high = count($array) - 1;
+    while ($low < $high) {
+        $mid = ($low + $high) / 2;
+        if ($array[$mid] <= $value) {
+            $low = $mid + 1;
+        } else {
+            $high = $mid;
+        }
     }
-    return $first; 
+    return $low;
 }
 
-function parseCallback($callback)
+function interpretCallback($callback)
 {
     if (is_object($callback)) {
-        return parseCallback(array($callback, "__invoke"));
+        return interpretCallback(array($callback, "__invoke"));
     }
     if (is_array($callback)) {
         list($class, $method) = $callback;
@@ -56,7 +63,7 @@ function parseCallback($callback)
 
 function callbackTargetDefined($callback, $shouldAutoload = false)
 {
-    list($class, $method, $instance) = parseCallback($callback);
+    list($class, $method, $instance) = interpretCallback($callback);
     if ($instance !== null) {
         return true;
     }
@@ -69,7 +76,7 @@ function callbackTargetDefined($callback, $shouldAutoload = false)
 
 function classOrTraitExists($classOrTrait, $shouldAutoload = true)
 {
-    if (version_compare(PHP_VERSION, "5.4", ">=")) {
+    if (traitsSupported()) {
         if (trait_exists($classOrTrait, $shouldAutoload)) {
             return true;
         }
@@ -86,7 +93,7 @@ function append(&$array, $value)
 
 function normalizePath($path)
 {
-    return strtr($path, "\\", "/");
+    return rtrim(strtr($path, "\\", "/"), "/");
 }
 
 function reflectCallback($callback)
@@ -94,7 +101,7 @@ function reflectCallback($callback)
     if ($callback instanceof \Closure) {
         return new \ReflectionFunction($callback);
     }
-    list($class, $method) = parseCallback($callback);
+    list($class, $method) = interpretCallback($callback);
     if (isset($class)) {
         return new \ReflectionMethod($class, $method);
     }
@@ -103,7 +110,7 @@ function reflectCallback($callback)
 
 function callbackToString($callback)
 {
-    list($class, $method) = parseCallback($callback);
+    list($class, $method) = interpretCallback($callback);
     if (isset($class)) {
         return $class . "::" . $method;
     }

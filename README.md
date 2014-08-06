@@ -63,6 +63,20 @@ require 'actualEntryScript.php';
 
 Variations on this setup are possible: see the [Setup](http://antecedent.github.io/patchwork/docs/setup.html) section of the documentation for details.
 
+For instance, PHPUnit users will most likely want to use a `--bootstrap vendor/antecedent/patchwork/Patchwork.php` command line option.
+
+## Installation using Composer
+
+A sample `composer.json` importing only Patchwork would be as follows:
+
+```json
+{
+    "require-dev": {
+        "antecedent/patchwork": "*"
+    }
+}
+```
+
 ## Further Reading
 
 For more information, please refer to the online documentation, which can be accessed and navigated using the top menu of [Patchwork's website](http://antecedent.github.io/patchwork/).

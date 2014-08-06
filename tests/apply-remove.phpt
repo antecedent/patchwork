@@ -25,10 +25,10 @@ Patchwork\undo($handle);
 assert(Singleton::getInstance() === $real);
 
 # This call should have no effect, as the patch is already removed
-Patchwork\undo($handle);    
+Patchwork\undo($handle);
 
 assert(Singleton::getInstance() === $real);
-    
+
 ?>
 ===DONE===
 

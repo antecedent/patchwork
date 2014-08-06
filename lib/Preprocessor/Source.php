@@ -2,20 +2,19 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Preprocessor;
 
 use Patchwork\Utils;
-use Patchwork\Exceptions;
 
 class Source
 {
     const TYPE_OFFSET = 0;
     const STRING_OFFSET = 1;
-    
+
     public $tokens;
     public $tokensByType;
     public $splices;
@@ -23,12 +22,12 @@ class Source
     public $code;
     public $file;
 
-    function __construct($tokens)
+    public function __construct($tokens)
     {
         $this->initialize(is_array($tokens) ? $tokens : token_get_all($tokens));
     }
-    
-    function initialize(array $tokens)
+
+    public function initialize(array $tokens)
     {
         $this->tokens = $tokens;
         $this->tokens[] = array(T_WHITESPACE, "");
@@ -36,8 +35,8 @@ class Source
         $this->matchingBrackets = $this->matchBrackets($this->tokens);
         $this->splices = $this->spliceLengths = array();
     }
-    
-    function indexTokensByType(array $tokens)
+
+    public function indexTokensByType(array $tokens)
     {
         $tokensByType = array();
         foreach ($tokens as $offset => $token) {
@@ -46,7 +45,7 @@ class Source
         return $tokensByType;
     }
 
-    function matchBrackets(array $tokens)
+    public function matchBrackets(array $tokens)
     {
         $matches = array();
         $stack = array();
@@ -71,17 +70,17 @@ class Source
         }
         return $matches;
     }
-    
-    function findNext($type, $offset)
+
+    public function findNext($type, $offset)
     {
         if (!isset($this->tokensByType[$type])) {
             return INF;
         }
-        $bound = Utils\getUpperBound($this->tokensByType[$type], $offset);
-        return isset($this->tokensByType[$type][$bound]) ? $this->tokensByType[$type][$bound] : INF;
+        $next = Utils\findFirstGreaterThan($this->tokensByType[$type], $offset);
+        return isset($this->tokensByType[$type][$next]) ? $this->tokensByType[$type][$next] : INF;
     }
-    
-    function findAll($type)
+
+    public function findAll($type)
     {
         $tokens = &$this->tokensByType[$type];
         if (!isset($tokens)) {
@@ -89,20 +88,20 @@ class Source
         }
         return $tokens;
     }
-    
-    function findMatchingBracket($offset)
+
+    public function findMatchingBracket($offset)
     {
         return isset($this->matchingBrackets[$offset]) ? $this->matchingBrackets[$offset] : INF;
     }
 
-    function splice($splice, $offset, $length = 0)
+    public function splice($splice, $offset, $length = 0)
     {
         $this->splices[$offset] = $splice;
         $this->spliceLengths[$offset] = $length;
         $this->code = null;
     }
-    
-    function createCodeFromTokens()
+
+    public function createCodeFromTokens()
     {
         $splices = $this->splices;
         $code = "";
@@ -120,15 +119,15 @@ class Source
         $this->code = $code;
     }
 
-    function __toString()
+    public function __toString()
     {
         if ($this->code === null) {
             $this->createCodeFromTokens();
         }
         return $this->code;
     }
-    
-    function flush()
+
+    public function flush()
     {
         $this->initialize(token_get_all($this));
     }

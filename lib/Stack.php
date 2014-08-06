@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -31,7 +31,7 @@ function pushFor($offset, $calledClass, $callback)
     pop();
     if (isset($exception)) {
         throw $exception;
-    }    
+    }
 }
 
 function top($property = null)
@@ -59,7 +59,7 @@ function topCalledClass()
         throw new Exceptions\StackEmpty;
     }
     list($offset, $calledClass) = end(State::$items);
-    return $calledClass;   
+    return $calledClass;
 }
 
 function all()

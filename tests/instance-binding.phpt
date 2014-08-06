@@ -21,7 +21,7 @@ Patchwork\replace(array($foo, "getName"), function() {
 
 assert($foo->getName() === "patched foo");
 assert($bar->getName() === "bar");
-    
+
 ?>
 ===DONE===
 

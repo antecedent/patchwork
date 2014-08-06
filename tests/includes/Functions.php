@@ -2,7 +2,7 @@
 
 function setArrayElement(array &$array, $offset, $value)
 {
-    throw new Patchwork\Exceptions\NotImplemented(__METHOD__);
+    throw new Exception(__METHOD__ . " is not implemented");
 }
 
 function evaluate($code)

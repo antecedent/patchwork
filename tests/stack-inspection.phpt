@@ -38,7 +38,7 @@ function getNameOfNamedObject()
 assert(getNameOfNamedObject() === "bar");
 
 expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
-    
+
 ?>
 ===DONE===
 

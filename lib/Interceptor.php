@@ -2,45 +2,56 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Interceptor;
 
 require __DIR__ . "/Interceptor/PatchHandle.php";
-require __DIR__ . "/Interceptor/PatchDecorator.php";
+require __DIR__ . "/Interceptor/MethodPatchDecorator.php";
 
 use Patchwork;
 use Patchwork\Utils;
-use Patchwork\Exceptions;
 use Patchwork\Stack;
+use Patchwork\Exceptions;
 
 const EVALUATED_CODE_FILE_NAME_SUFFIX = "/\(\d+\) : eval\(\)'d code$/";
 
-function patch($function, $patch, $allowUndefined = false)
+function patch($function, $patch)
 {
-    assertPatchable($function, $allowUndefined);
-    list($class, $method) = Utils\parseCallback($function);
+    assertPatchable($function);
+    list($class, $method) = Utils\interpretCallback($function);
     if (empty($class)) {
-        return patchFunction($method, $patch);
+        $handle = patchFunction($method, $patch);
+    } else {
+        if (Utils\callbackTargetDefined($function)) {
+            $handle = patchMethod($function, $patch);
+        } else {
+            $handle = scheduleMethodPatch($function, $patch);
+        }
     }
-    if (Utils\callbackTargetDefined($function)) {
-        return patchMethod($function, $patch);
-    }
-    return scheduleMethodPatch($function, $patch);
+    attachExistenceAssertion($handle, $function);
+    return $handle;
 }
 
-function assertPatchable($function, $allowUndefined)
+function attachExistenceAssertion(PatchHandle $handle, $target)
 {
-    if ($allowUndefined && !Utils\callbackTargetDefined($function)) {
+    $handle->addExpirationHandler(function() use ($target) {
+        if (!Utils\callbackTargetDefined($target)) {
+            # Not using exceptions because this might happen during PHP shutdown
+            $message = "%s was never defined during the lifetime of its redefinition";
+            trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
+        }
+    });
+}
+
+function assertPatchable($function)
+{
+    if (!Utils\callbackTargetDefined($function)) {
         return;
     }
-    try {
-        $reflection = Utils\reflectCallback($function);
-    } catch (\ReflectionException $e) {
-        throw new Exceptions\NotDefined($function);
-    }
+    $reflection = Utils\reflectCallback($function);
     if ($reflection->isInternal()) {
         throw new Exceptions\NotUserDefined($function);
     }
@@ -89,15 +100,15 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     if ($handle === null) {
         $handle = new PatchHandle;
     }
-    list($class, $method, $instance) = Utils\parseCallback($function);
-    $patch = new PatchDecorator($patch);
+    list($class, $method, $instance) = Utils\interpretCallback($function);
+    $patch = new MethodPatchDecorator($patch);
     $patch->superclass = $class;
     $patch->method = $method;
     $patch->instance = $instance;
     $reflection = new \ReflectionMethod($class, $method);
     $declaringClass = $reflection->getDeclaringClass();
     $class = $declaringClass->getName();
-    if (version_compare(PHP_VERSION, "5.4", ">=")) {
+    if (Utils\traitsSupported()) {
         $aliases = $declaringClass->getTraitAliases();
         if (isset($aliases[$method])) {
             list($trait, $method) = explode("::", $aliases[$method]);

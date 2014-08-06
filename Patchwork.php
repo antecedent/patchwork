@@ -2,15 +2,11 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2013 Ignas Rudaitis
+ * @copyright  2010-2014 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork;
-
-if (version_compare(PHP_VERSION, "5.3", "<")) {
-    trigger_error("Patchwork requires PHP version 5.3.0 or higher", E_USER_ERROR);
-}
 
 require_once __DIR__ . "/lib/Exceptions.php";
 require_once __DIR__ . "/lib/Interceptor.php";
@@ -23,14 +19,26 @@ function replace($function, $replacement)
     return Interceptor\patch($function, $replacement);
 }
 
+/**
+ * @deprecated
+ * @alias replace
+ */
 function replaceLater($function, $replacement)
 {
-    return Interceptor\patch($function, $replacement, true);
+    return replace($function, $replacement);
 }
 
-function pass()
+function fallBack()
 {
     throw new Exceptions\NoResult;
+}
+
+/**
+ * @alias fallBack
+ */
+function pass()
+{
+    fallBack();
 }
 
 function undo(Interceptor\PatchHandle $handle)
@@ -42,6 +50,18 @@ function undoAll()
 {
     Interceptor\unpatchAll();
 }
+
+function enableCaching($location)
+{
+    Preprocessor\setCacheLocation($location);
+}
+
+function blacklist($path)
+{
+    Preprocessor\exclude($path);
+}
+
+enableCaching(__DIR__ . '/cache', false);
 
 Preprocessor\Stream::wrap();
 

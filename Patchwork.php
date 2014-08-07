@@ -64,6 +64,7 @@ function blacklist($path)
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
     # just let Patchwork become a wrapper for fb_intercept()
+    register_shutdown_function('Patchwork\undoAll');
     return;
 }
 

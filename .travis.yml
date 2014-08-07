@@ -1,5 +1,4 @@
 language: php
-before_script: echo 'extension=apc.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 script: phpunit tests
 php:
   - hhvm

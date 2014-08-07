@@ -33,7 +33,7 @@ class MethodPatchDecorator
         $methodMatches = $this->methodMatches($top);
         if ($superclassMatches && $instanceMatches && $methodMatches) {
             $patch = $this->patch;
-            if (is_callable($patch, "bindTo")) {
+            if (is_callable(array($patch, "bindTo"))) {
                 if (isset($top["object"]) && $patch instanceof \Closure) {
                     $patch = $patch->bindTo($top["object"], $this->superclass);
                 }

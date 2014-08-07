@@ -4,6 +4,11 @@ class FooObject
 {
     function getFoo()
     {
+        return $this->bah();
+    }
+
+    private function bah()
+    {
         return "foo";
     }
 }

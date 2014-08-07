@@ -142,32 +142,60 @@ function unpatchAll()
     State::$patches = array();
 }
 
-function runPatch($patch, $args = null)
+function runPatch($patch)
 {
-    if ($args === null) {
-        $args = Stack\top("args");
-    }
-    return call_user_func_array($patch, $args);
+    return call_user_func_array($patch, Stack\top("args"));
 }
 
-function intercept($class, $calledClass, $method, $frame, &$result, $args = null)
+function intercept($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
     $success = false;
-    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success, $args) {
+    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
         foreach (State::$patches[$class][$method] as $offset => $patch) {
             if (empty($patch)) {
                 unset(State::$patches[$class][$method][$offset]);
                 continue;
             }
+            State::$patchStack[] = array($class, $method, $offset);
             try {
-                $result = runPatch(reset($patch), $args);
+                $result = runPatch(reset($patch));
                 $success = true;
             } catch (Exceptions\NoResult $e) {
+                array_pop(State::$patchStack);
                 continue;
             }
+            array_pop(State::$patchStack);
         }
-    });
+    }, $args);
     return $success;
+}
+
+function callOriginal(array $args = null)
+{
+    list($class, $method, $offset) = end(State::$patchStack);
+    $patch = &State::$patches[$class][$method][$offset];
+    $backup = $patch;
+    $patch = array('Patchwork\fallBack', new PatchHandle);
+    $top = Stack\top();
+    if ($args === null) {
+        $args = $top["args"];
+    }
+    try {
+        if (isset($top["class"])) {
+            $reflection = new \ReflectionMethod(Stack\topCalledClass(), $top["function"]);
+            $reflection->setAccessible(true);
+            $result = $reflection->invokeArgs(Stack\top("object"), $args);
+        } else {
+            $result = call_user_func_array($top["function"], $args);
+        }
+    } catch (\Exception $e) {
+        $exception = $e;
+    }
+    $patch = $backup;
+    if (isset($exception)) {
+        throw $exception;
+    }
+    return $result;
 }
 
 function patchOnHHVM($function, $patch, PatchHandle $handle)
@@ -210,4 +238,5 @@ class State
     static $patches = array();
     static $scheduledPatches = array();
     static $preprocessedFiles = array();
+    static $patchStack = array();
 }

@@ -14,3 +14,14 @@ function getInteger()
 {
     return 0;
 }
+
+function identity($x)
+{
+	return $x;
+}
+
+function getClosure()
+{
+	return function() {};
+}
+

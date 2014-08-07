@@ -14,9 +14,9 @@ require_once __DIR__ . "/lib/Preprocessor.php";
 require_once __DIR__ . "/lib/Utils.php";
 require_once __DIR__ . "/lib/Stack.php";
 
-function replace($function, $replacement)
+function replace($original, $replacement)
 {
-    return Interceptor\patch($function, $replacement);
+    return Interceptor\patch($original, $replacement);
 }
 
 /**
@@ -39,6 +39,11 @@ function fallBack()
 function pass()
 {
     fallBack();
+}
+
+function callOriginal(array $args = null)
+{
+    return Interceptor\callOriginal($args);
 }
 
 function undo(Interceptor\PatchHandle $handle)

@@ -10,9 +10,9 @@ namespace Patchwork\Stack;
 
 use Patchwork\Exceptions;
 
-function push($offset, $calledClass)
+function push($offset, $calledClass, array $argsOverride = null)
 {
-    State::$items[] = array($offset, $calledClass);
+    State::$items[] = array($offset, $calledClass, $argsOverride);
 }
 
 function pop()
@@ -20,9 +20,9 @@ function pop()
     array_pop(State::$items);
 }
 
-function pushFor($offset, $calledClass, $callback)
+function pushFor($offset, $calledClass, $callback, array $argsOverride = null)
 {
-    push($offset, $calledClass);
+    push($offset, $calledClass, $argsOverride);
     try {
         $callback();
     } catch (\Exception $e) {
@@ -38,6 +38,10 @@ function top($property = null)
 {
     $all = all();
     $frame = reset($all);
+    $argsOverride = topArgsOverride();
+    if ($argsOverride !== null) {
+        $frame["args"] = $argsOverride;
+    }
     if ($property) {
         return isset($frame[$property]) ? $frame[$property] : null;
     }
@@ -60,6 +64,15 @@ function topCalledClass()
     }
     list($offset, $calledClass) = end(State::$items);
     return $calledClass;
+}
+
+function topArgsOverride()
+{
+    if (empty(State::$items)) {
+        throw new Exceptions\StackEmpty;
+    }
+    list($offset, $calledClass, $argsOverride) = end(State::$items);
+    return $argsOverride;   
 }
 
 function all()

@@ -103,7 +103,7 @@ function setCacheLocation($location, $assertWritable = true)
     $location = Utils\normalizePath($location);
     if (!is_writable($location)) {
         if ($assertWritable) {
-            throw new Exceptions\CacheLocationReadOnly($location);
+            throw new Exceptions\CacheLocationUnavailable($location);
         }
         return false;
     }

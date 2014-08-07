@@ -56,9 +56,9 @@ function undoAll()
     Interceptor\unpatchAll();
 }
 
-function enableCaching($location)
+function enableCaching($location, $assertWritable = true)
 {
-    Preprocessor\setCacheLocation($location);
+    Preprocessor\setCacheLocation($location, $assertWritable);
 }
 
 function blacklist($path)

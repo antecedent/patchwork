@@ -49,12 +49,12 @@ class DefinedTooEarly extends CallbackException
     }
 }
 
-class CacheLocationReadOnly extends Exception
+class CacheLocationUnavailable extends Exception
 {
     public function __construct($location)
     {
         parent::__construct(sprintf(
-            "The specified cache location is read-only: %s",
+            "The specified cache location is inexistent or read-only: %s",
             $location
         ));
     }

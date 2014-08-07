@@ -9,6 +9,7 @@
 namespace Patchwork\Preprocessor\Callbacks\Generic;
 
 use Patchwork\Preprocessor\Source;
+use Patchwork\Utils;
 
 const LEFT_PARENTHESIS = "(";
 const RIGHT_PARENTHESIS = ")";
@@ -17,8 +18,8 @@ const SEMICOLON = ";";
 
 function markPreprocessedFiles(&$target)
 {
-    return function(Source $s) use (&$target) {
-        $target[$s->file] = true;
+    return function($file) use (&$target) {
+        $target[$file] = true;
     };
 }
 
@@ -27,6 +28,13 @@ function prependCodeToFunctions($code)
     return function(Source $s) use ($code) {
         foreach ($s->findAll(T_FUNCTION) as $function) {
             $bracket = $s->findNext(LEFT_CURLY_BRACKET, $function);
+            if (Utils\generatorsSupported()) {
+                # Skip generators
+                $yield = $s->findNext(T_YIELD, $bracket);
+                if ($yield < $s->findMatchingBracket($bracket)) {
+                    continue;
+                }
+            }
             $semicolon = $s->findNext(SEMICOLON, $function);
             if ($bracket < $semicolon) {
                 $s->splice($code, $bracket + 1);

@@ -79,7 +79,10 @@ Preprocessor\Stream::wrap();
 
 Preprocessor\attach(array(
     Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
-    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
     Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
     Preprocessor\Callbacks\Interceptor\injectScheduledPatchApplicationCode(),
+));
+
+Preprocessor\onImport(array(
+    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),    
 ));

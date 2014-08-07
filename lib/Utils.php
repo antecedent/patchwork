@@ -13,6 +13,11 @@ function traitsSupported()
     return version_compare(PHP_VERSION, "5.4", ">=");
 }
 
+function generatorsSupported()
+{
+    return version_compare(PHP_VERSION, "5.5", ">=");
+}
+
 function runningOnHHVM()
 {
     return defined("HHVM_VERSION");

@@ -60,8 +60,10 @@ function availableCached($file)
 
 function preprocessAndOpen($file)
 {
+    foreach (State::$importListeners as $listener) {
+        $listener($file);
+    }
     if (availableCached($file)) {
-        Interceptor\State::$preprocessedFiles[$file] = true;
         return fopen(getCachedPath($file), 'r');
     }
     $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
@@ -93,6 +95,11 @@ function attach($callbacks)
     State::$callbacks = array_merge(State::$callbacks, (array) $callbacks);
 }
 
+function onImport($listeners)
+{
+    State::$importListeners = array_merge(State::$importListeners, (array) $listeners);
+}
+
 function exclude($path)
 {
     State::$blacklist[] = Utils\normalizePath($path);
@@ -115,5 +122,6 @@ class State
 {
     static $callbacks = array();
     static $blacklist = array();
+    static $importListeners = array();
     static $cacheLocation;
 }

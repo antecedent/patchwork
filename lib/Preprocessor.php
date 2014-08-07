@@ -71,6 +71,7 @@ function preprocessAndOpen($file)
     preprocess($source);
     if (cacheEnabled()) {
         file_put_contents(getCachedPath($file), $source);
+        return preprocessAndOpen($file);
     }
     fwrite($resource, $source);
     rewind($resource);
@@ -104,9 +105,10 @@ function setCacheLocation($location, $assertWritable = true)
         if ($assertWritable) {
             throw new Exceptions\CacheLocationReadOnly($location);
         }
-        return;
+        return false;
     }
     State::$cacheLocation = $location;
+    return true;
 }
 
 class State

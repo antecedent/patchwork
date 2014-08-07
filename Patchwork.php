@@ -61,6 +61,11 @@ function blacklist($path)
     Preprocessor\exclude($path);
 }
 
+if (Utils\runningOnHHVM()) {
+    # no preprocessor needed; Patchwork will just become a wrapper for fb_intercept()
+    return;
+}
+
 enableCaching(__DIR__ . '/cache', false);
 
 Preprocessor\Stream::wrap();

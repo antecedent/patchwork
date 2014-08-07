@@ -68,6 +68,9 @@ function patchFunction($function, $patch)
     $patches = &State::$patches[null][$function];
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
+    if (Utils\runningOnHHVM()) {
+        patchFunctionOnHHVM($function, $patch, $handle);
+    }
     return $handle;
 }
 
@@ -117,11 +120,22 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     $patches = &State::$patches[$class][$method];
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
+    if (Utils\runningOnHHVM()) {
+        patchFunctionOnHHVM("$class::$method", $patch, $handle);
+    }
     return $handle;
 }
 
 function unpatchAll()
 {
+    foreach (State::$patches as $class => $patchesByClass) {
+        foreach ($patchesByClass as $method => $patches) {
+            foreach ($patches as $patch) {
+                list($callback, $handle) = $patch;
+                $handle->removePatches();
+            }
+        }
+    }
     State::$patches = array();
 }
 
@@ -148,6 +162,18 @@ function intercept($class, $calledClass, $method, $frame, &$result)
         }
     });
     return $success;
+}
+
+function patchFunctionOnHHVM($function, $patch, PatchHandle $handle)
+{
+    fb_intercept($function, function($name, $obj, $args, $data, &$done) use ($patch) {
+        list($class, $method) = Utils\interpretCallback($name);
+        $frame = count(debug_backtrace(false) - 1);
+        $done = intercept($class, $class, $method, $frame, $result);
+    });
+    $handle->addExpirationHandler(function() use ($function) {
+        fb_intercept($function, null);
+    });
 }
 
 class State

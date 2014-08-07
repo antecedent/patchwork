@@ -142,22 +142,25 @@ function unpatchAll()
     State::$patches = array();
 }
 
-function runPatch($patch)
+function runPatch($patch, $args = null)
 {
-    return call_user_func_array($patch, Stack\top("args"));
+    if ($args === null) {
+        $args = Stack\top("args");
+    }
+    return call_user_func_array($patch, $args);
 }
 
-function intercept($class, $calledClass, $method, $frame, &$result)
+function intercept($class, $calledClass, $method, $frame, &$result, $args = null)
 {
     $success = false;
-    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
+    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success, $args) {
         foreach (State::$patches[$class][$method] as $offset => $patch) {
             if (empty($patch)) {
                 unset(State::$patches[$class][$method][$offset]);
                 continue;
             }
             try {
-                $result = runPatch(reset($patch));
+                $result = runPatch(reset($patch), $args);
                 $success = true;
             } catch (Exceptions\NoResult $e) {
                 continue;
@@ -178,7 +181,7 @@ function patchOnHHVM($function, $patch, PatchHandle $handle)
             $calledClass = get_class($obj);
         }
         $frame = count(debug_backtrace(false)) - 1;
-        $done = intercept($class, $calledClass, $method, $frame, $result);
+        $done = intercept($class, $calledClass, $method, $frame, $result, $args);
     });
     $handle->addExpirationHandler(getHHVMExpirationHandler($function));
 }

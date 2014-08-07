@@ -27,8 +27,11 @@ function findFirstGreaterThan(array $array, $value)
 {
     $low = 0;
     $high = count($array) - 1;
+    if ($array[$high] <= $value) {
+        return $high + 1;
+    }
     while ($low < $high) {
-        $mid = ($low + $high) / 2;
+        $mid = (int) (($low + $high) / 2);
         if ($array[$mid] <= $value) {
             $low = $mid + 1;
         } else {

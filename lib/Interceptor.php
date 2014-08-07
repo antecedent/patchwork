@@ -56,6 +56,9 @@ function assertPatchable($function)
         throw new Exceptions\NotUserDefined($function);
     }
     $file = $reflection->getFileName();
+    if (Utils\runningOnHHVM()) {
+        return;
+    }
     $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
     if (!$evaluated && empty(State::$preprocessedFiles[$file])) {
         throw new Exceptions\DefinedTooEarly($function);
@@ -69,7 +72,7 @@ function patchFunction($function, $patch)
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
     if (Utils\runningOnHHVM()) {
-        patchFunctionOnHHVM($function, $patch, $handle);
+        patchOnHHVM($function, $patch, $handle);
     }
     return $handle;
 }
@@ -121,7 +124,7 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
     if (Utils\runningOnHHVM()) {
-        patchFunctionOnHHVM("$class::$method", $patch, $handle);
+        patchOnHHVM("$class::$method", $patch, $handle);
     }
     return $handle;
 }
@@ -164,16 +167,39 @@ function intercept($class, $calledClass, $method, $frame, &$result)
     return $success;
 }
 
-function patchFunctionOnHHVM($function, $patch, PatchHandle $handle)
+function patchOnHHVM($function, $patch, PatchHandle $handle)
 {
     fb_intercept($function, function($name, $obj, $args, $data, &$done) use ($patch) {
         list($class, $method) = Utils\interpretCallback($name);
+        $calledClass = null;
+        if (is_string($obj)) {
+            $calledClass = $obj;
+        } elseif (is_object($obj)) {
+            $calledClass = get_class($obj);
+        }
         $frame = count(debug_backtrace(false) - 1);
-        $done = intercept($class, $class, $method, $frame, $result);
+        $done = intercept($class, $calledClass, $method, $frame, $result);
     });
-    $handle->addExpirationHandler(function() use ($function) {
-        fb_intercept($function, null);
-    });
+    $handle->addExpirationHandler(getHHVMExpirationHandler($function));
+}
+
+function getHHVMExpirationHandler($function)
+{
+    return function() use ($function) {
+        list($class, $method) = Utils\interpretCallback($function);
+        $empty = true;
+        foreach (State::$patches[$class][$method] as $offset => $patch) {
+            if (!empty($patch)) {
+                $empty = false;
+                break;
+            } else {
+                unset(State::$patches[$class][$method][$offset]);
+            }
+        }
+        if ($empty) {
+            fb_intercept($function, null);
+        }
+    };
 }
 
 class State

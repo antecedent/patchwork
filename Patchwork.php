@@ -62,7 +62,8 @@ function blacklist($path)
 }
 
 if (Utils\runningOnHHVM()) {
-    # no preprocessor needed; Patchwork will just become a wrapper for fb_intercept()
+    # no preprocessor needed on HHVM;
+    # just let Patchwork become a wrapper for fb_intercept()
     return;
 }
 

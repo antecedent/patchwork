@@ -85,7 +85,7 @@ class Stream
     public function url_stat($path, $flags)
     {
         $this->unwrap();
-        $result = @stat($path);
+        $result = is_readable($path) ? stat($path) : false;
         $this->wrap();
         return $result;
     }

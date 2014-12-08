@@ -90,7 +90,13 @@ class Stream
     public function url_stat($path, $flags)
     {
         $this->unwrap();
-        $result = is_readable($path) ? stat($path) : false;
+        if ($flags & STREAM_URL_STAT_QUIET) {
+            set_error_handler(function() {});
+        }
+        $result = stat($path);
+        if ($flags & STREAM_URL_STAT_QUIET) {
+            restore_error_handler();
+        }
         $this->wrap();
         return $result;
     }

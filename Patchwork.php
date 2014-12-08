@@ -8,11 +8,11 @@
  */
 namespace Patchwork;
 
-require_once __DIR__ . "/lib/Exceptions.php";
-require_once __DIR__ . "/lib/Interceptor.php";
-require_once __DIR__ . "/lib/Preprocessor.php";
-require_once __DIR__ . "/lib/Utils.php";
-require_once __DIR__ . "/lib/Stack.php";
+require_once __DIR__ . "/src/Exceptions.php";
+require_once __DIR__ . "/src/Interceptor.php";
+require_once __DIR__ . "/src/Preprocessor.php";
+require_once __DIR__ . "/src/Utils.php";
+require_once __DIR__ . "/src/Stack.php";
 
 function replace($original, $replacement)
 {

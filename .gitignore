@@ -1,4 +1,5 @@
 vendor/
 cache/*.php
+cache/*.phar
 composer.phar
 .DS_Store

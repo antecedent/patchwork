@@ -3,3 +3,11 @@ cache/*.php
 cache/*.phar
 composer.phar
 .DS_Store
+
+# Ignore PhpStorm project related files.
+.idea
+
+# Ignore Zend Studio and Eclipse project related files.
+.buildpath
+.project
+.settings

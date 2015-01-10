@@ -10,7 +10,8 @@ In other words, Patchwork is a partial implementation of [`runkit_function_redef
 
 As of now, it only works with user-defined functions and methods, including static, final, and non-public ones.
 
-Internal function redefinition functionality is currently only offered by core PHP extensions: [Runkit](http://php.net/manual/en/book.runkit.php) and [ext/test_helpers](https://github.com/sebastianbergmann/php-test-helpers).
+Internal function redefinition functionality is currently only offered by core PHP extensions: [Runkit](http://php.net/manual/en/book.runkit.php), [ext/test_helpers](https://github.com/sebastianbergmann/php-test-helpers), and
+[krakjoe/uopz](https://github.com/krakjoe/uopz).
 
 It is, however, planned and being developed for Patchwork's next major release.
 

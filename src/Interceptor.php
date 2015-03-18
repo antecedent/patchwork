@@ -96,6 +96,7 @@ function applyScheduledPatches()
         if (Utils\callbackTargetDefined($function)) {
             assertPatchable($function, false);
             patchMethod($function, $patch, $handle);
+            unset(State::$scheduledPatches[$offset]);
         }
     }
 }

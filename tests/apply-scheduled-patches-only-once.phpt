@@ -13,9 +13,9 @@ Patchwork\replace("NamedObject::getName", function () use (&$callNumber) {
     $callNumber++;
 });
 
-require __DIR__ . "/includes/TestUtils.php";// just for many many injects triggered
+require __DIR__ . "/includes/TestUtils.php"; # (dummy import)
 require __DIR__ . "/includes/NamedObject.php";
-require __DIR__ . "/includes/Generator.php";// just for many many injects triggered
+require __DIR__ . "/includes/Inheritance.php"; # (dummy import)
 
 $obj= new NamedObject('');
 $obj->getName();

@@ -1,6 +1,6 @@
 # Patchwork
 
-### Version 1.3.3
+### Version 1.3.4
 
 A pure PHP library that lets you redefine user-defined functions at runtime. Released under the terms of the [MIT license](http://www.opensource.org/licenses/mit-license.php).
 

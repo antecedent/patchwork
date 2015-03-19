@@ -20,7 +20,7 @@ require __DIR__ . "/includes/Inheritance.php"; # (dummy import)
 $obj= new NamedObject('');
 $obj->getName();
 
-assert($callNumber === 1, "\$callNumber was $callNumber");
+assert($callNumber === 1);
 
 ?>
 ===DONE===

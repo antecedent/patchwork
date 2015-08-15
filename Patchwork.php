@@ -56,6 +56,11 @@ function undoAll()
     Interceptor\unpatchAll();
 }
 
+function silence(Interceptor\PatchHandle $handle)
+{
+    $handle->silence();
+}
+
 function enableCaching($location, $assertWritable = true)
 {
     Preprocessor\setCacheLocation($location, $assertWritable);

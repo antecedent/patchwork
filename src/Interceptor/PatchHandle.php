@@ -12,6 +12,7 @@ class PatchHandle
 {
     private $references = array();
     private $expirationHandlers = array();
+    private $silenced = false;
 
     public function __destruct()
     {
@@ -28,8 +29,10 @@ class PatchHandle
         foreach ($this->references as &$reference) {
             $reference = null;
         }
-        foreach ($this->expirationHandlers as $expirationHandler) {
-            $expirationHandler();
+        if (!$this->silenced) {
+            foreach ($this->expirationHandlers as $expirationHandler) {
+                $expirationHandler();
+            }
         }
         $this->expirationHandlers = array();
     }
@@ -37,5 +40,10 @@ class PatchHandle
     public function addExpirationHandler($expirationHandler)
     {
         $this->expirationHandlers[] = $expirationHandler;
+    }
+
+    public function silence()
+    {
+        $this->silenced = true;
     }
 }

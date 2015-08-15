@@ -8,6 +8,16 @@
  */
 namespace Patchwork\Utils;
 
+function clearOpcodeCaches()
+{
+    if (ini_get('wincache.ocenabled')) {
+        wincache_refresh_if_changed();
+    }
+    if (ini_get('apc.enabled')) {
+        apc_clear_cache();
+    }
+}
+
 function traitsSupported()
 {
     return version_compare(PHP_VERSION, "5.4", ">=");

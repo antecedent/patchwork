@@ -86,3 +86,5 @@ Preprocessor\attach(array(
 Preprocessor\onImport(array(
     Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),    
 ));
+
+Utils\clearOpcodeCaches();

@@ -13,6 +13,8 @@ use Patchwork\Utils;
 class Stream
 {
     const STREAM_OPEN_FOR_INCLUDE = 128;
+    const STAT_MTIME_NUMERIC_OFFSET = 9;
+    const STAT_MTIME_ASSOC_OFFSET = 'mtime';
 
     protected static $protocols = array('file', 'phar');
 
@@ -79,7 +81,12 @@ class Stream
 
     public function stream_stat()
     {
-        return fstat($this->resource);
+        $result = fstat($this->resource);
+        if ($result) {
+            $result[self::STAT_MTIME_ASSOC_OFFSET]++;
+            $result[self::STAT_MTIME_NUMERIC_OFFSET]++;
+        }
+        return $result;
     }
 
     public function stream_tell()
@@ -98,6 +105,10 @@ class Stream
             restore_error_handler();
         }
         $this->wrap();
+        if ($result) {
+            $result[self::STAT_MTIME_ASSOC_OFFSET]++;
+            $result[self::STAT_MTIME_NUMERIC_OFFSET]++;
+        }
         return $result;
     }
 

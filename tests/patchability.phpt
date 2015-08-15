@@ -51,7 +51,7 @@ if (!Patchwork\Utils\runningOnHHVM()) {
 Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
 
 # Should raise no errors
-Patchwork\replace('yetAnotherUndefinedFunction')->silence();
+Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
 
 ?>
 ===DONE===

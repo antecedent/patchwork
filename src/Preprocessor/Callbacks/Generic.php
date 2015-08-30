@@ -61,7 +61,7 @@ function injectTickingDeclaration()
         if (empty($openTags)) {
             return;
         }
-        $s->splice(' declare(ticks=1); ', $openTags + 1);
+        $s->splice(' declare(ticks=1); ', reset($openTags) + 1);
     };
 }
 

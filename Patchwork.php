@@ -85,11 +85,13 @@ Preprocessor\Stream::wrap();
 Preprocessor\attach(array(
     Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
     Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
-    Preprocessor\Callbacks\Interceptor\injectScheduledPatchApplicationCode(),
+    Preprocessor\Callbacks\Generic\injectTickingDeclaration(),
 ));
 
 Preprocessor\onImport(array(
-    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),    
+    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
 ));
+
+register_tick_function('Patchwork\Interceptor\applyScheduledPatches');
 
 Utils\clearOpcodeCaches();

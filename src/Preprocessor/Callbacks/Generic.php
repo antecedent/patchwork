@@ -54,17 +54,6 @@ function wrapUnaryConstructArguments($construct, $wrapper)
     };
 }
 
-function injectTickingDeclaration()
-{
-    return function(Source $s) {
-        $openTags = $s->findAll(T_OPEN_TAG);
-        if (empty($openTags)) {
-            return;
-        }
-        $s->splice(' declare(ticks=1); ', reset($openTags) + 1);
-    };
-}
-
 function chain(array $callbacks)
 {
     return function(Source $s) use ($callbacks) {

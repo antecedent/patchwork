@@ -8,6 +8,8 @@
  */
 namespace Patchwork;
 
+declare(ticks = 1);
+
 require_once __DIR__ . "/src/Exceptions.php";
 require_once __DIR__ . "/src/Interceptor.php";
 require_once __DIR__ . "/src/Preprocessor.php";
@@ -85,7 +87,6 @@ Preprocessor\Stream::wrap();
 Preprocessor\attach(array(
     Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
     Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
-    Preprocessor\Callbacks\Generic\injectTickingDeclaration(),
 ));
 
 Preprocessor\onImport(array(

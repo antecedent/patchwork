@@ -13,6 +13,7 @@ use Patchwork\Interceptor;
 use Patchwork\Utils;
 
 const CALL_INTERCEPTION_CODE = '
+    \Patchwork\Interceptor\applyScheduledPatches();
     $__pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\{closure}" : "{closure}";
     $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
     if (!empty(\Patchwork\Interceptor\State::$patches[$__pwClass][__FUNCTION__])) {

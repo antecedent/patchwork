@@ -8,8 +8,6 @@
  */
 namespace Patchwork;
 
-declare(ticks = 1);
-
 require_once __DIR__ . "/src/Exceptions.php";
 require_once __DIR__ . "/src/Interceptor.php";
 require_once __DIR__ . "/src/Preprocessor.php";
@@ -72,8 +70,6 @@ function blacklist($path)
 {
     Preprocessor\exclude($path);
 }
-
-register_tick_function('Patchwork\Interceptor\applyScheduledPatches');
 
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;

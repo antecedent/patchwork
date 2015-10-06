@@ -73,6 +73,8 @@ function blacklist($path)
     Preprocessor\exclude($path);
 }
 
+register_tick_function('Patchwork\Interceptor\applyScheduledPatches');
+
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
     # just let Patchwork become a wrapper for fb_intercept()
@@ -92,7 +94,5 @@ Preprocessor\attach(array(
 Preprocessor\onImport(array(
     Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
 ));
-
-register_tick_function('Patchwork\Interceptor\applyScheduledPatches');
 
 Utils\clearOpcodeCaches();

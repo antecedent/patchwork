@@ -10,3 +10,4 @@ php:
 notifications:
   email: false
 sudo: false
+before_script: phpenv config-add tests/php.ini

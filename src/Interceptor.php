@@ -209,7 +209,9 @@ function patchOnHHVM($function, $patch, PatchHandle $handle)
             $calledClass = get_class($obj);
         }
         $frame = count(debug_backtrace(false)) - 1;
+        $result = null;
         $done = intercept($class, $calledClass, $method, $frame, $result, $args);
+        return $result;
     });
     $handle->addExpirationHandler(getHHVMExpirationHandler($function));
 }

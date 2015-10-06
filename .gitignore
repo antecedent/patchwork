@@ -1,6 +1,6 @@
 vendor/
-cache/*.php
-cache/*.phar
+cache/*
+!cache/README
 composer.phar
 .DS_Store
 

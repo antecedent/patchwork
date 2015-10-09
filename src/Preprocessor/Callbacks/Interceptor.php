@@ -13,7 +13,6 @@ use Patchwork\Interceptor;
 use Patchwork\Utils;
 
 const CALL_INTERCEPTION_CODE = '
-    \Patchwork\Interceptor\applyScheduledPatches();
     $__pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\{closure}" : "{closure}";
     $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
     if (!empty(\Patchwork\Interceptor\State::$patches[$__pwClass][__FUNCTION__])) {
@@ -26,7 +25,7 @@ const CALL_INTERCEPTION_CODE = '
     unset($__pwClass, $__pwCalledClass, $__pwResult, $__pwClosureName, $__pwFrame);
 ';
 
-const SCHEDULED_PATCH_APPLICATION_CODE = '\Patchwork\Interceptor\applyScheduledPatches()';
+const QUEUE_DEPLOYMENT_CODE = '\Patchwork\Interceptor\deployQueue()';
 
 function markPreprocessedFiles()
 {
@@ -36,4 +35,12 @@ function markPreprocessedFiles()
 function injectCallInterceptionCode()
 {
     return Generic\prependCodeToFunctions(Utils\condense(CALL_INTERCEPTION_CODE));
+}
+
+function injectQueueDeploymentCode()
+{
+    return Generic\chain(array(
+        Generic\injectFalseExpressionAtBeginnings(QUEUE_DEPLOYMENT_CODE),
+        Generic\injectCodeAfterClassDefinitions(QUEUE_DEPLOYMENT_CODE . ';'),
+    ));
 }

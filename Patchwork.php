@@ -85,6 +85,7 @@ Preprocessor\Stream::wrap();
 Preprocessor\attach(array(
     Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
     Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
+    Preprocessor\Callbacks\Preprocessor\injectQueueDeploymentCode(),
 ));
 
 Preprocessor\onImport(array(

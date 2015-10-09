@@ -39,7 +39,7 @@ class Stream
     public function stream_open($path, $mode, $options, &$openedPath)
     {
         $this->unwrap();
-        $including = true; # (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
+        $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
         if ($including && shouldPreprocess($path)) {
             $this->resource = preprocessAndOpen($path);
             $this->wrap();

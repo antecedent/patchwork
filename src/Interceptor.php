@@ -27,7 +27,10 @@ function patch($function, $patch)
         if (Utils\callbackTargetDefined($function)) {
             $handle = patchMethod($function, $patch);
         } else {
-            $handle = scheduleMethodPatch($function, $patch);
+            $handle = queueMethodPatch($function, $patch);
+            if (Utils\runningOnHHVM()) {
+                patchOnHHVM("$class::$method", $patch, $handle);
+            }
         }
     }
     attachExistenceAssertion($handle, $function);
@@ -76,27 +79,28 @@ function patchFunction($function, $patch)
     return $handle;
 }
 
-function scheduleMethodPatch($function, $patch)
+function queueMethodPatch($function, $patch)
 {
     $handle = new PatchHandle;
-    $scheduledPatch = array($function, $patch, $handle);
-    $offset = Utils\append(State::$scheduledPatches, $scheduledPatch);
-    $handle->addReference(State::$scheduledPatches[$offset]);
+    $queuedPatch = array($function, $patch, $handle);
+    $offset = Utils\append(State::$queuedPatches, $queuedPatch);
+    $handle->addReference(State::$queuedPatches[$offset]);
     return $handle;
 }
 
-function applyScheduledPatches()
+function deployQueue()
 {
-    foreach (State::$scheduledPatches as $offset => $scheduledPatch) {
-        if (empty($scheduledPatch)) {
-            unset(State::$scheduledPatches[$offset]);
+    State::$queueDeployedAtLeastOnce = true;
+    foreach (State::$queuedPatches as $offset => $queuedPatch) {
+        if (empty($queuedPatch)) {
+            unset(State::$queuedPatches[$offset]);
             continue;
         }
-        list($function, $patch, $handle) = $scheduledPatch;
+        list($function, $patch, $handle) = $queuedPatch;
         if (Utils\callbackTargetDefined($function)) {
             assertPatchable($function, false);
             patchMethod($function, $patch, $handle);
-            unset(State::$scheduledPatches[$offset]);
+            unset(State::$queuedPatches[$offset]);
         }
     }
 }
@@ -232,13 +236,19 @@ function getHHVMExpirationHandler($function)
         if ($empty) {
             fb_intercept($function, null);
         }
+        if (!State::$queueDeployedAtLeastOnce && class_exists($class, false)) {
+            $message = 'Please include Patchwork\Interceptor\deployQueue() ' .
+                       'in your autoloader to intercept calls to %s';
+            trigger_error(sprintf($message, $target), E_USER_WARNING);
+        }
     };
 }
 
 class State
 {
     static $patches = array();
-    static $scheduledPatches = array();
+    static $queuedPatches = array();
+    static $queueDeployedAtLeastOnce = false;
     static $preprocessedFiles = array();
     static $patchStack = array();
 }

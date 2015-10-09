@@ -30,7 +30,7 @@ function generatorsSupported()
 
 function runningOnHHVM()
 {
-    return false; # defined("HHVM_VERSION");
+    return defined("HHVM_VERSION");
 }
 
 function condense($string)

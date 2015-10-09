@@ -34,6 +34,8 @@ class BazObject extends BarObject
     }
 }
 
+Patchwork\Interceptor\deployQueue();
+
 $foo = new FooObject;
 $bar = new BarObject;
 $baz = new BazObject;

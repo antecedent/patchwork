@@ -71,15 +71,10 @@ function blacklist($path)
     Preprocessor\exclude($path);
 }
 
-function deployQueue()
-{
-    Interceptor\State::$queueDeployedManually = true;
-    Interceptor\deployQueue();
-}
-
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
     # just let Patchwork become a wrapper for fb_intercept()
+    spl_autoload_register('Patchwork\Interceptor\deployQueue');
     register_shutdown_function('Patchwork\undoAll');
     return;
 }

@@ -72,7 +72,7 @@ function topArgsOverride()
         throw new Exceptions\StackEmpty;
     }
     list($offset, $calledClass, $argsOverride) = end(State::$items);
-    return $argsOverride;   
+    return $argsOverride;
 }
 
 function all()

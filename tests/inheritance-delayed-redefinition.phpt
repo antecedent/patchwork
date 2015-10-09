@@ -20,8 +20,6 @@ Patchwork\replace("BarObject::getBar", function() {
 
 require __DIR__ . "/includes/InheritanceWithAssertions.php";
 
-Patchwork\undoAll();
-
 ?>
 ===DONE===
 

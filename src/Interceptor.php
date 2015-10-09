@@ -236,10 +236,17 @@ function getHHVMExpirationHandler($function)
         if ($empty) {
             fb_intercept($function, null);
         }
-        if (!State::$queueDeployedAtLeastOnce && class_exists($class, false)) {
-            $message = 'Please include Patchwork\Interceptor\deployQueue() ' .
-                       'in your autoloader to intercept calls to %s on HHVM';
-            trigger_error(sprintf($message, $function), E_USER_WARNING);
+        if (State::$queueDeployedAtLeastOnce || !class_exists($class, false)) {
+            return;
+        }
+        foreach (State::$queuedPatches as $item) {
+            list($target) = $item;
+            if ($target === $function) {
+                $message = 'Please call Patchwork\Interceptor\deployQueue() from ' .
+                           'your autoloader to intercept calls to %s on HHVM';
+                trigger_error(sprintf($message, $function), E_USER_WARNING);
+                break;
+            }
         }
     };
 }

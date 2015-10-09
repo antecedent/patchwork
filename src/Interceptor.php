@@ -134,6 +134,7 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
 
 function unpatchAll()
 {
+    checkForMissedDeployments();
     foreach (State::$patches as $class => $patchesByClass) {
         foreach ($patchesByClass as $method => $patches) {
             foreach ($patches as $patch) {
@@ -236,17 +237,23 @@ function getHHVMExpirationHandler($function)
         if ($empty) {
             fb_intercept($function, null);
         }
-        if ($class !== null && !State::$queueDeployedManually && class_exists($class, false)) {
-            foreach (State::$queuedPatches as $queuedPatch) {
-                list($target) = $queuedPatch;
-                list($targetClass) = Utils\interpretCallback($target);
-                if ($class === $targetClass) {
-                    $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';
-                    trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
-                }
-            }
-        }
+        checkForMissedDeployments();
     };
+}
+
+function checkForMissedDeployments()
+{
+    if (State::$queueDeployedManually) {
+        return;
+    }
+    foreach (State::$queuedPatches as $queuedPatch) {
+        list($target) = $queuedPatch;
+        list($class) = Utils\interpretCallback($target);
+        if (class_exists($class, false)) {
+            $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';
+            trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
+        }
+    }
 }
 
 function getPatchesFor($class, $method)

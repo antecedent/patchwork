@@ -26,15 +26,15 @@ class PatchHandle
 
     public function removePatches()
     {
-        foreach ($this->references as &$reference) {
-            $reference = null;
-        }
         if (!$this->silenced) {
             foreach ($this->expirationHandlers as $expirationHandler) {
                 $expirationHandler();
             }
         }
         $this->expirationHandlers = array();
+        foreach ($this->references as &$reference) {
+            $reference = null;
+        }
     }
 
     public function addExpirationHandler($expirationHandler)

@@ -117,9 +117,9 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     $reflection = new \ReflectionMethod($class, $method);
     $declaringClass = $reflection->getDeclaringClass();
     $class = $declaringClass->getName();
-    if (Utils\traitsSupported()) {
+    if (!Utils\runningOnHHVM() && Utils\traitsSupported()) {
         $aliases = $declaringClass->getTraitAliases();
-        if (isset($aliases[$method])) {
+        if (Uisset($aliases[$method])) {
             list($trait, $method) = explode("::", $aliases[$method]);
         }
     }
@@ -153,11 +153,8 @@ function runPatch($patch)
 function intercept($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
     $success = false;
-    if (empty(State::$patches[$class][$method])) {
-        return false;
-    }
     Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
-        foreach (State::$patches[$class][$method] as $offset => $patch) {
+        foreach (getPatchesFor($class, $method) as $offset => $patch) {
             if (empty($patch)) {
                 unset(State::$patches[$class][$method][$offset]);
                 continue;
@@ -238,7 +235,7 @@ function getHHVMExpirationHandler($function)
             }
         }
         $empty = true;
-        foreach (State::$patches[$class][$method] as $offset => $patch) {
+        foreach (getPatchesFor($class, $method) as $offset => $patch) {
             if (!empty($patch)) {
                 $empty = false;
                 break;
@@ -250,6 +247,14 @@ function getHHVMExpirationHandler($function)
             fb_intercept($function, null);
         }
     };
+}
+
+function getPatchesFor($class, $method)
+{
+    if (!isset(State::$patches[$class][$method])) {
+        return array();
+    }
+    return State::$patches[$class][$method];
 }
 
 class State

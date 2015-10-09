@@ -153,6 +153,9 @@ function runPatch($patch)
 function intercept($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
     $success = false;
+    if (empty(State::$patches[$class][$method])) {
+        return false;
+    }
     Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
         foreach (State::$patches[$class][$method] as $offset => $patch) {
             if (empty($patch)) {

@@ -90,7 +90,6 @@ function queueMethodPatch($function, $patch)
 
 function deployQueue()
 {
-    State::$queueDeployedAtLeastOnce = true;
     foreach (State::$queuedPatches as $offset => $queuedPatch) {
         if (empty($queuedPatch)) {
             unset(State::$queuedPatches[$offset]);
@@ -227,7 +226,7 @@ function getHHVMExpirationHandler($function)
         list($class, $method) = Utils\interpretCallback($function);
         if ($class !== null && !State::$queueDeployedManually) {
             foreach (State::$queuedPatches as $queuedPatch) {
-                list($target) = $queuedPatches;
+                list($target) = $queuedPatch;
                 list($targetClass) = Utils\interpretCallback($target);
                 if ($class === $targetClass) {
                     $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';

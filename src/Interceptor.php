@@ -29,7 +29,7 @@ function patch($function, $patch)
         } else {
             $handle = queueMethodPatch($function, $patch);
             if (Utils\runningOnHHVM()) {
-                patchOnHHVM("$class::$method", $patch, $handle);
+                patchOnHHVM("$class::$method", $handle);
             }
         }
     }
@@ -74,7 +74,7 @@ function patchFunction($function, $patch)
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
     if (Utils\runningOnHHVM()) {
-        patchOnHHVM($function, $patch, $handle);
+        patchOnHHVM($function, $handle);
     }
     return $handle;
 }
@@ -202,9 +202,10 @@ function callOriginal(array $args = null)
     return $result;
 }
 
-function patchOnHHVM($function, $patch, PatchHandle $handle)
+function patchOnHHVM($function, PatchHandle $handle)
 {
-    fb_intercept($function, function($name, $obj, $args, $data, &$done) use ($patch) {
+    fb_intercept($function, function($name, $obj, $args, $data, &$done) {
+        deployQueue();
         list($class, $method) = Utils\interpretCallback($name);
         $calledClass = null;
         if (is_string($obj)) {
@@ -224,6 +225,16 @@ function getHHVMExpirationHandler($function)
 {
     return function() use ($function) {
         list($class, $method) = Utils\interpretCallback($function);
+        if ($class !== null && !State::$queueDeployedManually) {
+            foreach (State::$queuedPatches as $queuedPatch) {
+                list($target) = $queuedPatches;
+                list($targetClass) = Utils\interpretCallback($target);
+                if ($class === $targetClass) {
+                    $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';
+                    trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
+                }
+            }
+        }
         $empty = true;
         foreach (State::$patches[$class][$method] as $offset => $patch) {
             if (!empty($patch)) {
@@ -236,18 +247,6 @@ function getHHVMExpirationHandler($function)
         if ($empty) {
             fb_intercept($function, null);
         }
-        if (State::$queueDeployedAtLeastOnce || !class_exists($class, false)) {
-            return;
-        }
-        foreach (State::$queuedPatches as $item) {
-            list($target) = $item;
-            if ($target === $function) {
-                $message = 'Please call Patchwork\Interceptor\deployQueue() from ' .
-                           'your autoloader to intercept calls to %s on HHVM';
-                trigger_error(sprintf($message, $function), E_USER_WARNING);
-                break;
-            }
-        }
     };
 }
 
@@ -255,7 +254,7 @@ class State
 {
     static $patches = array();
     static $queuedPatches = array();
-    static $queueDeployedAtLeastOnce = false;
+    static $queueDeployedManually = false;
     static $preprocessedFiles = array();
     static $patchStack = array();
 }

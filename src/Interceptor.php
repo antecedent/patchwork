@@ -238,8 +238,8 @@ function getHHVMExpirationHandler($function)
         }
         if (!State::$queueDeployedAtLeastOnce && class_exists($class, false)) {
             $message = 'Please include Patchwork\Interceptor\deployQueue() ' .
-                       'in your autoloader to intercept calls to %s';
-            trigger_error(sprintf($message, $target), E_USER_WARNING);
+                       'in your autoloader to intercept calls to %s on HHVM';
+            trigger_error(sprintf($message, $function), E_USER_WARNING);
         }
     };
 }

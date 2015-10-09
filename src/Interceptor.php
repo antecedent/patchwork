@@ -128,7 +128,7 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     $offset = Utils\append($patches, array($patch, $handle));
     $handle->addReference($patches[$offset]);
     if (Utils\runningOnHHVM()) {
-        patchOnHHVM("$class::$method", $patch, $handle);
+        patchOnHHVM("$class::$method", $handle);
     }
     return $handle;
 }

@@ -224,16 +224,6 @@ function getHHVMExpirationHandler($function)
 {
     return function() use ($function) {
         list($class, $method) = Utils\interpretCallback($function);
-        if ($class !== null && !State::$queueDeployedManually) {
-            foreach (State::$queuedPatches as $queuedPatch) {
-                list($target) = $queuedPatch;
-                list($targetClass) = Utils\interpretCallback($target);
-                if ($class === $targetClass) {
-                    $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';
-                    trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
-                }
-            }
-        }
         $empty = true;
         foreach (getPatchesFor($class, $method) as $offset => $patch) {
             if (!empty($patch)) {
@@ -245,6 +235,16 @@ function getHHVMExpirationHandler($function)
         }
         if ($empty) {
             fb_intercept($function, null);
+        }
+        if ($class !== null && !State::$queueDeployedManually && class_exists($class, false)) {
+            foreach (State::$queuedPatches as $queuedPatch) {
+                list($target) = $queuedPatch;
+                list($targetClass) = Utils\interpretCallback($target);
+                if ($class === $targetClass) {
+                    $message = 'Please invoke Patchwork\deployQueue() from your autoloader to make %s redefinable';
+                    trigger_error(sprintf($message, Utils\callbackToString($target)), E_USER_WARNING);
+                }
+            }
         }
     };
 }

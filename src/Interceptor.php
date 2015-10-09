@@ -119,7 +119,7 @@ function patchMethod($function, $patch, PatchHandle $handle = null)
     $class = $declaringClass->getName();
     if (!Utils\runningOnHHVM() && Utils\traitsSupported()) {
         $aliases = $declaringClass->getTraitAliases();
-        if (Uisset($aliases[$method])) {
+        if (isset($aliases[$method])) {
             list($trait, $method) = explode("::", $aliases[$method]);
         }
     }

@@ -6,7 +6,7 @@ A pure PHP library that lets you redefine user-defined functions at runtime. Rel
 
 ## Functionality and Limitations
 
-In other words, Patchwork is a partial implementation of [`runkit_function_redefine`](http://php.net/runkit_function_redefine) in userland PHP 5.3 code.
+In other words, Patchwork is a partial implementation of [`runkit_function_redefine`](http://php.net/runkit_function_redefine) in userland PHP 5.4 code.
 
 As of now, it only works with user-defined functions and methods, including static, final, and non-public ones.
 
@@ -17,7 +17,7 @@ It is, however, planned and being developed for Patchwork's next major release.
 
 ## Requirements
 
-Patchwork requires at least either Zend's PHP 5.3.0 or HHVM 3.2.0 to run. Compatibility with lower versions of HHVM is possible, but has not been tested.
+Patchwork requires at least either Zend's PHP 5.4.0 or HHVM 3.6.0 to run. Compatibility with lower versions of HHVM is possible, but has not been tested.
 
 ## Setup
 
@@ -41,7 +41,8 @@ When absolutely necessary, however, one can always use the `@` operator to suppr
 
 ## Example
 
-The following code would make _all_ instances of [Collection](http://laravel.com/docs/5.1/collections) have an `$axe` in them.
+After running the following code, any existing *and upcoming* instances of [Collection](http://laravel.com/docs/5.1/collections)
+will automatically have an `$axe` in them.
 
 This is done by redefining all methods of the class. The new definition ensures that an `$axe` is present and
 then relays control to the original definition.

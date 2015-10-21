@@ -152,23 +152,18 @@ function getUserDefinedCallables()
 function getUserDefinedMethods()
 {
     # TODO optimize
-    $classes = array_merge(getUserDefinedClasses(), get_declared_traits());
-    $mapping = function($class) {
-        $methods = get_class_methods($class);
-        return array_map(function ($method) use ($class) {
-            return "$class::$method";
-        }, $methods);
-    };
-    return call_user_func_array('array_merge', array_map($mapping, $classes));
-}
-
-function getUserDefinedClasses()
-{
-    # TODO optimize
-    $all = get_declared_classes();
-    return array_filter($all, function($class) {
-        return !(new \ReflectionClass($class))->isInternal();
-    });
+    $classes = array_merge(get_declared_classes(), get_declared_traits());
+    $result = [];
+    foreach ($classes as $class) {
+        $methods = array_filter(get_class_methods($class), function($method) use ($class) {
+            return (new \ReflectionMethod($class, $method))->isUserDefined();
+        });
+        foreach ($methods as &$method) {
+            $method = $class . '::' . $method;
+        }
+        $result = array_merge($result, $methods);
+    }
+    return $result;
 }
 
 function matchWildcard($wildcard, $subject)

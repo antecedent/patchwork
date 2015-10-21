@@ -41,7 +41,7 @@ When absolutely necessary, however, one can always use the `@` operator to suppr
 
 ## Example
 
-After running the following code, any existing *and upcoming* instances of [Collection](http://laravel.com/docs/5.1/collections)
+After running the following code, any existing and upcoming instances of [Collection](http://laravel.com/docs/5.1/collections)
 will automatically have an `$axe` in them.
 
 This is done by redefining all methods of the class. The new definition ensures that an `$axe` is present and

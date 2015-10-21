@@ -54,6 +54,11 @@ function blacklist($path)
     CodeManipulation\exclude($path);
 }
 
+if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
+    trigger_error('Please import Patchwork from a point in your code ' .
+        'where no user-defined function is yet defined.', E_USER_WARNING);
+}
+
 Utils\alias('Patchwork', [
     'redefine'   => ['replace', 'replaceLater'],
     'relay'      => 'callOriginal',
@@ -86,7 +91,3 @@ CodeManipulation\onImport([
 
 Utils\clearOpcodeCaches();
 
-if (!empty(array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName'))) {
-    trigger_error('Please import Patchwork from a point in your code ' .
-                  'where no user-defined function is yet defined.', E_USER_WARNING);
-}

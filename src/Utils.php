@@ -167,7 +167,7 @@ function getUserDefinedClasses()
     # TODO optimize
     $all = get_declared_classes();
     return array_filter($all, function($class) {
-        return (new \ReflectionClass($class))->isUserDefined();
+        return !(new \ReflectionClass($class))->isInternal();
     });
 }
 

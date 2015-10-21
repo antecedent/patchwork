@@ -18,7 +18,7 @@ Patchwork\replace("NamedObject::getName", function() {
     throw new RuntimeException;
 });
 
-expectException('RuntimeException', array($foo, "getName"));
+expectException('RuntimeException', [$foo, "getName"]);
 
 Patchwork\undoAll();
 
@@ -44,5 +44,6 @@ expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 ?>
 ===DONE===
 
---EXPECT--
+--EXPECTF--
+Warning: Please import Patchwork from a point in your code where no user-defined function is yet defined. in %s on line %d
 ===DONE===

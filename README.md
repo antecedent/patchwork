@@ -1,6 +1,6 @@
-# Patchwork
+# Patchwork 1.4
 
-### Version 1.3
+    composer require antecedent/patchwork
 
 A pure PHP library that lets you redefine user-defined functions at runtime. Released under the terms of the [MIT license](http://www.opensource.org/licenses/mit-license.php).
 
@@ -19,68 +19,48 @@ It is, however, planned and being developed for Patchwork's next major release.
 
 Patchwork requires at least either Zend's PHP 5.3.0 or HHVM 3.2.0 to run. Compatibility with lower versions of HHVM is possible, but has not been tested.
 
-## Example
-
-All these steps occur at the same runtime:
-
-### 1. Define a function
-
-```php
-function size($x)
-{
-    return count($x);
-}
-
-size(array(1, 2)); # => 2
-```
-
-### 2. Replace its definition
-
-```php
-Patchwork\replace("size", function($x)
-{
-    return "huge";
-});
-
-size(array(1, 2)); # => "huge"
-```
-
-### 3. Undo the redefinition
-
-```php
-Patchwork\undoAll();
-
-size(array(1, 2)); # => 2
-```
-
 ## Setup
 
-To make the above example actually run, a dummy entry script is needed, one that would would first import Patchwork, and then the rest of the application:
+Upon obtaining the package, it is necessary to import it manually:
 
 ```php
 require 'vendor/antecedent/patchwork/Patchwork.php';
-require 'actualEntryScript.php';
 ```
 
-Variations on this setup are possible: see the [Setup](http://antecedent.github.io/patchwork/docs/setup.html) section of the documentation for details.
+However, inserting this statement in an arbitrary point in your code will likely result in an error:
 
-For instance, PHPUnit users will most likely want to use a `--bootstrap vendor/antecedent/patchwork/Patchwork.php` command line option.
+    Warning: Please import Patchwork from a point in your code where no user-defined function is yet defined.
 
-## Installation using Composer
+It is highly recommended to comply to this warning.
 
-A sample `composer.json` importing only Patchwork would be as follows:
+When absolutely necessary, however, one can always use the `@` operator to suppress this warning:
 
-```json
+```php
+@require 'vendor/antecedent/patchwork/Patchwork.php';
+```
+
+## Example
+
+The following code would make _all_ instances of [Collection](http://laravel.com/docs/5.1/collections) have an `$axe` in them.
+
+This is done by redefining all methods of the class. The new definition ensures that an `$axe` is present and
+then relays control to the original definition.
+
+```php
+use function Patchwork\{redefine, relay};
+
+redefine([Collection::class, '*'], function() use ($axe)
 {
-    "require-dev": {
-        "antecedent/patchwork": "*"
+    if (!$this->contains($axe)) {
+        $this->push($axe);
     }
-}
+    return relay();
+});
 ```
 
-## Further Reading
+## Wiki
 
-For more information, please refer to the online documentation, which can be accessed and navigated using the top menu of [Patchwork's website](http://antecedent.github.io/patchwork/).
+The [wiki](https://github.com/antecedent/patchwork/wiki) contains detailed usage instructions and implementation notes.
 
 ## Issues
 

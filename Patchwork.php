@@ -8,24 +8,20 @@
  */
 namespace Patchwork;
 
-require_once __DIR__ . "/src/Exceptions.php";
-require_once __DIR__ . "/src/Interceptor.php";
-require_once __DIR__ . "/src/Preprocessor.php";
-require_once __DIR__ . "/src/Utils.php";
-require_once __DIR__ . "/src/Stack.php";
+require_once __DIR__ . '/src/Exceptions.php';
+require_once __DIR__ . '/src/CallRerouting.php';
+require_once __DIR__ . '/src/CodeManipulation.php';
+require_once __DIR__ . '/src/Utils.php';
+require_once __DIR__ . '/src/Stack.php';
 
-function replace($original, $replacement)
+function redefine($what, callable $asWhat)
 {
-    return Interceptor\patch($original, $replacement);
+    return CallRerouting\connect($what, $asWhat);
 }
 
-/**
- * @deprecated
- * @alias replace
- */
-function replaceLater($function, $replacement)
+function relay(array $args = null)
 {
-    return replace($function, $replacement);
+    return CallRerouting\relay($args);
 }
 
 function fallBack()
@@ -33,64 +29,64 @@ function fallBack()
     throw new Exceptions\NoResult;
 }
 
-/**
- * @alias fallBack
- */
-function pass()
+function restore(CallRerouting\Handle $handle)
 {
-    fallBack();
+    $handle->expire();
 }
 
-function callOriginal(array $args = null)
+function restoreAll()
 {
-    return Interceptor\callOriginal($args);
+    CallRerouting\disconnectAll();
 }
 
-function undo(Interceptor\PatchHandle $handle)
-{
-    $handle->removePatches();
-}
-
-function undoAll()
-{
-    Interceptor\unpatchAll();
-}
-
-function silence(Interceptor\PatchHandle $handle)
+function silence(CallRerouting\Handle $handle)
 {
     $handle->silence();
 }
 
 function enableCaching($location, $assertWritable = true)
 {
-    Preprocessor\setCacheLocation($location, $assertWritable);
+    CodeManipulation\setCacheLocation($location, $assertWritable);
 }
 
 function blacklist($path)
 {
-    Preprocessor\exclude($path);
+    CodeManipulation\exclude($path);
 }
+
+Utils\alias('Patchwork', [
+    'redefine'   => ['replace', 'replaceLater'],
+    'relay'      => 'callOriginal',
+    'fallBack'   => 'pass',
+    'restore'    => 'undo',
+    'restoreAll' => 'undoAll',
+]);
 
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
     # just let Patchwork become a wrapper for fb_intercept()
-    spl_autoload_register('Patchwork\Interceptor\deployQueue');
+    spl_autoload_register('Patchwork\CallRerouting\deployQueue');
     register_shutdown_function('Patchwork\undoAll');
     return;
 }
 
 enableCaching(__DIR__ . '/cache', false);
 
-Preprocessor\Stream::wrap();
+CodeManipulation\Stream::wrap();
 
-Preprocessor\attach(array(
-    Preprocessor\Callbacks\Preprocessor\propagateThroughEval(),
-    Preprocessor\Callbacks\Interceptor\injectCallInterceptionCode(),
-    Preprocessor\Callbacks\Interceptor\injectQueueDeploymentCode(),
-));
+CodeManipulation\attach([
+    CodeManipulation\Actions\Preprocessor\propagateThroughEval(),
+    CodeManipulation\Actions\CodeManipulation\injectCallInterceptionCode(),
+    CodeManipulation\Actions\CodeManipulation\injectQueueDeploymentCode(),
+]);
 
-Preprocessor\onImport(array(
-    Preprocessor\Callbacks\Interceptor\markPreprocessedFiles(),
-));
+CodeManipulation\onImport([
+    CodeManipulation\Actions\CodeManipulation\markPreprocessedFiles(),
+]);
 
 Utils\clearOpcodeCaches();
+
+if (!empty(array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName'))) {
+    trigger_error('Please import Patchwork from a point in your code ' .
+                  'where no user-defined function is yet defined.', E_USER_WARNING);
+}

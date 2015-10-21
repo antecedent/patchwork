@@ -15,11 +15,11 @@ Patchwork\replace("setArrayElement", function(array &$array, $key, $value) {
     $array[$key] = $value;
 });
 
-$array = array(0, 1, "foo" => 2, 3);
+$array = [0, 1, "foo" => 2, 3];
 
 setArrayElement($array, "foo", "bar");
 
-assert($array == array(0, 1, "foo" => "bar", 3));
+assert($array == [0, 1, "foo" => "bar", 3]);
 
 ?>
 ===DONE===

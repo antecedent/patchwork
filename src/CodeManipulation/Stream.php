@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor;
+namespace Patchwork\CodeManipulation;
 
 use Patchwork\Utils;
 
@@ -16,7 +16,7 @@ class Stream
     const STAT_MTIME_NUMERIC_OFFSET = 9;
     const STAT_MTIME_ASSOC_OFFSET = 'mtime';
 
-    protected static $protocols = array('file', 'phar');
+    protected static $protocols = ['file', 'phar'];
 
     public $context;
     public $resource;

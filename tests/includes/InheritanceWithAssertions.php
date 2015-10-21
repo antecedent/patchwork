@@ -34,7 +34,7 @@ class BazObject extends BarObject
     }
 }
 
-Patchwork\Interceptor\deployQueue();
+Patchwork\CallRerouting\deployQueue();
 
 $foo = new FooObject;
 $bar = new BarObject;

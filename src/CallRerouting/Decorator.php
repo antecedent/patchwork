@@ -6,12 +6,12 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Interceptor;
+namespace Patchwork\CallRerouting;
 
 use Patchwork;
 use Patchwork\Stack;
 
-class MethodPatchDecorator
+class Decorator
 {
     public $superclass;
     public $instance;
@@ -32,12 +32,10 @@ class MethodPatchDecorator
         $methodMatches = $this->methodMatches($top);
         if ($superclassMatches && $instanceMatches && $methodMatches) {
             $patch = $this->patch;
-            if (is_callable(array($patch, "bindTo"))) {
-                if (isset($top["object"]) && $patch instanceof \Closure) {
-                    $patch = $patch->bindTo($top["object"], $this->superclass);
-                }
+            if (isset($top["object"]) && $patch instanceof \Closure) {
+                $patch = $patch->bindTo($top["object"], $this->superclass);
             }
-            return runPatch($patch);
+            return dispatchTo($patch);
         }
         Patchwork\fallBack();
     }

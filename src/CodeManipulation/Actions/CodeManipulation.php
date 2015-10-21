@@ -6,12 +6,12 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor\Callbacks\Preprocessor;
+namespace Patchwork\CodeManipulation\Actions\Preprocessor;
 
-use Patchwork\Preprocessor\Callbacks\Generic;
-use Patchwork\Preprocessor\Source;
+use Patchwork\CodeManipulation\Actions\Generic;
+use Patchwork\CodeManipulation\Source;
 
-const EVAL_ARGUMENT_WRAPPER = '\Patchwork\Preprocessor\preprocessForEval';
+const EVAL_ARGUMENT_WRAPPER = '\Patchwork\CodeManipulation\preprocessForEval';
 
 function propagateThroughEval()
 {

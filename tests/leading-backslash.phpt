@@ -22,7 +22,7 @@ Patchwork\replace("Foo\identify", function() {
     return "Spam";
 });
 
-Patchwork\replace(array("Foo\FooClass", "identify"), function() {
+Patchwork\replace(["Foo\FooClass", "identify"], function() {
     return "Spam";
 });
 
@@ -35,7 +35,7 @@ Patchwork\replace("\Bar\identify", function() {
     return "Eggs";
 });
 
-Patchwork\replace(array("\Bar\BarClass", "identify"), function() {
+Patchwork\replace(["\Bar\BarClass", "identify"], function() {
     return "Eggs";
 });
 

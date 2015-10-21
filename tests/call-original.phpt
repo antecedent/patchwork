@@ -28,7 +28,7 @@ foreach (range(1, 2) as $i) {
 
 p\replace("identity", function($x) {
 	echo "Four", PHP_EOL;
-	assert(p\callOriginal(array(42)) === 42);
+	assert(p\callOriginal([42]) === 42);
 	echo "Five", PHP_EOL;
 	return $x + 1;
 });

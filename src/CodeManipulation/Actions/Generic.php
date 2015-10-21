@@ -6,9 +6,9 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor\Callbacks\Generic;
+namespace Patchwork\CodeManipulation\Actions\Generic;
 
-use Patchwork\Preprocessor\Source;
+use Patchwork\CodeManipulation\Source;
 use Patchwork\Utils;
 
 const LEFT_PARENTHESIS = "(";

@@ -11,7 +11,7 @@ error_reporting(E_ALL | E_STRICT);
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/TestUtils.php";
 
-Patchwork\Preprocessor\exclude(__DIR__ . "/includes/Singleton.php");
+Patchwork\blacklist(__DIR__ . "/includes/Singleton.php");
 
 function functionThatIsNotPreprocessed()
 {
@@ -60,8 +60,10 @@ Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
 ===DONE===
 
 --EXPECTF--
-Warning: anotherUndefinedFunction was never defined during the lifetime of its redefinition in %s on line %d
+Warning: Please import Patchwork from a point in your code where no user-defined function is yet defined. in %s on line %d
+
+Warning: anotherUndefinedFunction() was never defined during the lifetime of its redefinition in %s on line %d
 ===DONE===
 
 
-Warning: functionThatIsNotDefined was never defined during the lifetime of its redefinition in %s on line %d
+Warning: functionThatIsNotDefined() was never defined during the lifetime of its redefinition in %s on line %d

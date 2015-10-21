@@ -1,10 +1,6 @@
 --TEST--
 Patching methods imported from traits (https://github.com/antecedent/patchwork/issues/5)
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "5.4", ">=")
-      or die("skip because traits are not supported in this version of PHP") ?>
-
 --FILE--
 <?php
 

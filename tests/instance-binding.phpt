@@ -17,7 +17,7 @@ $bar = new NamedObject("bar");
 assert($foo->getName() === "foo");
 assert($bar->getName() === "bar");
 
-Patchwork\replace(array($foo, "getName"), function() {
+Patchwork\replace([$foo, "getName"], function() {
     return "patched foo";
 });
 

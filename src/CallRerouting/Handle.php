@@ -6,17 +6,28 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Interceptor;
+namespace Patchwork\CallRerouting;
 
-class PatchHandle
+class Handle
 {
-    private $references = array();
-    private $expirationHandlers = array();
+    private $references = [];
+    private $expirationHandlers = [];
     private $silenced = false;
+    private $tags = [];
 
     public function __destruct()
     {
-        $this->removePatches();
+        $this->expire();
+    }
+
+    public function tag($tag)
+    {
+        $this->tags[] = $tag;
+    }
+
+    public function isTaggedWith($tag)
+    {
+        return in_array($tag, $this->tags);
     }
 
     public function addReference(&$reference)
@@ -24,7 +35,7 @@ class PatchHandle
         $this->references[] = &$reference;
     }
 
-    public function removePatches()
+    public function expire()
     {
         foreach ($this->references as &$reference) {
             $reference = null;
@@ -34,10 +45,10 @@ class PatchHandle
                 $expirationHandler();
             }
         }
-        $this->expirationHandlers = array();
+        $this->expirationHandlers = [];
     }
 
-    public function addExpirationHandler($expirationHandler)
+    public function addExpirationHandler(callable $expirationHandler)
     {
         $this->expirationHandlers[] = $expirationHandler;
     }

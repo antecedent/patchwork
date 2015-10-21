@@ -12,7 +12,7 @@ use Patchwork\Exceptions;
 
 function push($offset, $calledClass, array $argsOverride = null)
 {
-    State::$items[] = array($offset, $calledClass, $argsOverride);
+    State::$items[] = [$offset, $calledClass, $argsOverride];
 }
 
 function pop()
@@ -91,5 +91,5 @@ function allCalledClasses()
 
 class State
 {
-    static $items = array();
+    static $items = [];
 }

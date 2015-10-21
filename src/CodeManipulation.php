@@ -6,13 +6,13 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor;
+namespace Patchwork\CodeManipulation;
 
-require __DIR__ . "/Preprocessor/Source.php";
-require __DIR__ . "/Preprocessor/Stream.php";
-require __DIR__ . "/Preprocessor/Callbacks/Generic.php";
-require __DIR__ . "/Preprocessor/Callbacks/Interceptor.php";
-require __DIR__ . "/Preprocessor/Callbacks/Preprocessor.php";
+require __DIR__ . '/CodeManipulation/Source.php';
+require __DIR__ . '/CodeManipulation/Stream.php';
+require __DIR__ . '/CodeManipulation/Actions/Generic.php';
+require __DIR__ . '/CodeManipulation/Actions/CallRerouting.php';
+require __DIR__ . '/CodeManipulation/Actions/CodeManipulation.php';
 
 use Patchwork\Exceptions;
 use Patchwork\Utils;
@@ -119,8 +119,8 @@ function setCacheLocation($location, $assertWritable = true)
 
 class State
 {
-    static $callbacks = array();
-    static $blacklist = array();
-    static $importListeners = array();
+    static $callbacks = [];
+    static $blacklist = [];
+    static $importListeners = [];
     static $cacheLocation;
 }

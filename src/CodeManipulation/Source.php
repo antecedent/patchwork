@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\Preprocessor;
+namespace Patchwork\CodeManipulation;
 
 use Patchwork\Utils;
 
@@ -31,15 +31,15 @@ class Source
     public function initialize(array $tokens)
     {
         $this->tokens = $tokens;
-        $this->tokens[] = array(T_WHITESPACE, "");
+        $this->tokens[] = [T_WHITESPACE, ""];
         $this->tokensByType = $this->indexTokensByType($this->tokens);
         $this->matchingBrackets = $this->matchBrackets($this->tokens);
-        $this->splices = $this->spliceLengths = array();
+        $this->splices = $this->spliceLengths = [];
     }
 
     public function indexTokensByType(array $tokens)
     {
-        $tokensByType = array();
+        $tokensByType = [];
         foreach ($tokens as $offset => $token) {
             $tokensByType[$token[self::TYPE_OFFSET]][] = $offset;
         }
@@ -48,8 +48,8 @@ class Source
 
     public function matchBrackets(array $tokens)
     {
-        $matches = array();
-        $stack = array();
+        $matches = [];
+        $stack = [];
         foreach ($tokens as $offset => $token) {
             $type = $token[self::TYPE_OFFSET];
             switch ($type) {
@@ -85,7 +85,7 @@ class Source
     {
         $tokens = &$this->tokensByType[$type];
         if (!isset($tokens)) {
-            $tokens = array();
+            $tokens = [];
         }
         return $tokens;
     }

@@ -27,7 +27,7 @@ abstract class CallbackException extends Exception
 {
     function __construct($callback)
     {
-        parent::__construct(sprintf($this->message, Utils\callbackToString($callback)));
+        parent::__construct(sprintf($this->message, Utils\callableToString($callback)));
     }
 }
 
@@ -41,7 +41,7 @@ class DefinedTooEarly extends CallbackException
 
     function __construct($callback)
     {
-        $this->message = "The file that defines %s was included earlier than Patchwork. " .
+        $this->message = "The file that defines %s() was included earlier than Patchwork. " .
                          "This is likely a result of an improper setup; see " .
                          "http://antecedent.github.io/patchwork/docs/setup.html for details.";
         parent::__construct($callback);

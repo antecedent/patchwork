@@ -1,10 +1,6 @@
 --TEST--
 Automatic binding of $this on closures used as method redefinitions
 
---SKIPIF--
-<?php is_callable("Closure::bind")
-      or die('skip because closure $this binding is not supported in this version of PHP') ?>
-
 --FILE--
 <?php
 

@@ -25,9 +25,7 @@ Patchwork\undoAll();
 expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 
 Patchwork\replace("NamedObject::getName", function() {
-    $properties = Patchwork\Stack\top();
-    assert($properties["function"] === Patchwork\Stack\top("function"));
-    assert(Patchwork\Stack\top("function") === "getName");
+    assert(Patchwork\getMethod() === "getName");
     return "bar";
 });
 

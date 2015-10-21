@@ -23,6 +23,8 @@ assert(get_declared_classes() !== 'Whammy!');
 
 require __DIR__ . '/includes/NamespacedFunctions.php';
 
+Patchwork\CallRerouting\deployQueue();
+
 assert(Foo\identify() === 'Whammy!');
 
 ?>

@@ -13,6 +13,7 @@ require_once __DIR__ . '/src/CallRerouting.php';
 require_once __DIR__ . '/src/CodeManipulation.php';
 require_once __DIR__ . '/src/Utils.php';
 require_once __DIR__ . '/src/Stack.php';
+require_once __DIR__ . '/src/Config.php';
 
 function redefine($what, callable $asWhat)
 {
@@ -49,11 +50,6 @@ function enableCaching($location, $assertWritable = true)
     CodeManipulation\setCacheLocation($location, $assertWritable);
 }
 
-function blacklist($path)
-{
-    CodeManipulation\exclude($path);
-}
-
 function getClass()
 {
     return Stack\top('class');
@@ -72,6 +68,14 @@ function getFunction()
 function getMethod()
 {
     return getFunction();
+}
+
+function configure($input)
+{
+    if (is_string($input)) {
+        Config\read($input);
+    }
+    Config\set($input);
 }
 
 if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
@@ -94,18 +98,18 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-enableCaching(__DIR__ . '/cache', false);
+Config\tryRead(dirname(debug_backtrace()[0]['file']) . '/patchwork.json');
 
 CodeManipulation\Stream::wrap();
 
 CodeManipulation\attach([
-    CodeManipulation\Actions\Preprocessor\propagateThroughEval(),
-    CodeManipulation\Actions\CodeManipulation\injectCallInterceptionCode(),
-    CodeManipulation\Actions\CodeManipulation\injectQueueDeploymentCode(),
+    CodeManipulation\Actions\CodeManipulation\propagateThroughEval(),
+    CodeManipulation\Actions\CallRerouting\injectCallInterceptionCode(),
+    CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
 ]);
 
 CodeManipulation\onImport([
-    CodeManipulation\Actions\CodeManipulation\markPreprocessedFiles(),
+    CodeManipulation\Actions\CallRerouting\markPreprocessedFiles(),
 ]);
 
 Utils\clearOpcodeCaches();

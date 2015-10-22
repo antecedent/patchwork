@@ -16,6 +16,7 @@ require __DIR__ . '/CodeManipulation/Actions/CodeManipulation.php';
 
 use Patchwork\Exceptions;
 use Patchwork\Utils;
+use Patchwork\Config;
 
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
@@ -42,27 +43,47 @@ function preprocessForEval($code)
 
 function cacheEnabled()
 {
-    return State::$cacheLocation !== null;
+    $location = Config\getCacheLocation();
+    if ($location === null) {
+        return false;
+    }
+    if (!is_dir($location) || !is_writable($location)) {
+        throw new Exceptions\CacheLocationUnavailable($location);
+    }
+    return true;
 }
 
 function getCachedPath($file)
 {
-    return State::$cacheLocation . '/' . urlencode($file);
+    $file = realpath($file);
+    return Config\getCacheLocation() . '/' . urlencode($file);
 }
 
 function availableCached($file)
 {
+    $file = realpath($file);
     return cacheEnabled() &&
-           file_exists(getCachedPath($file)) &&
-           filemtime($file) <= filemtime(getCachedPath($file));
+    file_exists(getCachedPath($file)) &&
+    filemtime($file) <= filemtime(getCachedPath($file));
+}
+
+function internalToCache($file)
+{
+    $file = realpath($file);
+    if (!cacheEnabled()) {
+        return false;
+    }
+    return strpos($file, Config\getCacheLocation() . '/') === 0
+        || strpos($file, Config\getCacheLocation() . DIRECTORY_SEPARATOR) === 0;
 }
 
 function preprocessAndOpen($file)
 {
+    $file = realpath($file);
     foreach (State::$importListeners as $listener) {
         $listener($file);
     }
-    if (availableCached($file)) {
+    if (!internalToCache($file) && availableCached($file)) {
         return fopen(getCachedPath($file), 'r');
     }
     $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
@@ -70,7 +91,7 @@ function preprocessAndOpen($file)
     $source = new Source(token_get_all($code));
     $source->file = $file;
     preprocess($source);
-    if (cacheEnabled()) {
+    if (!internalToCache($file) && cacheEnabled()) {
         file_put_contents(getCachedPath($file), $source);
         return preprocessAndOpen($file);
     }
@@ -79,14 +100,30 @@ function preprocessAndOpen($file)
     return $resource;
 }
 
+function prime($file)
+{
+    $file = realpath($file);
+    fclose(preprocessAndOpen($file));
+}
+
 function shouldPreprocess($file)
 {
-    foreach (State::$blacklist as $path) {
-        if (strpos(Utils\normalizePath($file), $path) === 0) {
-            return false;
+    $file = realpath($file);
+    $blacklisted = false;
+    foreach ((array) Config\get('blacklist') as $path) {
+        if (strpos($file, Config\resolvePath($path)) === 0) {
+            $blacklisted = true;
         }
     }
-    return true;
+    if (!$blacklisted) {
+        return true;
+    }
+    foreach ((array) Config\get('whitelist') as $path) {
+        if (strpos($file, Config\resolvePath($path)) === 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function attach($callbacks)
@@ -99,28 +136,8 @@ function onImport($listeners)
     State::$importListeners = array_merge(State::$importListeners, (array) $listeners);
 }
 
-function exclude($path)
-{
-    State::$blacklist[] = Utils\normalizePath($path);
-}
-
-function setCacheLocation($location, $assertWritable = true)
-{
-    $location = Utils\normalizePath($location);
-    if (!is_writable($location)) {
-        if ($assertWritable) {
-            throw new Exceptions\CacheLocationUnavailable($location);
-        }
-        return false;
-    }
-    State::$cacheLocation = $location;
-    return true;
-}
-
 class State
 {
     static $callbacks = [];
-    static $blacklist = [];
     static $importListeners = [];
-    static $cacheLocation;
 }

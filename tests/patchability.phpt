@@ -11,7 +11,7 @@ error_reporting(E_ALL | E_STRICT);
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/TestUtils.php";
 
-Patchwork\blacklist(__DIR__ . "/includes/Singleton.php");
+Patchwork\configure(['blacklist' => [__DIR__ . "/includes/Singleton.php"]]);
 
 function functionThatIsNotPreprocessed()
 {

@@ -6,7 +6,7 @@
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
-namespace Patchwork\CodeManipulation\Actions\Preprocessor;
+namespace Patchwork\CodeManipulation\Actions\CodeManipulation;
 
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Source;

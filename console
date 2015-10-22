@@ -1,0 +1,62 @@
+#!/usr/bin/php
+<?php
+
+use Patchwork\CodeManipulation as CM;
+
+error_reporting(E_ALL | E_STRICT);
+
+php_sapi_name() == 'cli'
+    or exit("\npatchwork/console has to be run from the command line.\n\n");
+
+$argc > 2 && $argv[1] == 'prime'
+    or exit("\nUsage: php patchwork/console prime DIR1 DIR2 ... DIRn\n" .
+              "       (to recursively prime all PHP files under given directories)\n\n");
+
+file_exists(getcwd() . "/patchwork.json")
+    or exit("\nError: patchwork.json does not exist in the current directory.\n\n");
+
+try {
+    require 'Patchwork.php';
+} catch (Patchwork\Exceptions\CacheLocationUnavailable $e) {
+    exit("\nError: the cache location specified in patchwork.json is unavailable.\n\n");
+}
+
+try {
+    Patchwork\Config\read(getcwd() . '/patchwork.json');
+} catch (RuntimeException $e) {
+    echo "\n" . $e->getMessage() . "\n\n";
+}
+
+CM\cacheEnabled()
+    or exit("\nError: no cache location set.\n\n");
+
+
+$files = [];
+
+foreach (array_slice($argv, 2) as $path) {
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
+        if (substr($file, -4) == '.php' && !CM\internalToCache($file) && !CM\availableCached($file)) {
+            $files[] = $file;
+        }
+    }
+}
+
+$count = count($files);
+
+$count > 0 or exit("\nNothing to do.\n\n");
+
+echo "\nPriming ($count files total):\n";
+
+const CONSOLE_WIDTH = 80;
+
+$progress = 0;
+
+for ($i = 0; $i < $count; $i++) {
+    CM\prime($files[$i]);
+    while ((int) (($i + 1) / $count * CONSOLE_WIDTH) > $progress) {
+        echo '.';
+        $progress++;
+    }
+}
+
+echo "\n\n";

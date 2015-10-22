@@ -1,6 +1,4 @@
 vendor/
-cache/*
-!cache/README
 composer.phar
 .DS_Store
 

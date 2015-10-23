@@ -57,20 +57,15 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
         foreach (get_class_methods($instance) as $item) {
-            if (Utils\matchWildcard($method, $item) && !$handle->isTaggedWith($item)) {
+            if (Utils\matchWildcard($method, $item) && !$handle->hasTag($item)) {
                 connect([$instance, $method], $target, $handle);
                 $handle->tag($item);
             }
         }
     }
     foreach (Utils\getUserDefinedCallables() as $callable) {
-        if (Utils\isOwnName($callable)) {
-            continue;
-        }
-        if (!Utils\matchWildcard($wildcard, $callable)) {
-            continue;
-        }
-        if ($handle->isTaggedWith($callable)) {
+        list($w, $f) = [$wildcard, $callable];
+        if (!Utils\matchWildcard($w, $f) || !inPreprocessedFile($f) || $handle->hasTag($f)) {
             continue;
         }
         if (function_exists($callable)) {
@@ -102,18 +97,26 @@ function validate($function)
     if (!Utils\callableDefined($function)) {
         return;
     }
-    $reflection = Utils\reflectCallback($function);
+    $reflection = Utils\reflectCallable($function);
     if ($reflection->isInternal()) {
         throw new Exceptions\NotUserDefined($function);
     }
-    $file = $reflection->getFileName();
     if (Utils\runningOnHHVM()) {
         return;
     }
-    $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
-    if (!$evaluated && empty(State::$preprocessedFiles[$file])) {
+    if (!inPreprocessedFile($function)) {
         throw new Exceptions\DefinedTooEarly($function);
     }
+}
+
+function inPreprocessedFile($callable)
+{
+    if (Utils\isOwnName(Utils\callableToString($callable))) {
+        return false;
+    }
+    $file = Utils\reflectCallable($callable)->getFileName();
+    $evaluated = preg_match(EVALUATED_CODE_FILE_NAME_SUFFIX, $file);
+    return $evaluated || !empty(State::$preprocessedFiles[$file]);
 }
 
 function connectFunction($function, callable $target, Handle $handle = null)

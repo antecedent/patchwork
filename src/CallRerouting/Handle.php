@@ -25,7 +25,7 @@ class Handle
         $this->tags[] = $tag;
     }
 
-    public function isTaggedWith($tag)
+    public function hasTag($tag)
     {
         return in_array($tag, $this->tags);
     }

@@ -112,7 +112,7 @@ function normalizePath($path)
     return rtrim(strtr($path, "\\", "/"), "/");
 }
 
-function reflectCallback($callback)
+function reflectCallable($callback)
 {
     if ($callback instanceof \Closure) {
         return new \ReflectionFunction($callback);

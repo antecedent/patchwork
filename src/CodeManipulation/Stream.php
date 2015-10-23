@@ -40,8 +40,8 @@ class Stream
     {
         $this->unwrap();
         $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
-        if ($including && shouldPreprocess($path)) {
-            $this->resource = preprocessAndOpen($path);
+        if ($including && shouldTransform($path)) {
+            $this->resource = transformAndOpen($path);
             $this->wrap();
             return true;
         }

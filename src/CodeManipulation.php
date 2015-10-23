@@ -21,29 +21,29 @@ use Patchwork\Config;
 const OUTPUT_DESTINATION = 'php://memory';
 const OUTPUT_ACCESS_MODE = 'rb+';
 
-function preprocess(Source $s)
+function transform(Source $s)
 {
-    foreach (State::$callbacks as $callback) {
-        $callback($s);
+    foreach (State::$actions as $action) {
+        $action($s);
     }
 }
 
-function preprocessString($code)
+function transformString($code)
 {
     $source = new Source(token_get_all($code));
-    preprocess($source);
+    transform($source);
     return (string) $source;
 }
 
-function preprocessForEval($code)
+function transformForEval($code)
 {
     $prefix = "<?php ";
-    return substr(preprocessString($prefix . $code), strlen($prefix));
+    return substr(transformString($prefix . $code), strlen($prefix));
 }
 
 function cacheEnabled()
 {
-    $location = Config\getCacheLocation();
+    $location = Config\getCachePath();
     if ($location === null) {
         return false;
     }
@@ -56,7 +56,7 @@ function cacheEnabled()
 function getCachedPath($file)
 {
     $file = realpath($file);
-    return Config\getCacheLocation() . '/' . urlencode($file);
+    return Config\getCachePath() . '/' . urlencode($file);
 }
 
 function availableCached($file)
@@ -73,11 +73,11 @@ function internalToCache($file)
     if (!cacheEnabled()) {
         return false;
     }
-    return strpos($file, Config\getCacheLocation() . '/') === 0
-        || strpos($file, Config\getCacheLocation() . DIRECTORY_SEPARATOR) === 0;
+    return strpos($file, Config\getCachePath() . '/') === 0
+        || strpos($file, Config\getCachePath() . DIRECTORY_SEPARATOR) === 0;
 }
 
-function preprocessAndOpen($file)
+function transformAndOpen($file)
 {
     $file = realpath($file);
     foreach (State::$importListeners as $listener) {
@@ -90,10 +90,10 @@ function preprocessAndOpen($file)
     $code = file_get_contents($file, true);
     $source = new Source(token_get_all($code));
     $source->file = $file;
-    preprocess($source);
+    transform($source);
     if (!internalToCache($file) && cacheEnabled()) {
         file_put_contents(getCachedPath($file), $source);
-        return preprocessAndOpen($file);
+        return transformAndOpen($file);
     }
     fwrite($resource, $source);
     rewind($resource);
@@ -103,10 +103,10 @@ function preprocessAndOpen($file)
 function prime($file)
 {
     $file = realpath($file);
-    fclose(preprocessAndOpen($file));
+    fclose(transformAndOpen($file));
 }
 
-function shouldPreprocess($file)
+function shouldTransform($file)
 {
     $file = realpath($file);
     $blacklisted = false;
@@ -126,9 +126,9 @@ function shouldPreprocess($file)
     return false;
 }
 
-function attach($callbacks)
+function register($actions)
 {
-    State::$callbacks = array_merge(State::$callbacks, (array) $callbacks);
+    State::$actions = array_merge(State::$actions, (array) $actions);
 }
 
 function onImport($listeners)
@@ -138,6 +138,6 @@ function onImport($listeners)
 
 class State
 {
-    static $callbacks = [];
+    static $actions = [];
     static $importListeners = [];
 }

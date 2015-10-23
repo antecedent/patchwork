@@ -11,7 +11,7 @@ namespace Patchwork\CodeManipulation\Actions\CodeManipulation;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Source;
 
-const EVAL_ARGUMENT_WRAPPER = '\Patchwork\CodeManipulation\preprocessForEval';
+const EVAL_ARGUMENT_WRAPPER = '\Patchwork\CodeManipulation\transformForEval';
 
 function propagateThroughEval()
 {

@@ -8,14 +8,40 @@
  */
 namespace Patchwork\Config;
 
+use Patchwork\Exceptions;
+
+const FILE_NAME = 'patchwork.json';
+
+function locate($path)
+{
+    setRoot($path);
+    while (file_exists($path) && is_readable($path)) {
+        $file = rtrim($path, '/\\') . '/' . FILE_NAME;
+        if (is_file($file)) {
+            setRoot($path);
+            read($file);
+            break;
+        }
+        $path = dirname($path);
+    }
+}
+
+function setRoot($root)
+{
+    State::$root = rtrim($root, '/\\');
+}
+
 function set(array $data)
 {
     State::$table = $data + State::$table;
 }
 
-function get($key)
+function get($key, $default = null)
 {
     if (!array_key_exists($key, State::$table)) {
+        if (func_num_args() == 2) {
+            return $default;
+        }
         throw new \InvalidArgumentException("Configuration key '$key' is absent");
     }
     return State::$table[$key];
@@ -23,33 +49,26 @@ function get($key)
 
 function read($file)
 {
+    $file = resolvePath($file);
     $data = json_decode(file_get_contents($file), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new \RuntimeException("Malformed configuration file: " . json_last_error_msg());
+        throw new \RuntimeException("Malformed configuration file $file (" . json_last_error_msg() . ")");
     }
-    set($data);
-    State::$path = dirname($file);
-}
-
-function tryRead($file)
-{
-    if (!is_file($file)) {
-        return;
-    }
-    read($file);
-}
-
-function getPath()
-{
-    return State::$path;
+    set((array) $data);
 }
 
 function resolvePath($path)
 {
-    return file_exists($path) ? realpath($path) : (getPath() . '/' . $path);
+    if (file_exists($path) && realpath($path) == $path) {
+        return $path;
+    }
+    if (State::$root === null) {
+        return $path;
+    }
+    return State::$root . '/' . $path;
 }
 
-function getCacheLocation()
+function getCachePath()
 {
     if (get('cache') === null) {
         return null;
@@ -66,5 +85,5 @@ class State
         'redefinableInternals' => [],
     ];
 
-    static $path;
+    static $root;
 }

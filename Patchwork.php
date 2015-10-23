@@ -70,12 +70,9 @@ function getMethod()
     return getFunction();
 }
 
-function configure($input)
+function configure($dir)
 {
-    if (is_string($input)) {
-        Config\read($input);
-    }
-    Config\set($input);
+    Config\locate($dir);
 }
 
 if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
@@ -98,11 +95,11 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-Config\tryRead(dirname(debug_backtrace()[0]['file']) . '/patchwork.json');
+Config\locate(__DIR__);
 
 CodeManipulation\Stream::wrap();
 
-CodeManipulation\attach([
+CodeManipulation\register([
     CodeManipulation\Actions\CodeManipulation\propagateThroughEval(),
     CodeManipulation\Actions\CallRerouting\injectCallInterceptionCode(),
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),

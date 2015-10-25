@@ -145,32 +145,62 @@ function alias($namespace, array $mapping)
 
 function getUserDefinedCallables()
 {
-    # TODO optimize
     return array_merge(get_defined_functions()['user'], getUserDefinedMethods());
 }
 
 function getUserDefinedMethods()
 {
-    # TODO optimize
-    $classes = array_merge(get_declared_classes(), get_declared_traits());
-    $result = [];
-    foreach ($classes as $class) {
-        $methods = array_filter(get_class_methods($class), function($method) use ($class) {
-            return (new \ReflectionMethod($class, $method))->isUserDefined();
-        });
-        foreach ($methods as &$method) {
-            $method = $class . '::' . $method;
+    static $result = [];
+    static $classCount = 0;
+    $classes = getUserDefinedClassesAndTraits();
+    $newClasses = array_slice($classes, $classCount);
+    foreach ($newClasses as $newClass) {
+        foreach (get_class_methods($newClass) as $method) {
+            $result[] = $newClass . '::' . $method;
         }
-        $result = array_merge($result, $methods);
     }
+    $classCount = count($classes);
     return $result;
 }
 
-function matchWildcard($wildcard, $subject)
+function getUserDefinedClassesAndTraits()
 {
-    # TODO optimize
+    static $classCutoff;
+    static $traitCutoff;
+    $classes = get_declared_classes();
+    $traits = get_declared_traits();
+    if (!isset($classCutoff)) {
+        $classCutoff = count($classes);
+        for ($i = 0; $i < count($classes); $i++) {
+            if ((new \ReflectionClass($classes[$i]))->isUserDefined()) {
+                $classCutoff = $i;
+                break;
+            }
+        }
+    }
+    if (!isset($traitCutoff)) {
+        $traitCutoff = count($traits);
+        for ($i = 0; $i < count($traits); $i++) {
+            $methods = get_class_methods($traits[$i]);
+            if (empty($methods)) {
+                continue;
+            }
+            list($first) = $methods;
+            if ((new \ReflectionMethod($traits[$i], $first))->isUserDefined()) {
+                $traitCutoff = $i;
+                break;
+            }
+        }
+    }
+    return array_merge(array_slice($classes, $classCutoff),
+                       array_slice($traits, $traitCutoff));
+}
+
+function matchWildcard($wildcard, array $subjects)
+{
     $table = ['*' => '.*', '{' => '(', '}' => ')', ' ' => ''];
-    return preg_match('/' . strtr($wildcard, $table) . '/', $subject);
+    $pattern = '/' . strtr($wildcard, $table) . '/';
+    return preg_grep($pattern, $subjects);
 }
 
 function isOwnName($name)

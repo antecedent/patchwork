@@ -45,11 +45,6 @@ function silence(CallRerouting\Handle $handle)
     $handle->silence();
 }
 
-function enableCaching($location, $assertWritable = true)
-{
-    CodeManipulation\setCacheLocation($location, $assertWritable);
-}
-
 function getClass()
 {
     return Stack\top('class');

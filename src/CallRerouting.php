@@ -63,9 +63,9 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
             }
         }
     }
-    foreach (Utils\getUserDefinedCallables() as $callable) {
-        list($w, $f) = [$wildcard, $callable];
-        if (!Utils\matchWildcard($w, $f) || !inPreprocessedFile($f) || $handle->hasTag($f)) {
+    $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
+    foreach ($callables as $callable) {
+        if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
             continue;
         }
         if (function_exists($callable)) {

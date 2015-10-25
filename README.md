@@ -19,26 +19,6 @@ It is, however, planned and being developed for Patchwork's next major release.
 
 Patchwork requires at least either Zend's PHP 5.4.0 or HHVM 3.6.0 to run. Compatibility with lower versions of HHVM is possible, but has not been tested.
 
-## Setup
-
-Upon obtaining the package, it is necessary to import it manually:
-
-```php
-require 'vendor/antecedent/patchwork/Patchwork.php';
-```
-
-However, inserting this statement in an arbitrary point in your code will likely result in an error:
-
-    Warning: Please import Patchwork from a point in your code where no user-defined function is yet defined.
-
-It is highly recommended to comply to this warning.
-
-When absolutely necessary, however, one can always use the `@` operator to suppress this warning:
-
-```php
-@require 'vendor/antecedent/patchwork/Patchwork.php';
-```
-
 ## Example
 
 After running the following code, any existing and upcoming instances of [Collection](http://laravel.com/docs/5.1/collections)

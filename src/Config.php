@@ -12,18 +12,32 @@ use Patchwork\Exceptions;
 
 const FILE_NAME = 'patchwork.json';
 
-function locate($path)
+function locate()
 {
-    setRoot($path);
+    foreach (array_merge([$_SERVER['PHP_SELF']], get_included_files()) as $file) {
+        if (tryToLocateIn(dirname($file))) {
+            return;
+        }
+    }
+    throw new Exceptions\ConfigMissing;
+}
+
+function tryToLocateIn($path)
+{
+    $path = rtrim($path, '/\\');
     while (file_exists($path) && is_readable($path)) {
-        $file = rtrim($path, '/\\') . '/' . FILE_NAME;
+        $file = $path . '/' . FILE_NAME;
         if (is_file($file)) {
             setRoot($path);
             read($file);
-            break;
+            return true;
+        }
+        if ($path == dirname($path)) {
+            return false;
         }
         $path = dirname($path);
     }
+    return false;
 }
 
 function setRoot($root)
@@ -82,7 +96,7 @@ class State
         'cache' => null,
         'blacklist' => [],
         'whitelist' => [],
-        'redefinableInternals' => [],
+        'redefinable_internals' => [],
     ];
 
     static $root;

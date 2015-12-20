@@ -65,9 +65,9 @@ function getMethod()
     return getFunction();
 }
 
-function configure($dir)
+function configure()
 {
-    Config\locate($dir);
+    Config\locate();
 }
 
 if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
@@ -90,7 +90,9 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-Config\locate(__DIR__);
+try {
+    configure();
+} catch (Exceptions\ConfigMissing $e) {}
 
 CodeManipulation\Stream::wrap();
 
@@ -105,4 +107,3 @@ CodeManipulation\onImport([
 ]);
 
 Utils\clearOpcodeCaches();
-

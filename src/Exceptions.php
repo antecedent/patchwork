@@ -49,11 +49,19 @@ class DefinedTooEarly extends CallbackException
 
 class CacheLocationUnavailable extends Exception
 {
-    public function __construct($location)
+    function __construct($location)
     {
         parent::__construct(sprintf(
             "The specified cache location is inexistent or read-only: %s",
             $location
         ));
+    }
+}
+
+class ConfigMissing extends Exception
+{
+    public function __construct()
+    {
+        parent::__construct('No patchwork.json was found in directories enclosing any included files');
     }
 }

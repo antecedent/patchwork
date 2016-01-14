@@ -8,6 +8,7 @@
  */
 namespace Patchwork\Config;
 
+use Patchwork\Utils;
 use Patchwork\Exceptions;
 
 const FILE_NAME = 'patchwork.json';
@@ -91,12 +92,24 @@ function getCachePath()
     return resolvePath(get('cache'));
 }
 
+function shouldIgnore($callable)
+{
+    $name = Utils\callableToString($callable);
+    foreach (get('ignore', []) as $wildcard) {
+        if (Utils\wildcardMatches($wildcard, $name)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 class State
 {
     static $table = [
         'cache' => null,
         'blacklist' => [],
         'whitelist' => [],
+        'ignore' => [],
     ];
 
     static $root;

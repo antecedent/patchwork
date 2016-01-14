@@ -78,9 +78,9 @@ Utils\alias('Patchwork', [
     'restoreAll' => 'undoAll',
 ]);
 
-if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
+if (array_filter(Utils\getUserDefinedCallables(), 'Patchwork\Utils\isForeignName') != []) {
     trigger_error('Please import Patchwork from a point in your code ' .
-        'where no user-defined function is yet defined.', E_USER_WARNING);
+        'where no user-defined function, class or trait is yet defined.', E_USER_WARNING);
 }
 
 if (Utils\runningOnHHVM()) {

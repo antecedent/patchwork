@@ -60,7 +60,7 @@ Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
 ===DONE===
 
 --EXPECTF--
-Warning: Please import Patchwork from a point in your code where no user-defined function is yet defined. in %s on line %d
+Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. in %s on line %d
 
 Warning: anotherUndefinedFunction() was never defined during the lifetime of its redefinition in %s on line %d
 ===DONE===

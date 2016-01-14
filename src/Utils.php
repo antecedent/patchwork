@@ -8,6 +8,8 @@
  */
 namespace Patchwork\Utils;
 
+use Patchwork\Config;
+
 const ALIASING_CODE = '
     namespace %s;
     function %s() {
@@ -203,9 +205,14 @@ function matchWildcard($wildcard, array $subjects)
     return preg_grep($pattern, $subjects);
 }
 
+function wildcardMatches($wildcard, $subject)
+{
+    return matchWildcard($wildcard, [$subject]) == [$subject];
+}
+
 function isOwnName($name)
 {
-    return stripos((string) $name, 'Patchwork\\') === 0;
+    return stripos((string) $name, 'Patchwork\\') === 0 || Config\shouldIgnore($name);
 }
 
 function isForeignName($name)

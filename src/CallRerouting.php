@@ -13,6 +13,7 @@ require __DIR__ . '/CallRerouting/Decorator.php';
 
 use Patchwork\Utils;
 use Patchwork\Stack;
+use Patchwork\Config;
 use Patchwork\Exceptions;
 
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
@@ -65,7 +66,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     }
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
     foreach ($callables as $callable) {
-        if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
+        if (!inPreprocessedFile($callable) || Config\shouldIgnore($callable) || $handle->hasTag($callable)) {
             continue;
         }
         if (function_exists($callable)) {
@@ -104,7 +105,7 @@ function validate($function)
     if (Utils\runningOnHHVM()) {
         return;
     }
-    if (!inPreprocessedFile($function)) {
+    if (!Config\shouldIgnore($function) && !inPreprocessedFile($function)) {
         throw new Exceptions\DefinedTooEarly($function);
     }
 }

@@ -42,7 +42,7 @@ class DefinedTooEarly extends CallbackException
     function __construct($callback)
     {
         $this->message = "The file that defines %s() was included earlier than Patchwork. " .
-                         "This is likely a result of an improper setup; see wiki for details.";
+                         "This is likely a result of an improper setup; see readme for details.";
         parent::__construct($callback);
     }
 }

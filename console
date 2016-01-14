@@ -15,21 +15,14 @@ $argc > 2 && $argv[1] == 'prime'
 file_exists(getcwd() . "/patchwork.json")
     or exit("\nError: patchwork.json does not exist in the current directory.\n\n");
 
+require 'Patchwork.php';
+
 try {
-    require 'Patchwork.php';
+    CM\cacheEnabled()
+        or exit("\nError: no cache location set.\n\n");
 } catch (Patchwork\Exceptions\CacheLocationUnavailable $e) {
-    exit("\nError: the cache location specified in patchwork.json is unavailable.\n\n");
+    exit("\nError: " . $e->getMessage() . "\n\n");
 }
-
-try {
-    Patchwork\Config\read(getcwd() . '/patchwork.json');
-} catch (RuntimeException $e) {
-    echo "\n" . $e->getMessage() . "\n\n";
-}
-
-CM\cacheEnabled()
-    or exit("\nError: no cache location set.\n\n");
-
 
 $files = [];
 

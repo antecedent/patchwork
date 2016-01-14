@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2015 Ignas Rudaitis
+ * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  * @link       http://antecedent.github.com/patchwork
  */
@@ -66,7 +66,8 @@ function read($file)
     $file = resolvePath($file);
     $data = json_decode(file_get_contents($file), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new \RuntimeException("Malformed configuration file $file (" . json_last_error_msg() . ")");
+        $message = json_last_error_msg();
+        throw new \RuntimeException("Malformed configuration file $file ($message)");
     }
     set((array) $data);
 }
@@ -96,7 +97,6 @@ class State
         'cache' => null,
         'blacklist' => [],
         'whitelist' => [],
-        'redefinable_internals' => [],
     ];
 
     static $root;

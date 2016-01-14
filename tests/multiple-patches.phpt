@@ -39,7 +39,6 @@ assert(getInteger() === 0);
 
 --EXPECT--
 Calling getInteger()
-Patch #1
-Patch #2
 Patch #3
+Patch #2
 ===DONE===

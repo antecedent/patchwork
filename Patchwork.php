@@ -70,11 +70,6 @@ function configure()
     Config\locate();
 }
 
-if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
-    trigger_error('Please import Patchwork from a point in your code ' .
-        'where no user-defined function is yet defined.', E_USER_WARNING);
-}
-
 Utils\alias('Patchwork', [
     'redefine'   => ['replace', 'replaceLater'],
     'relay'      => 'callOriginal',
@@ -88,6 +83,11 @@ if (Utils\runningOnHHVM()) {
     # just let Patchwork become a wrapper for fb_intercept()
     spl_autoload_register('Patchwork\CallRerouting\deployQueue');
     return;
+}
+
+if (array_filter(get_defined_functions()['user'], 'Patchwork\Utils\isForeignName') != []) {
+    trigger_error('Please import Patchwork from a point in your code ' .
+        'where no user-defined function is yet defined.', E_USER_WARNING);
 }
 
 try {

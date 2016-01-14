@@ -111,6 +111,9 @@ function validate($function)
 
 function inPreprocessedFile($callable)
 {
+    if (Utils\runningOnHHVM()) {
+        return true;
+    }
     if (Utils\isOwnName(Utils\callableToString($callable))) {
         return false;
     }

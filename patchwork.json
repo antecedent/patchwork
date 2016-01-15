@@ -1,5 +1,5 @@
 {
-    "ignore": [
+    "suppress-warnings": [
         "*Test::*",
         "PHPUnit_*",
         "phpDocumentor\\*",
@@ -18,6 +18,7 @@
         "cbdsn_*",
         "_cbdsn_*",
         "Couchbase*",
-        "_Couchbase*"
+        "_Couchbase*",
+        "Extract_Phar::*"
     ]
 }

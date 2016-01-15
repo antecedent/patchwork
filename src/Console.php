@@ -1,33 +1,32 @@
-#!/usr/bin/php
 <?php
+
+/**
+ * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
+ * @copyright  2010-2016 Ignas Rudaitis
+ * @license    http://www.opensource.org/licenses/mit-license.html
+ */
+namespace Patchwork\Console; \Patchwork\CallRerouting\deployQueue();
 
 use Patchwork\CodeManipulation as CM;
 
 error_reporting(E_ALL | E_STRICT);
 
-php_sapi_name() == 'cli'
-    or exit("\npatchwork/console has to be run from the command line.\n\n");
-
 $argc > 2 && $argv[1] == 'prime'
-    or exit("\nUsage: php patchwork/console prime DIR1 DIR2 ... DIRn\n" .
+    or exit("\nUsage: php patchwork.phar prime DIR1 DIR2 ... DIRn\n" .
               "       (to recursively prime all PHP files under given directories)\n\n");
-
-file_exists(getcwd() . "/patchwork.json")
-    or exit("\nError: patchwork.json does not exist in the current directory.\n\n");
-
-require 'Patchwork.php';
 
 try {
     CM\cacheEnabled()
         or exit("\nError: no cache location set.\n\n");
-} catch (Patchwork\Exceptions\CacheLocationUnavailable $e) {
+} catch (Patchwork\Exceptions\CachePathUnavailable $e) {
     exit("\nError: " . $e->getMessage() . "\n\n");
 }
 
 $files = [];
 
 foreach (array_slice($argv, 2) as $path) {
-    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
+    $path = realpath($path);
+    foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $file) {
         if (substr($file, -4) == '.php' && !CM\internalToCache($file) && !CM\availableCached($file)) {
             $files[] = $file;
         }

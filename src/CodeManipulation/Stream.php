@@ -96,13 +96,9 @@ class Stream
     public function url_stat($path, $flags)
     {
         $this->unwrap();
-        if ($flags & STREAM_URL_STAT_QUIET) {
-            set_error_handler(function() {});
-        }
+        set_error_handler(function() {});
         $result = stat($path);
-        if ($flags & STREAM_URL_STAT_QUIET) {
-            restore_error_handler();
-        }
+        restore_error_handler();
         $this->wrap();
         if ($result) {
             $result[self::STAT_MTIME_ASSOC_OFFSET]++;

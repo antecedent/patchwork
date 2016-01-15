@@ -12,14 +12,16 @@ use function Patchwork\{redefine, relay, getMethod};
 $profiling = fopen('profiling.csv', 'w');
 
 /**
- * A crude profiler-like contraption.
- * Catches all (*) userland calls, acting as a wrapper.
+ * A minimalistic profiler.
+ *
+ * Catches all userland calls to methods inside the App namespace,
+ * acting as an around-filter.
  */
-redefine('*', function(...$args) use ($profiling) {
+redefine('App\*', function(...$args) use ($profiling) {
     $begin = microtime(true);
     relay(); # defaults to original arguments
     $end = microtime(true);
-    fputcsv($profiling, [getMethod(), $end - $start]);
+    fputcsv($profiling, [getMethod(), $end - $begin]);
 });
 ```
 
@@ -28,7 +30,7 @@ redefine('*', function(...$args) use ($profiling) {
 * *Method redefinition* is the internally preferred metaphor for Patchwork's behavior.
 * `restoreAll()` and `restore($handle)` end the lifetime of, respectively, all redefinitions, or only one of them, where `$handle = redefine(...)`.
 * Closure `$this` is automatically re-bound to the enclosing class of the method being redefined.
-* `__CLASS__`, `get_called_class()` etc. behave with no regard to the metaphor. `getClass()`, `getCalledClass()`, `getMethod()` and `getFunction()` from the `Patchwork` namespace should be used instead.
+* The behavior of `__CLASS__`, `static::class` etc. inside redefinitions disregards the metaphor. `getClass()`, `getCalledClass()`, `getMethod()` and `getFunction()` from the `Patchwork` namespace should be used instead.
 
 ## Testing-related uses
 

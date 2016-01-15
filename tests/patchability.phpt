@@ -8,6 +8,8 @@ assert_options(ASSERT_ACTIVE, 1);
 assert_options(ASSERT_WARNING, 1);
 error_reporting(E_ALL | E_STRICT);
 
+$_SERVER['PHP_SELF'] = __FILE__;
+
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/TestUtils.php";
 
@@ -40,6 +42,14 @@ Patchwork\replaceLater("getInteger", function() {
 require __DIR__ . "/includes/Functions.php";
 
 assert(getInteger() === 42);
+
+require __DIR__ . "/includes/Singleton.php";
+
+if (!Patchwork\Utils\runningOnHHVM()) {
+	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
+	    Patchwork\replace("Singleton::getInstance", function() {});
+	});
+}
 
 Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
 

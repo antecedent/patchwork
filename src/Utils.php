@@ -208,7 +208,7 @@ function getUserDefinedTraits()
 function matchWildcard($wildcard, array $subjects)
 {
     $table = ['*' => '.*', '{' => '(', '}' => ')', ' ' => '', '\\' => '\\\\'];
-    $pattern = '/' . strtr($wildcard, $table) . '/';
+    $pattern = '/' . strtr($wildcard, $table) . '/i';
     return preg_grep($pattern, $subjects);
 }
 
@@ -229,5 +229,5 @@ function isForeignName($name)
 
 function isMissedForeignName($name)
 {
-    return isForeignName($name) && !Config\shouldIgnore($name);
+    return isForeignName($name) && Config\shouldWarnAbout($name);
 }

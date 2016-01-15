@@ -46,21 +46,55 @@ class DefinedTooEarly extends CallbackException
     }
 }
 
-class CacheLocationUnavailable extends Exception
+class CachePathUnavailable extends Exception
 {
     function __construct($location)
     {
         parent::__construct(sprintf(
-            "The specified cache location is inexistent or read-only: %s",
+            "The specified cache path is inexistent or read-only: %s",
             $location
         ));
     }
 }
 
-class ConfigMissing extends Exception
+class ConfigException extends Exception
 {
-    public function __construct()
+}
+
+class ConfigMalformed extends ConfigException
+{
+    function __construct($file, $message)
     {
-        parent::__construct('No patchwork.json was found in directories enclosing any included files');
+        parent::__construct(sprintf(
+            'The configuration file %s is malformed: %s',
+            $file,
+            $message
+        ));
+    }
+}
+
+class ConfigKeyNotRecognized extends ConfigException
+{
+    function __construct($key, $list, $file)
+    {
+        parent::__construct(sprintf(
+            "The key '%s' in the configuration file %s was not recognized. " .
+            "You might have meant one of these: %s",
+            $key,
+            $file,
+            join(', ', $list)
+        ));
+    }
+}
+
+class CachePathConflict extends ConfigException
+{
+    function __construct($first, $second)
+    {
+        parent::__construct(sprintf(
+            "Detected configuration files provide conflicting cache paths: %s and %s",
+            $first,
+            $second
+        ));
     }
 }

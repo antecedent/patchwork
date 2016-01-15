@@ -1,0 +1,5 @@
+{
+    "blacklist": [
+        "includes/Singleton.php"
+    ]
+}

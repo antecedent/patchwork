@@ -77,9 +77,7 @@ Utils\alias('Patchwork', [
     'restoreAll' => 'undoAll',
 ]);
 
-try {
-    configure();
-} catch (Exceptions\ConfigMissing $e) {}
+configure();
 
 call_user_func(function() {
     $unwantedCallables = array_filter(
@@ -116,3 +114,7 @@ CodeManipulation\onImport([
 ]);
 
 Utils\clearOpcodeCaches();
+
+if (isset($argv) && realpath($argv[0]) === __FILE__) {
+    require 'src/Console.php';
+}

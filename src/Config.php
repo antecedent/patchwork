@@ -14,102 +14,147 @@ const FILE_NAME = 'patchwork.json';
 
 function locate()
 {
-    foreach (array_merge([$_SERVER['PHP_SELF']], get_included_files()) as $file) {
-        if (tryToLocateIn(dirname($file))) {
-            return;
+    $alreadyRead = [];
+    $paths = array_map('dirname', get_included_files());
+    $paths[] = dirname($_SERVER['PHP_SELF']);
+    foreach ($paths as $path) {
+        while (dirname($path) !== $path) {
+            $file = $path . '/' . FILE_NAME;
+            if (is_file($file) && !isset($alreadyRead[$file])) {
+                read($file);
+                $alreadyRead[$file] = true;
+            }
+            $path = dirname($path);
         }
     }
-    throw new Exceptions\ConfigMissing;
-}
-
-function tryToLocateIn($path)
-{
-    $path = rtrim($path, '/\\');
-    while (file_exists($path) && is_readable($path)) {
-        $file = $path . '/' . FILE_NAME;
-        if (is_file($file)) {
-            setRoot($path);
-            read($file);
-            return true;
-        }
-        if ($path == dirname($path)) {
-            return false;
-        }
-        $path = dirname($path);
-    }
-    return false;
-}
-
-function setRoot($root)
-{
-    State::$root = rtrim($root, '/\\');
-}
-
-function set(array $data)
-{
-    State::$table = $data + State::$table;
-}
-
-function get($key, $default = null)
-{
-    if (!array_key_exists($key, State::$table)) {
-        if (func_num_args() == 2) {
-            return $default;
-        }
-        throw new \InvalidArgumentException("Configuration key '$key' is absent");
-    }
-    return State::$table[$key];
 }
 
 function read($file)
 {
-    $file = resolvePath($file);
     $data = json_decode(file_get_contents($file), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         $message = json_last_error_msg();
-        throw new \RuntimeException("Malformed configuration file $file ($message)");
+        throw new Exceptions\ConfigMalformed($file, $message);
     }
-    set((array) $data);
+    set($data, $file);
 }
 
-function resolvePath($path)
+function set(array $data, $file)
 {
-    if (file_exists($path) && realpath($path) == $path) {
-        return $path;
+    $keys = array_keys($data);
+    $list = ['blacklist', 'whitelist', 'suppress-warnings', 'cache-path'];
+    $unknown = array_diff($keys, $list);
+    if ($unknown != []) {
+        throw new Exceptions\ConfigKeyNotRecognized(reset($unknown), $list, $file);
     }
-    if (State::$root === null) {
-        return $path;
-    }
-    return State::$root . '/' . $path;
+    $root = dirname($file);
+    setBlacklist(get($data, 'blacklist'), $root);
+    setWhitelist(get($data, 'whitelist'), $root);
+    setSuppressedWarnings(get($data, 'suppress-warnings'));
+    setCachePath(get($data, 'cache-path'), $root);
 }
 
-function getCachePath()
+function get(array $data, $key)
 {
-    if (get('cache') === null) {
-        return null;
-    }
-    return resolvePath(get('cache'));
+    return isset($data[$key]) ? $data[$key] : null;
 }
 
-function shouldIgnore($callable)
+function setBlacklist($data, $root)
 {
-    $name = Utils\callableToString($callable);
-    foreach (get('ignore', []) as $wildcard) {
-        if (Utils\wildcardMatches($wildcard, $name)) {
+    merge(State::$blacklist, resolvePaths($data, $root));
+}
+
+function isListed($path, array $list)
+{
+    $path = rtrim($path, '\\/');
+    foreach ($list as $item) {
+        if (strpos($path, $item) === 0) {
             return true;
         }
     }
     return false;
 }
 
+function isBlacklisted($path)
+{
+    return isListed($path, State::$blacklist);
+}
+
+function setWhitelist($data, $root)
+{
+    merge(State::$whitelist, resolvePaths($data, $root));
+}
+
+function isWhitelisted($path)
+{
+    return isListed($path, State::$whitelist);
+}
+
+function setSuppressedWarnings($data)
+{
+    merge(State::$suppressedWarnings, $data);
+}
+
+function shouldWarnAbout($callable)
+{
+    $callable = Utils\callableToString($callable);
+    foreach (State::$suppressedWarnings as $wildcard) {
+        if (Utils\wildcardMatches($wildcard, $callable)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function setCachePath($data, $root)
+{
+    if ($data === null) {
+        return;
+    }
+    $path = resolvePath($data, $root);
+    if (State::$cachePath !== null && State::$cachePath !== $path) {
+        throw new Exceptions\CachePathConflict(State::$cachePath, $path);
+    }
+    State::$cachePath = $path;
+}
+
+function getCachePath()
+{
+    return State::$cachePath;
+}
+
+function resolvePath($path, $root)
+{
+    if ($path === null) {
+        return null;
+    }
+    if (file_exists($path) && realpath($path) === $path) {
+        return $path;
+    }
+    return realpath($root . '/' . $path);
+}
+
+function resolvePaths($paths, $root)
+{
+    if ($paths === null) {
+        return [];
+    }
+    $result = [];
+    foreach ((array) $paths as $path) {
+        $result[] = resolvePath($path, $root);
+    }
+    return $result;
+}
+
+function merge(array &$target, $source)
+{
+    $target = array_merge($target, (array) $source);
+}
+
 class State
 {
-    static $table = [
-        'cache' => null,
-        'blacklist' => [],
-        'whitelist' => [],
-        'ignore' => [],
-    ];
-
-    static $root;
+    static $blacklist = [];
+    static $whitelist = [];
+    static $suppressedWarnings = [];
+    static $cachePath;
 }

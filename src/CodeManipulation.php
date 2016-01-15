@@ -47,20 +47,18 @@ function cacheEnabled()
         return false;
     }
     if (!is_dir($location) || !is_writable($location)) {
-        throw new Exceptions\CacheLocationUnavailable($location);
+        throw new Exceptions\CachePathUnavailable($location);
     }
     return true;
 }
 
 function getCachedPath($file)
 {
-    $file = realpath($file);
     return Config\getCachePath() . '/' . urlencode($file);
 }
 
 function availableCached($file)
 {
-    $file = realpath($file);
     return cacheEnabled() &&
     file_exists(getCachedPath($file)) &&
     filemtime($file) <= filemtime(getCachedPath($file));
@@ -68,7 +66,6 @@ function availableCached($file)
 
 function internalToCache($file)
 {
-    $file = realpath($file);
     if (!cacheEnabled()) {
         return false;
     }
@@ -78,7 +75,6 @@ function internalToCache($file)
 
 function transformAndOpen($file)
 {
-    $file = realpath($file);
     foreach (State::$importListeners as $listener) {
         $listener($file);
     }
@@ -101,28 +97,12 @@ function transformAndOpen($file)
 
 function prime($file)
 {
-    $file = realpath($file);
     fclose(transformAndOpen($file));
 }
 
 function shouldTransform($file)
 {
-    $file = realpath($file);
-    $blacklisted = false;
-    foreach ((array) Config\get('blacklist') as $path) {
-        if (strpos($file, Config\resolvePath($path)) === 0) {
-            $blacklisted = true;
-        }
-    }
-    if (!$blacklisted) {
-        return true;
-    }
-    foreach ((array) Config\get('whitelist') as $path) {
-        if (strpos($file, Config\resolvePath($path)) === 0) {
-            return true;
-        }
-    }
-    return false;
+    return !Config\isBlacklisted($file) || Config\isWhitelisted($file);
 }
 
 function register($actions)

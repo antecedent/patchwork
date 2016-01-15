@@ -104,7 +104,7 @@ function validate($function)
     if (Utils\runningOnHHVM()) {
         return;
     }
-    if (!Config\shouldIgnore($function) && !inPreprocessedFile($function)) {
+    if (!inPreprocessedFile($function) && Config\shouldWarnAbout($function)) {
         throw new Exceptions\DefinedTooEarly($function);
     }
 }

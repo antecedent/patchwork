@@ -4,7 +4,6 @@
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
- * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\CallRerouting;
 
@@ -22,11 +21,11 @@ function connect($source, callable $target, Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
     list($class, $method) = Utils\interpretCallable($source);
-    if (Utils\isOwnName($class) || Utils\isOwnName($method)) {
-        return $handle;
-    }
     if (constitutesWildcard($source)) {
         return applyWildcard($source, $target, $handle);
+    }
+    if (Utils\isOwnName($class) || Utils\isOwnName($method)) {
+        return $handle;
     }
     validate($source);
     if (empty($class)) {
@@ -66,7 +65,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     }
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
     foreach ($callables as $callable) {
-        if (!inPreprocessedFile($callable) || Config\shouldIgnore($callable) || $handle->hasTag($callable)) {
+        if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
             continue;
         }
         if (function_exists($callable)) {

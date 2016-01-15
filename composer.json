@@ -1,8 +1,7 @@
 {
     "name": "antecedent/patchwork",
-    "description": "A pure PHP library that lets you redefine user-defined functions at runtime.",
+    "description": "Monkey-patching for PHP, in PHP.",
     "keywords": ["testing", "redefinition", "runkit", "monkeypatching", "interception", "aop", "aspect"],
-    "homepage": "http://antecedent.github.io/patchwork/",
     "license": "MIT",
     "authors": [
         {

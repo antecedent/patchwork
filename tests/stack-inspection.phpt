@@ -25,7 +25,7 @@ Patchwork\undoAll();
 expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 
 Patchwork\replace("NamedObject::getName", function() {
-    assert(Patchwork\getMethod() === "getName");
+    assert(Patchwork\getFunction() === "getName");
     return "bar";
 });
 
@@ -43,5 +43,5 @@ expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 ===DONE===
 
 --EXPECTF--
-Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. in %s on line %d
+Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. %s() and possibly others currently violate this. in %s on line %d
 ===DONE===

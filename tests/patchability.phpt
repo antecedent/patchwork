@@ -8,8 +8,6 @@ assert_options(ASSERT_ACTIVE, 1);
 assert_options(ASSERT_WARNING, 1);
 error_reporting(E_ALL | E_STRICT);
 
-$_SERVER['PHP_SELF'] = __FILE__;
-
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/TestUtils.php";
 
@@ -43,14 +41,6 @@ require __DIR__ . "/includes/Functions.php";
 
 assert(getInteger() === 42);
 
-require __DIR__ . "/includes/Singleton.php";
-
-if (!Patchwork\Utils\runningOnHHVM()) {
-	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
-	    Patchwork\replace("Singleton::getInstance", function() {});
-	});
-}
-
 Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
 
 # Should raise no errors
@@ -60,7 +50,7 @@ Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
 ===DONE===
 
 --EXPECTF--
-Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. in %s on line %d
+Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. %s() and possibly others currently violate this. in %s on line %d
 
 Warning: anotherUndefinedFunction() was never defined during the lifetime of its redefinition in %s on line %d
 ===DONE===

@@ -4,7 +4,6 @@
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
- * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork\Utils;
 
@@ -154,23 +153,25 @@ function getUserDefinedMethods()
 {
     static $result = [];
     static $classCount = 0;
-    $classes = getUserDefinedClassesAndTraits();
+    static $traitCount = 0;
+    $classes = getUserDefinedClasses();
+    $traits = getUserDefinedTraits();
     $newClasses = array_slice($classes, $classCount);
-    foreach ($newClasses as $newClass) {
+    $newTraits = array_slice($traits, $traitCount);
+    foreach (array_merge($newClasses, $newTraits) as $newClass) {
         foreach (get_class_methods($newClass) as $method) {
             $result[] = $newClass . '::' . $method;
         }
     }
     $classCount = count($classes);
+    $traitCount = count($traits);
     return $result;
 }
 
-function getUserDefinedClassesAndTraits()
+function getUserDefinedClasses()
 {
     static $classCutoff;
-    static $traitCutoff;
     $classes = get_declared_classes();
-    $traits = get_declared_traits();
     if (!isset($classCutoff)) {
         $classCutoff = count($classes);
         for ($i = 0; $i < count($classes); $i++) {
@@ -180,6 +181,13 @@ function getUserDefinedClassesAndTraits()
             }
         }
     }
+    return array_slice($classes, $classCutoff);
+}
+
+function getUserDefinedTraits()
+{
+    static $traitCutoff;
+    $traits = get_declared_traits();
     if (!isset($traitCutoff)) {
         $traitCutoff = count($traits);
         for ($i = 0; $i < count($traits); $i++) {
@@ -194,13 +202,12 @@ function getUserDefinedClassesAndTraits()
             }
         }
     }
-    return array_merge(array_slice($classes, $classCutoff),
-                       array_slice($traits, $traitCutoff));
+    return array_slice($traits, $traitCutoff);
 }
 
 function matchWildcard($wildcard, array $subjects)
 {
-    $table = ['*' => '.*', '{' => '(', '}' => ')', ' ' => ''];
+    $table = ['*' => '.*', '{' => '(', '}' => ')', ' ' => '', '\\' => '\\\\'];
     $pattern = '/' . strtr($wildcard, $table) . '/';
     return preg_grep($pattern, $subjects);
 }
@@ -212,10 +219,15 @@ function wildcardMatches($wildcard, $subject)
 
 function isOwnName($name)
 {
-    return stripos((string) $name, 'Patchwork\\') === 0 || Config\shouldIgnore($name);
+    return stripos((string) $name, 'Patchwork\\') === 0;
 }
 
 function isForeignName($name)
 {
     return !isOwnName($name);
+}
+
+function isMissedForeignName($name)
+{
+    return isForeignName($name) && !Config\shouldIgnore($name);
 }

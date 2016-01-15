@@ -4,7 +4,6 @@
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
- * @link       http://antecedent.github.com/patchwork
  */
 namespace Patchwork;
 
@@ -62,7 +61,7 @@ function getFunction()
 
 function getMethod()
 {
-    return getFunction();
+    return getClass() . '::' . getFunction();
 }
 
 function configure()
@@ -78,10 +77,24 @@ Utils\alias('Patchwork', [
     'restoreAll' => 'undoAll',
 ]);
 
-if (array_filter(Utils\getUserDefinedCallables(), 'Patchwork\Utils\isForeignName') != []) {
-    trigger_error('Please import Patchwork from a point in your code ' .
-        'where no user-defined function, class or trait is yet defined.', E_USER_WARNING);
-}
+try {
+    configure();
+} catch (Exceptions\ConfigMissing $e) {}
+
+call_user_func(function() {
+    $unwantedCallables = array_filter(
+        Utils\getUserDefinedCallables(),
+        'Patchwork\Utils\isMissedForeignName'
+    );
+    if ($unwantedCallables != []) {
+        trigger_error(
+            'Please import Patchwork from a point in your code where no user-defined function, ' .
+            'class or trait is yet defined. ' . reset($unwantedCallables) . '() and possibly ' .
+            'others currently violate this.',
+            E_USER_WARNING
+        );
+    }
+});
 
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
@@ -89,10 +102,6 @@ if (Utils\runningOnHHVM()) {
     spl_autoload_register('Patchwork\CallRerouting\deployQueue');
     return;
 }
-
-try {
-    configure();
-} catch (Exceptions\ConfigMissing $e) {}
 
 CodeManipulation\Stream::wrap();
 

@@ -144,9 +144,9 @@ size<span class="noise">([</span><span class="number">1</span>, <span class="num
                 <div class="example-box">
                     <pre><span class="keyword">use function</span> Patchwork<span class="noise">\</span>redefine;
 
-redefine<span class="noise">(</span><span class="string">'size'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>
-<span class="noise">{</span>
-    <span class="keyword">return</span> <span class="string">'h'</span> . str_repeat<span class="noise">(</span><span class="string">'u'</span>, count<span class="noise">(</span>$x<span class="noise">))</span> . <span class="string">'ge'</span>;
+redefine<span class="noise">(</span><span class="string">'size'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">) {</span>
+    $u = str_repeat<span class="noise">(</span><span class="string">'u'</span>, count<span class="noise">(</span>$x<span class="noise">))</span>;
+    <span class="keyword">return</span> <span class="string">'h'</span> . $u . <span class="string">'ge'</span>;
 <span class="noise">}</span><span class="noise">)</span>;
 
 size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => "huge"

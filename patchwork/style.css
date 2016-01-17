@@ -1,0 +1,531 @@
+@import url(http://fonts.googleapis.com/css?family=Merriweather|Ubuntu+Mono|Roboto:300);
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+#top-outer {
+    padding-top: 30px;
+    background: rgb(190,216,244);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+#top {
+    width: 896px;
+    height: 320px;
+    margin: 0 auto;
+    position: relative;
+}
+
+#square-pattern, #header {
+    width: 896px;
+    height: 320px;
+    position: absolute;
+}
+
+#top-outer.for-docs #top, #top-outer.for-docs #header, #top-outer.for-docs #square-pattern {
+    height: 128px;
+}
+
+h1 {
+    font-family: Merriweather, Georgia, serif;
+    font-weight: normal;
+    font-size: 100px;
+    color: white;
+    text-shadow: rgba(0, 0, 0, .3) 0 0 5px;
+    margin-top: 20px;
+    text-align: center;
+    height: 110px;
+}
+
+h1 a {
+    font-family: Merriweather, Georgia, serif;
+    color: white;
+    text-decoration: none;
+}
+
+#top-outer.for-docs h1 {
+    font-size: 90px;
+    height: 100px;
+    margin-top: 15px;
+}
+
+h2 {
+    color: #569;
+    text-align: center;
+    font-size: 20px;
+    margin-top: 10px;
+    line-height: 25px;
+}
+
+h2 span, h2 a {
+    color: #336;
+    text-decoration: none;
+}
+
+h2 a:hover {
+    text-decoration: underline;
+}
+
+a#download-button {
+    background: #DEE6FF;
+    background: rgba(255, 255, 255, 0.3);
+    display: block;
+    width: 155px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 5px;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #446;
+    border-radius: 7px;
+    box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+a#download-button .icon {
+    float: left;
+    width: 32px;
+    padding-top: 4px;
+    padding-right: 12px;
+    padding-left: 8px;
+    cursor: pointer;
+}
+
+a#download-button .content {
+    text-align: center;
+    float: left;
+    cursor: pointer;
+}
+
+a#download-button:hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 0.6)), color-stop(100%, rgba(255, 255, 255, 0.3)));
+    background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+    background: -o-linear-gradient(top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+    background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+    background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+    background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+}
+
+a#download-button h3 {
+    font-size: 20px;
+    font-weight: normal;
+    padding-bottom: 0;
+    margin-top: 0;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+a#download-button p {
+    font-size: 12px;
+    text-decoration: none;
+}
+
+#main-outer {
+    width: 896px;
+    margin: 0 auto;
+}
+
+#main {
+    padding: 20px;
+    padding-top: 0;
+    color: #444;
+    font-size: 14px;
+}
+
+#square-pattern {
+    overflow: auto;
+}
+
+#square-pattern div {
+    float: left;
+    height: 64px;
+    width: 64px;
+}
+
+#main h3 {
+    font-weight: bold;
+    font-size: 28px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+#main h4 {
+    font-weight: bold;
+    font-size: 23px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+#main .separator {
+    height: 1px;
+    background: #CCC;
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, white), color-stop(50%, #CCC), color-stop(100%, white));
+    background: -webkit-linear-gradient(left, white 0%, #CCC 50%, white 100%);
+    background: -o-linear-gradient(left, white 0%, #CCC 50%, white 100%);
+    background: -ms-linear-gradient(left, white 0%, #CCC 50%, white 100%);
+    background: -moz-linear-gradient(left, white 0%, #CCC 50%, white 100%);
+    background: -ms-linear-gradient(left, white 0%, #CCC 50%, white 100%);
+    background: linear-gradient(to right, white 0%, #CCC 50%, white 100%);
+    margin-top: 20px;
+}
+
+#main p {
+    margin-top: 20px;
+    text-align: justify;
+}
+
+#main p, #main ul li {
+    line-height: 20px;
+}
+
+#main a {
+    color: #406fb0;
+    text-decoration: none;
+}
+
+#main a:hover {
+    text-decoration: underline;
+}
+
+#nav {
+    position: fixed;
+    background: #333;
+    color: white;
+    width: 100%;
+    font-size: 14px;
+    z-index: 100;
+    box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+#nav a {
+    display: inline-block;
+    padding: 10px;
+    padding-bottom: 5px;
+    text-decoration: none;
+    color: white;
+    border-bottom: 5px solid #333;
+}
+
+#nav a.first {
+    font-weight: bold;
+}
+
+#nav a:hover {
+    border-bottom-color: #0062FF;
+}
+
+#nav a.more {
+    display: none;
+}
+
+#github-ribbon {
+    z-index: 200;
+}
+
+#example {
+    overflow: auto;
+    margin-top: 20px;
+}
+
+#main #example pre {
+    margin-top: 0;
+}
+
+.example-box {
+    float: left;
+    width: 268px;
+    margin-right: 25px;
+    border-radius: 0 0 10px 10px;
+}
+
+.example-box.last {
+    margin-right: 0;
+}
+
+#main .example-box p {
+    border-radius: 0 0 10px 10px;
+    background: #1e5799;
+    background: -moz-linear-gradient(top,  #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1e5799), color-stop(50%,#2989d8), color-stop(51%,#207cca), color-stop(100%,#7db9e8));
+    background: -webkit-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+    background: -o-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+    background: -ms-linear-gradient(top,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+    background: linear-gradient(to bottom,  #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+    text-align: center;
+    margin-top: 0;
+    padding: 7px;
+    color: white;
+}
+
+.example-box pre {
+    height: 132px;
+    font-size: 15px;
+    line-height: 17px;
+}
+
+pre {
+    background: #222;
+    color: white;
+    padding: 10px;
+    font-size: 15px;
+}
+
+pre .keyword {
+    color: #72b3ff;
+}
+
+pre .string {
+    color: #abe060;
+}
+
+pre .comment {
+    color: #c4d7fb;
+}
+
+pre .noise {
+    color: #BBB;
+}
+
+.important-box, .info-box {
+    overflow: auto;
+    padding: 10px;
+    border: 1px solid #E0C952;
+    background: #F7F1D4;
+    margin-top: 20px;
+    padding-top: 0;
+}
+
+.important-box .icon, .info-box .icon {
+    padding-right: 20px;
+    float: left;
+    padding-top: 10px;
+    width: 20px;
+}
+
+.important-box .content, .info-box .content {
+    float: left;
+    width: 780px;
+}
+
+#main .important-box .content p, #main .info-box .content p {
+    font-size: 14px;
+    line-height: 18px;
+    margin-top: 10px;
+}
+
+#social {
+    text-align: center;
+    margin-top: 15px;
+    padding-left: 30px;
+}
+
+#footer p {
+    text-align: center;
+}
+
+#disqus_thread {
+    margin-top: 20px;
+    padding: 20px;
+    background: #F4F4F4;
+    border: 1px solid #DDD;
+}
+
+.changed-behavior-notice {
+    background: #CDD5E4;
+    border: 1px solid #ACB9D2;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.changed-behavior-notice p {
+    margin-top: 0;
+}
+
+span.highlight {
+    border-radius: 7px;
+    padding: 2px;
+}
+
+table.files {
+    margin-top: 20px;
+    border-collapse: collapse;
+    border: 1px solid #CCC;
+    width: 200px;
+}
+
+table.files tr, table.files td {
+    background: #EEE;
+    border-bottom: 1px solid #CCC;
+}
+
+table.files tr.highlight td {
+    background: #BBD3FF;
+}
+
+table.files td {
+    padding: 3px;
+}
+
+table.files td.icon {
+    width: 18px;
+    text-align: center;
+}
+
+kbd, pre, pre span {
+    font-family: Consolas, "Ubuntu Mono", monospace;
+}
+
+kbd {
+    line-height: 14px;
+}
+
+#main ul {
+    margin-top: 10px;
+    list-style-type: square;
+    margin-left: 30px;
+}
+
+img {
+    border: none;
+}
+
+.license-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: #F4F4F4;
+    border: 1px solid #DDD;
+}
+
+#main .license-box h4 {
+    margin-top: 0;
+}
+
+#main .center {
+    text-align: center;
+}
+
+#main pre {
+    margin-top: 20px;
+}
+
+#main .important-box p.one-liner {
+    margin-top: 17px;
+}
+
+#main a.top {
+    float: right;
+    display: block;
+    margin-top: 20px;
+}
+
+#main h4.version {
+    font-weight: normal;
+    text-align: left;
+    font-size: 20px;
+    border-bottom: 1px solid #B3CAE6;
+    padding: 3px 0;
+    margin-top: 30px;
+}
+
+#main h4.version span {
+    color: white;
+    padding: 4px 5px;
+}
+
+#main h4.version.major span {
+    background: #134DEC;
+}
+
+#main h4.version.minor span {
+    background: #668FFF;
+}
+
+span.fixed {
+    padding: 3px;
+    padding-bottom: 1px;
+    background: #70CC00;
+    color: white;
+}
+
+#main ul.changes {
+    list-style-type: none;
+    font-size: 14px;
+    margin-left: 60px;
+    margin-top: 15px;
+}
+
+#main ul.changes li {
+    margin-top: 5px;
+}
+
+#main table.usage-section {
+    margin-top: 20px;
+    width: 100%;
+}
+
+#main table.usage-section th {
+    width: 215px;
+}
+
+#main table.usage-section th h4 {
+    font-family: Georgia, serif;
+    font-weight: normal;
+    font-style: italic;
+    font-size: 30px;
+    line-height: 35px;
+    margin-top: 0;
+}
+
+#main table.usage-section th.left {
+    border-right: 1px dashed #777;
+    padding-right: 20px;
+}
+
+#main table.usage-section td p.first {
+    margin-top: 0;
+}
+
+#main table.usage-section td.right {
+    padding-left: 20px;
+}
+
+#main table.usage-section th.right {
+    border-left: 1px dashed #777;
+    padding-left: 20px;
+}
+
+#main table.usage-section td.left {
+    padding-right: 20px;
+}
+
+#main .important-box .icon.top {
+    padding: 0;
+    float: none;
+    text-align: center;
+    width: auto;
+    height: auto;
+    margin-bottom: 5px;
+    margin-top: 8px;
+}
+
+#main .info-box {
+    border: 1px solid #A3BCF5;
+    background: #E8EEFC;
+}
+
+#main p.precaution {
+    font-weight: 200;
+    border-radius: 10px;
+    text-align: center;
+    padding: 15px;
+    border: 1px solid #f4d390;
+    background: #fcf8e3;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #8a6d3b;
+}

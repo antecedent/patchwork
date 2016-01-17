@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Usage - Patchwork</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../style.css" type="text/css">
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-20483190-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+    <div id="nav">
+        <a href="setup.html">Setup</a>
+        <a href="usage.html">Usage</a>
+        <a href="implementation.html">Implementation</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="license.html">License</a>
+        <a href="https://github.com/antecedent/patchwork">GitHub</a>
+    </div>
+    <div id="top-outer" class="for-docs">
+        <div id="top">
+            <div id="square-pattern">
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(191,216,242);"></div>
+                <div style="background: rgb(189,212,240);"></div>
+                <div style="background: rgb(191,213,245);"></div>
+                <div style="background: rgb(194,216,236);"></div>
+                <div style="background: rgb(184,210,249);"></div>
+                <div style="background: rgb(196,210,243);"></div>
+                <div style="background: rgb(184,218,249);"></div>
+                <div style="background: rgb(192,209,253);"></div>
+                <div style="background: rgb(193,210,245);"></div>
+                <div style="background: rgb(187,219,247);"></div>
+                <div style="background: rgb(188,215,246);"></div>
+                <div style="background: rgb(189,217,242);"></div>
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(191,216,245);"></div>
+                <div style="background: rgb(187,218,243);"></div>
+                <div style="background: rgb(192,218,240);"></div>
+                <div style="background: rgb(192,219,250);"></div>
+                <div style="background: rgb(188,221,235);"></div>
+                <div style="background: rgb(185,213,250);"></div>
+                <div style="background: rgb(200,221,244);"></div>
+                <div style="background: rgb(181,213,243);"></div>
+                <div style="background: rgb(187,218,239);"></div>
+                <div style="background: rgb(187,215,238);"></div>
+                <div style="background: rgb(189,212,240);"></div>
+            </div>
+            <div id="header">
+                <h1><a href="../">Patchwork</a></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-outer">
+        <div id="main">
+            <h3>Usage</h3>
+
+            <div class="separator"></div>
+
+            <p class="precaution">This section has not yet been updated for the backwards-compatible changes that appeared with <a href="changelog.html">version 1.3.0</a>.</p>
+
+            <table class="usage-section" id="redefinition-interface">
+            <tr>
+            <th class="left">
+                <h4>Redefinition interface</h4>
+            </th>
+            <td class="right">
+                <p class="first">Patchwork exposes two functions for redefining functions and methods:</p>
+<pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="keyword">callable</span> $original, <span class="keyword">callable</span> $redefinition<span class="noise">)</span></pre>
+<pre>Patchwork<span class="noise">\</span>replaceLater<span class="noise">(</span><span class="keyword">callable</span> $original, <span class="keyword">callable</span> $redefinition<span class="noise">)</span></pre>
+            </td>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="replace-vs-replaceLater">
+            <tr>
+            <td class="left">
+                <p class="first">The only difference between these two functions is that <kbd>replace</kbd> will throw an exception if requested to redefine a function that is not yet defined. <kbd>replaceLater</kbd>, on the other hand, will silently put off the redefinition to the point when the original definition occurs.</p>
+                <p>However, when there is no need for such behavior, we suggest using <kbd>replace</kbd>, since it will make sure that you have specified the original function's name correctly, which is especially relevant with heavily namespaced code.</p>
+            </td>
+            <th class="right">
+                <h4>replace vs. replaceLater</h4>
+            </th>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="specifying-the-redefinition">
+            <tr>
+            <th class="left">
+                <h4>Specifying the redefinition</h4>
+            </th>
+            <td class="right">
+                <p class="first"><kbd>replace</kbd> and <kbd>replaceLater</kbd> will accept any valid PHP callback as the redefinition. It is convenient to use anonymous functions for this purpose:</p>
+<pre>
+Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'File::exists'</span>, <span class="keyword">function</span><span class="noise">(</span>$name<span class="noise">)</span> <span class="noise">{</span>
+    <span class="keyword">return</span> </span>$name === <span class="string">'index.php'</span>;
+<span class="noise">}</span><span class="noise">)</span>;</pre>
+            </td>
+            <td class="right">
+                <div class="important-box" style="height: 100%; width: 120px; margin-top: 0;">
+                    <div class="top icon">
+                        <img src="../icons/attention.png" alt="Info">
+                    </div>
+                    <div class="content" style="width: 120px;">
+                        <p class="first" style="text-align: center;">Please note that it is impossible to <strong>alter a function's parameter list</strong> using Patchwork.</p>
+                    </div>
+                </div>
+            </td>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="specifying-the-original-function">
+            <tr>
+            <td class="left">
+                <p class="first">The reference to the original function or method is also accepted in the form of a PHP callback:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Foo\babble'</span>, $redefinition<span class="noise">)</span>;</pre>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Foo\Bar::baz'</span>, $redefinition<span class="noise">)</span>;</pre>
+                <p>References of the form <kbd>[$object, $method]</kbd> are also accepted. The way such references are interpreted is explained in the section <a href="#restricting-redefinitions-to-a-specific-object">&ldquo;Restricting redefinitions to a specific object&rdquo;</a>.</p>
+            </td>
+            <th class="right">
+                <h4>Specifying the original function</h4>
+            </th>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="redefining-inherited-methods">
+            <tr>
+            <th class="left">
+                <h4>Redefining inherited methods</h4>
+            </th>
+            <td class="right">
+                <p class="first">A valid PHP callback, such as <kbd>Foo\Bar::baz</kbd>, might sometimes refer to a method that has no &ldquo;physical&rdquo; definition of its own, but instead inherits it from a parent class or a trait.</p>
+                <p>The result that Patchwork produces when asked to redefine such a method is equivalent to inserting the redefinition as a new definition of the method into the class, overriding the inherited one. This kind of behavior can be thought as akin to <a href="http://php.net/runkit_method_add">runkit_method_add</a>.</p>
+                <p>However, it is impossible to make <kbd>Patchwork\replace</kbd> &ldquo;insert&rdquo; a method that is not already defined by any of the class's ancestors.</p>
+            </td>
+            </tr>
+            </table>
+
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="undoing-redefinitions">
+            <tr>
+            <td class="left">
+                <p class="first">This will undo all redefinitions that are currently in effect or are scheduled to come into effect in the future:</p>
+                <pre>Patchwork<span class="noise">\</span>undoAll<span class="noise">()</span>;</pre>
+                <p>The following, where <kbd>$handle</kbd> is the return value of a call to <kbd>replace</kbd> or <kbd>replaceLater</kbd>, will, on the other hand, undo or unschedule only a single redefinition:</p>
+                <pre>Patchwork<span class="noise">\</span>undo<span class="noise">(</span>$handle<span class="noise">)</span>;</pre>
+            </td>
+            <th class="right">
+                <h4>Undoing redefinitions</h4>
+            </th>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+            <table class="usage-section" id="escaping-redefinitions">
+            <tr>
+            <th class="left">
+                <h4>Passing the call to the original definition</h4>
+            </th>
+            <td class="right">
+                <p class="first">By calling <kbd>Patchwork\pass</kbd>, a redefinition can request to be immediately terminated, and let the original definition dispatch the call instead:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Cache::store'</span>, <span class="keyword">function</span><span class="noise">(</span>$key<span class="noise">) {</span>
+    <span class="comment"># Print some debugging output</span>
+    <span class="keyword">echo</span> <span class="string">"Writing an item with the key '</span>$key<span class="string">' to cache"</span>;
+    <span class="comment"># Let the original definition perform the caching</span>
+    Patchwork<span class="noise">\</span>pass<span class="noise">()</span>;
+<span class="noise">})</span>;</pre>
+                <p>This can be used to attach &ldquo;pre-filters&rdquo; to functions and methods, which might prove useful in some debugging tasks.</p>
+                <p>However, a much more important use for this is crafting redefinitions that only handle specific argument sets, letting the original redefinition respond to the rest:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'File::exists'</span>, <span class="keyword">function</span><span class="noise">(</span>$name<span class="noise">)</span> <span class="noise">{</span>
+    <span class="keyword">if</span> <span class="noise">(</span>$name === <span class="string">'inexistent.php'</span><span class="noise">)</span> <span class="noise">{</span>
+        <span class="keyword">return false</span>;
+    <span class="noise">}</span>
+    Patchwork<span class="noise">\</span>pass<span class="noise">(</span><span class="noise">)</span>;
+<span class="noise">}</span><span class="noise">)</span>;</pre>
+            </td>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+            <table class="usage-section" id="accessing-the-called-methods-object">
+            <tr>
+            <td class="left">
+                <p class="first">In PHP versions 5.4.0 and up, anonymous functions used as instance method redefinitions can refer to the method's object by <kbd>$this</kbd>:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Post::save'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="noise">)</span> <span class="keyword">use</span> <span class="noise">(&amp;</span>$savedPostIds<span class="noise">)</span> <span class="noise">{</span>
+    $savedPostIds<span class="noise">[</span><span class="noise">]</span> = $this<span class="noise">-></span>id;
+<span class="noise">}</span><span class="noise">)</span>;</pre>
+                <p style="text-align: left;">Alternatively, the top call's object can be obtained by calling <kbd>Patchwork\Stack\top('object')</kbd>:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Foo\Bar::baz'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="noise">)</span> <span class="noise">{</span>
+    assert<span class="noise">(</span>Patchwork<span class="noise">\</span>Stack<span class="noise">\</span>top<span class="noise">(</span><span class="string">'object'</span><span class="noise">)</span> === $this<span class="noise">)</span>;
+<span class="noise">}</span><span class="noise">)</span>;</pre>
+            </td>
+            <th class="right">
+                <h4>Accessing the called method's object</h4>
+            </th>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="restricting-redefinitions-to-a-specific-object">
+            <tr>
+            <th class="left">
+                <h4>Restricting redefinitions to a specific object</h4>
+            </th>
+            <td class="right">
+                <p class="first">By selectively passing the call to the original definition, it is possible to limit a redefinition to a specific object:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="string">'Request::getMethod'</span><span class="noise">)</span> <span class="keyword">use</span> <span class="noise">(</span>$instance<span class="noise">)</span> <span class="noise">{</span>
+    <span class="keyword">if</span> <span class="noise">(</span>$this !== $instance<span class="noise">)</span> <span class="noise">{</span>
+        Patchwork<span class="noise">\</span>pass<span class="noise">(</span><span class="noise">)</span>;
+    <span class="noise">}</span>
+    <span class="keyword">return</span> <span class="string">'GET'</span>;
+<span class="noise">}</span>
+<span class="noise">}</span><span class="noise">)</span>;</pre>
+                <p>To avoid this kind of boilerplate code, Patchwork provides an intuitive shortcut for this:</p>
+                <pre>Patchwork<span class="noise">\</span>replace<span class="noise">(</span><span class="noise">[</span>$instance, $method<span class="noise">]</span>, $redefinition<span class="noise">)</span>;</pre>
+            </td>
+            </tr>
+            </table>
+
+            <div class="separator"></div>
+
+
+            <table class="usage-section" id="referring-to-a-redefined-methods-class">
+            <tr>
+            <td class="left">
+                <p class="first">Quite inconveniently, the <kbd>self</kbd>, <kbd>parent</kbd> and <a href="http://php.net/manual/en/language.oop5.late-static-bindings.php"><kbd>static</kbd></a> keywords and <a href="http://php.net/get_called_class"><kbd>get_called_class</kbd></a> inside method redefinitions do not work as they would inside the original definition's class.</p>
+                <p>To circumvent this, full class names can be used instead of <kbd>self</kbd> and <kbd>parent</kbd>, and a special function, <kbd>Patchwork\Stack\topCalledClass()</kbd>, can be used as a replacement for <kbd>get_called_class</kbd> and <kbd>static</kbd>.</p>
+            </td>
+            <th class="right">
+                <h4>Referring to a redefined method's class</h4>
+            </th>
+            </tr>
+            </table>
+
+
+            <div class="separator"></div>
+
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'antecedentgithub';
+                var disqus_identifier = '/patchwork/docs/usage.html';
+                var disqus_url = 'http://antecedent.github.com/patchwork/docs/usage.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </div>
+</body>
+</html>

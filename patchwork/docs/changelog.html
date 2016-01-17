@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Changelog - Patchwork</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../style.css" type="text/css">
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-20483190-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+<body>
+    <div id="nav">
+        <a href="setup.html">Setup</a>
+        <a href="usage.html">Usage</a>
+        <a href="implementation.html">Implementation</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="license.html">License</a>
+        <a href="https://github.com/antecedent/patchwork">GitHub</a>
+    </div>
+    <div id="top-outer" class="for-docs">
+        <div id="top">
+            <div id="square-pattern">
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(191,216,242);"></div>
+                <div style="background: rgb(189,212,240);"></div>
+                <div style="background: rgb(191,213,245);"></div>
+                <div style="background: rgb(194,216,236);"></div>
+                <div style="background: rgb(184,210,249);"></div>
+                <div style="background: rgb(196,210,243);"></div>
+                <div style="background: rgb(184,218,249);"></div>
+                <div style="background: rgb(192,209,253);"></div>
+                <div style="background: rgb(193,210,245);"></div>
+                <div style="background: rgb(187,219,247);"></div>
+                <div style="background: rgb(188,215,246);"></div>
+                <div style="background: rgb(189,217,242);"></div>
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(190,216,244);"></div>
+                <div style="background: rgb(191,216,245);"></div>
+                <div style="background: rgb(187,218,243);"></div>
+                <div style="background: rgb(192,218,240);"></div>
+                <div style="background: rgb(192,219,250);"></div>
+                <div style="background: rgb(188,221,235);"></div>
+                <div style="background: rgb(185,213,250);"></div>
+                <div style="background: rgb(200,221,244);"></div>
+                <div style="background: rgb(181,213,243);"></div>
+                <div style="background: rgb(187,218,239);"></div>
+                <div style="background: rgb(187,215,238);"></div>
+                <div style="background: rgb(189,212,240);"></div>
+            </div>
+            <div id="header">
+                <h1><a href="../">Patchwork</a></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-outer">
+        <div id="main">
+            <h3>Changelog</h3>
+
+            <div class="separator"></div>
+
+            <h4 class="minor version">
+                <span>1.3.2</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/15">Fatal error: Generators cannot return values using "return"</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.3.1</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/16">Buggy reimplementation of binary search</a>.</li>
+            </ul>
+
+            <h4 class="major version">
+                <span>1.3.0</span> Major Release
+            </h4>
+
+            <ul class="changes">
+                <li>Wrapper-like behavior is now available to redefinitions using <kbd>Patchwork\callOriginal()</kbd>.</li>
+                <li>Preprocessor output is now optionally cached.</li>
+                <li><kbd>Patchwork\replaceLater</kbd> is now a <kbd>@deprecated</kbd> alias to <kbd>Patchwork\replace</kbd>, which now performs an existence check when a redefinition is being undone, or on shutdown.</li>
+                <li>HHVM is now supported.</li>
+                <li>No interference with opcode caches was detected.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.9</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/14">Unexpected T_NS_SEPARATOR when using ::class syntax</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.8</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/13">Another standard output leak</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.7</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><a href="https://github.com/antecedent/patchwork/pull/11">Improved the error message for <kbd>Patchwork\Exceptions\DefinedTooEarly</kbd></a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.6</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><a href="https://github.com/antecedent/patchwork/pull/9">Added a <kbd>composer.json</kbd></a>.</li>
+                <li>Moved the PHAR from the main repository.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.5</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/6"><kbd>Patchwork\Preprocessor\Stream::stream_set_option</kbd> was left unimplemented</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.4</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/7"><kbd>Patchwork\Preprocessor\Stream::rmdir</kbd> passes a wrong parameter to <kbd>rmdir</kbd></a>.</li>
+                <li>The stream wrapper now has <a href="http://www.php.net/manual/en/streamwrapper.stream-metadata.php"><kbd>stream_metadata</kbd></a> and <a href="http://www.php.net/manual/en/streamwrapper.stream-truncate.php"><kbd>stream_truncate</kbd></a> methods.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.3</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li>Method redefinitions that are closures now have <kbd>$this</kbd> bound to the method's object.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.2</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/4#issuecomment-12097422">Preprocessor leaks data to standard output</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.2.1</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li>No errors are thrown anymore if an opcode cache is enabled.</li>
+                <li>An error is now thrown when including <kbd>Patchwork.php</kbd> if PHP version is lower than 5.3.0.
+            </ul>
+
+            <h4 class="major version">
+                <span>1.2.0</span> Major Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/5">Aliased methods imported from a trait misidentify themselves by their original name during call interception</a>.</li>
+                <li>Static and instance method redefinitions are now heritable. This means that redefining <kbd>A::foo</kbd> now also redefines <kbd>B::foo</kbd>, if <kbd>B extends A</kbd> and <kbd>foo</kbd> is not overridden in <kbd>B</kbd>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.1.3</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/4">Referring to a namespaced function with a leading backslash causes redefinition to silently fail</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.1.2</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/2">Error: &ldquo;Only variables should be passed by reference&rdquo;</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.1.1</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/1">Error: &ldquo;Using $this when not in object context in \lib\Preprocessor.php(40) : eval()'d code on line 1&rdquo;</a>.</li>
+            </ul>
+
+            <h4 class="major version">
+                <span>1.1.0</span> Major Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> Error thrown from call interception code in namespaced anonymous functions.</li>
+                <li>Renamed public API functions: <kbd>patch</kbd> &rarr; <kbd>replace</kbd>, <kbd>unpatch</kbd> &rarr; <kbd>undo</kbd>, <kbd>escape</kbd> &rarr; <kbd>pass</kbd>.</li>
+                <li>Removed a specialized PHPUnit test case class.</li>
+                <li>Added <kbd>Patchwork\undoAll</kbd>.</li>
+                <li>Added <kbd>Patchwork\replaceLater</kbd>.</li>
+            </ul>
+
+            <h4 class="major version">
+                <span>1.0.0</span> Initial Public Release
+            </h4>
+
+            <div class="separator"></div>
+
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'antecedentgithub';
+                var disqus_identifier = '/patchwork/docs/changelog.html';
+                var disqus_url = 'http://antecedent.github.com/patchwork/docs/changelog.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </div>
+</body>
+</html>

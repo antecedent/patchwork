@@ -137,16 +137,16 @@
     <span class="keyword">return</span> count<span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>;
 <span class="noise">}</span>
 
-size<span class="noise">(</span><span class="keyword">array</span><span class="noise">(</span><span class="number">1</span>, <span class="number">2</span><span class="noise">)</span><span class="noise">)</span>; <span class="comment"># => 2
+size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">]</span><span class="noise">)</span>; <span class="comment"># => 2
                     </span></pre>
                     <p>1. Define a function</p>
                 </div>
                 <div class="example-box">
                     <pre><span class="keyword">use function</span> Patchwork<span class="noise">\</span>redefine;
 
-redefine<span class="noise">(</span><span class="string">"size"</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>
+redefine<span class="noise">(</span><span class="string">'size'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>
 <span class="noise">{</span>
-    <span class="keyword">return</span> <span class="string">"huge"</span>;
+    <span class="keyword">return</span> <span class="string">'h'</span> . str_repeat<span class="noise">(</span><span class="string">'u'</span>, count<span class="noise">(</span>$x<span class="noise">))</span> . <span class="string">'ge'</span>;
 <span class="noise">}</span><span class="noise">)</span>;
 
 size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => "huge"
@@ -156,7 +156,7 @@ size<span class="noise">([</span><span class="number">1</span>, <span class="num
                 <div class="example-box last">
                     <pre>Patchwork<span class="noise">\</span>restoreAll<span class="noise">(</span><span class="noise">)</span>;
 
-size<span class="noise">([</span><span class="noise">(</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => 2
+size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => 2
 </span>
 <span class="comment"># Note that all of these steps
 # occur at the same runtime!

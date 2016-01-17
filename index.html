@@ -142,21 +142,21 @@ size<span class="noise">(</span><span class="keyword">array</span><span class="n
                     <p>1. Define a function</p>
                 </div>
                 <div class="example-box">
-                    <pre><span class="keyword">use</span> Patchwork <span class="keyword">as</span> p;
+                    <pre><span class="keyword">use function</span> Patchwork<span class="noise">\</span>redefine;
 
-p<span class="noise">\</span>replace<span class="noise">(</span><span class="string">"size"</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>
+redefine<span class="noise">(</span><span class="string">"size"</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">)</span>
 <span class="noise">{</span>
     <span class="keyword">return</span> <span class="string">"huge"</span>;
 <span class="noise">}</span><span class="noise">)</span>;
 
-size<span class="noise">(</span><span class="keyword">array</span><span class="noise">(</span><span class="number">1</span>, <span class="number">2</span><span class="noise">)</span><span class="noise">)</span>; <span class="comment"># => "huge"
+size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => "huge"
 </span></pre>
                     <p>2. Replace its definition</p>
                 </div>
                 <div class="example-box last">
-                    <pre>p<span class="noise">\</span>undoAll<span class="noise">(</span><span class="noise">)</span>;
+                    <pre>Patchwork<span class="noise">\</span>reverseAll<span class="noise">(</span><span class="noise">)</span>;
 
-size<span class="noise">(</span><span class="keyword">array</span><span class="noise">(</span><span class="number">1</span>, <span class="number">2</span><span class="noise">)</span><span class="noise">)</span>; <span class="comment"># => 2
+size<span class="noise">([</span><span class="noise">(</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => 2
 </span>
 <span class="comment"># Note that all of these steps
 # occur at the same runtime!

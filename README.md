@@ -1,6 +1,6 @@
 # Patchwork 1.4 ([.phar](https://github.com/antecedent/patchwork/releases/download/1.4.0/patchwork.phar))
 
-Patchwork implements the [monkey-patching](https://en.wikipedia.org/wiki/Monkey_patch) of user-defined methods in PHP.
+Patchwork implements the redefinition ([monkey-patching](https://en.wikipedia.org/wiki/Monkey_patch)) of user-defined methods in PHP.
 
 Internally, it uses a [stream wrapper](http://php.net/manual/en/class.streamwrapper.php) on `file://` to inject a simple interceptor snippet to the beginning of every method.
 
@@ -11,12 +11,6 @@ use function Patchwork\{redefine, relay, getMethod};
 
 $profiling = fopen('profiling.csv', 'w');
 
-/**
- * A minimalistic profiler.
- *
- * Catches all userland calls to methods inside the App namespace,
- * acting as an around-filter.
- */
 redefine('App\*', function(...$args) use ($profiling) {
     $begin = microtime(true);
     relay(); # defaults to original arguments

@@ -13,7 +13,7 @@ $profiling = fopen('profiling.csv', 'w');
 
 redefine('App\*', function(...$args) use ($profiling) {
     $begin = microtime(true);
-    relay(); # defaults to original arguments
+    relay(); # calls the original definition
     $end = microtime(true);
     fputcsv($profiling, [getMethod(), $end - $begin]);
 });

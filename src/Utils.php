@@ -21,7 +21,7 @@ function clearOpcodeCaches()
     if (ini_get('wincache.ocenabled')) {
         wincache_refresh_if_changed();
     }
-    if (ini_get('apc.enabled')) {
+    if (ini_get('apc.enabled') && function_exists('apc_clear_cache')) {
         apc_clear_cache();
     }
 }

@@ -535,5 +535,5 @@ span.fixed {
 }
 
 .hint:hover {
-    border-bottom-color: #DDD;
+    border-bottom: 1px solid #BBB;
 }

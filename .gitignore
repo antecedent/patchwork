@@ -9,3 +9,6 @@ composer.phar
 .buildpath
 .project
 .settings
+
+# Ignore Brackets project related files.
+.brackets.json

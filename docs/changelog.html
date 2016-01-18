@@ -67,6 +67,34 @@
 
             <div class="separator"></div>
 
+            <h4 class="major version">
+                <span>1.4.0</span> Major Release
+            </h4>
+            <ul class="changes">
+                <li>Wildcards are now supported, e.g. <kbd>replace('App\*', ...)</kbd>.</li>
+                <li>Optional configuration files (<kbd>patchwork.json</kbd>) are now used to blacklist/whitelist files for preprocessing, suppress warnings and specify a cache path.</li>
+                <li>The cache used by Patchwork can now be primed by running <kbd>patchwork.phar</kbd> from the command line.</li>
+                <li><kbd>redefine</kbd>, <kbd>restore[All]</kbd> and <kbd>relay</kbd> are now the main aliases of <kbd>replace</kbd>, <kbd>undo[All]</kbd> and <kbd>fallBack</kbd>/<kbd>pass</kbd>.</li>
+            <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/27"></a>issues with <kbd>flock()</kbd></kbd></a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.3.5</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> faulty HHVM support.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/26"></a>incompatibility with WinCache</a>.</li>
+            </ul>
+
+            <h4 class="minor version">
+                <span>1.3.4</span> Minor Release
+            </h4>
+
+            <ul class="changes">
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/21">apply scheduled patches only once</a>.</li>
+            </ul>
+
             <h4 class="minor version">
                 <span>1.3.2</span> Minor Release
             </h4>

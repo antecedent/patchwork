@@ -73,13 +73,13 @@
 
             <p>Patchwork uses a <a href="http://php.net/manual/en/class.streamwrapper.php">stream wrapper</a> to intercept <kbd>include</kbd> statements and its variations.
 
-            <p>The following line from <a href="https://github.com/antecedent/patchwork/blob/1.2.1/Patchwork.php#L46"><kbd>Patchwork.php</kbd></a> registers the stream wrapper, whose code is located in <a href="https://github.com/antecedent/patchwork/blob/1.2.1/lib/Preprocessor/Stream.php"><kbd>lib/Preprocessor/Stream.php</kbd></a>:</p>
+            <p>The following line from <a href="https://github.com/antecedent/patchwork/blob/1.4.0/Patchwork.php#L104"><kbd>Patchwork.php</kbd></a> registers the stream wrapper, whose code is located in <a href="https://github.com/antecedent/patchwork/blob/1.4.0/src/CodeManipulation/Stream.php"><kbd>src/CodeManipulation/Stream.php</kbd></a>:</p>
 
-            <pre>Preprocessor<span class="noise">\</span>Stream<span class="noise">::</span>wrap<span class="noise">(</span><span class="noise">)</span>;</pre>
+            <pre>CodeManipulation<span class="noise">\</span>Stream<span class="noise">::</span>wrap<span class="noise">(</span><span class="noise">)</span>;</pre>
 
             <p>This wrapper is attached to the <kbd>file</kbd> protocol, and thus can override any of PHP's basic filesystem routines, such as opening a filesystem node (e.g. using <kbd>fopen</kbd>) or deleting it (using <kbd>unlink</kbd>). However, Patchwork's wrapper preserves the original functionality of all routines except for file opening, which is handled by the wrapper's <kbd>stream_open</kbd> method.</p>
 
-            <p>This method first checks if the request to open a file comes from an <kbd>include</kbd> statement. This check is done by checking for a specific bit flag (128 or 0x80) in the <kbd>$mode</kbd> argument. Any mention of this flag is nowhere to be found in PHP's documentation, yet it being set always coincides with the request coming from a statement of the <kbd>include</kbd> family (this has been tested on multiple PHP installations running on different platforms).</p>
+            <p>This method first checks if the request to open a file comes from an <kbd>include</kbd> statement. This check is done by checking for a specific bit flag (<kbd>STREAM_OPEN_FOR_INCLUDE</kbd>) in the <kbd>$mode</kbd> argument. Any mention of this flag is nowhere to be found in PHP's documentation, but it has been in <a href="https://github.com/php/php-src/blob/master/main/php_streams.h#L529"><kbd>php_streams.h</kbd></a> at least since PHP 5.3.</p>
 
             <p>If that turns out to be the case, Patchwork temporarily unwraps the <kbd>file</kbd> protocol to read the file being included, preprocesses its contents (more on that soon), writes the result to an <a href="http://php.net/manual/en/wrappers.php.php#refsect2-wrappers.php-unknown-unknown-unknown-unknown-unknown-descriptios">in-memory stream</a> and returns this stream's handle instead of a handle corresponding to the file being included.</p>
 
@@ -87,20 +87,19 @@
 
             <h4>Preprocessing Code</h4>
 
-            <p>Patchwork by default attaches <a href="https://github.com/antecedent/patchwork/blob/1.2.1/Patchwork.php#L48">four callbacks</a> that are responsible for code preprocessing:</p>
+            <p>Patchwork by default attaches <a href="https://github.com/antecedent/patchwork/blob/1.4.0/Patchwork.php#L106">three callbacks</a> that are responsible for code preprocessing:</p>
 
-            <pre>Preprocessor<span class="noise">\</span>attach<span class="noise">(</span><span class="keyword">array</span><span class="noise">(</span>
-    Preprocessor<span class="noise">\</span>Callbacks<span class="noise">\</span>Preprocessor<span class="noise">\</span>propagateThroughEval<span class="noise">(</span><span class="noise">)</span>,
-    Preprocessor<span class="noise">\</span>Callbacks<span class="noise">\</span>Interceptor<span class="noise">\</span>markPreprocessedFiles<span class="noise">(</span><span class="noise">)</span>,
-    Preprocessor<span class="noise">\</span>Callbacks<span class="noise">\</span>Interceptor<span class="noise">\</span>injectCallInterceptionCode<span class="noise">(</span><span class="noise">)</span>,
-    Preprocessor<span class="noise">\</span>Callbacks<span class="noise">\</span>Interceptor<span class="noise">\</span>injectScheduledPatchApplicationCode<span class="noise">(</span><span class="noise">)</span>,
-<span class="noise">)</span><span class="noise">)</span>;</pre>
+            <pre>CodeManipulation<span class="noise">\</span>register<span class="noise">([</span>
+    CodeManipulation<span class="noise">\</span>Actions<span class="noise">\</span>CodeManipulation<span class="noise">\</span>propagateThroughEval<span class="noise">(</span><span class="noise">)</span>,
+    CodeManipulation<span class="noise">\</span>Actions<span class="noise">\</span>Interceptor<span class="noise">\</span>injectCallInterceptionCode<span class="noise">(</span><span class="noise">)</span>,
+    CodeManipulation<span class="noise">\</span>Actions<span class="noise">\</span>Interceptor<span class="noise">\</span>injectQueueDeploymentCode<span class="noise">(</span><span class="noise">)</span>,
+<span class="noise">]</span><span class="noise">)</span>;</pre>
 
             <p>The most important of them is <kbd>injectCallInterceptionCode</kbd>, which, as the name suggests, injects code to the beginning of each function and method, and this code makes it possible to intercept any call to a function that resides in a preprocessed PHP file.</p>
 
             <img src="implementation/code_injection.png" alt="Behavior of injectCallInterceptionCode">
 
-            <p>The code injected by <kbd>injectCallInterceptionCode</kbd> is contained in a constant named <a href="https://github.com/antecedent/patchwork/blob/1.2.1/lib/Preprocessor/Callbacks/Interceptor.php#L15"><kbd>CALL_INTERCEPTION_CODE</kbd></a>. Before injection, this code is condensed to a single line to preserve line numbering, so that there wouldn't be any PHP error messages with incorrect line numbers. Also, this code is optimized to achieve minimum performance overhead in cases when the call doesn't have to be intercepted.</p>
+            <p>The code injected by <kbd>injectCallInterceptionCode</kbd> is contained in a constant named <a href="https://github.com/antecedent/patchwork/blob/1.4.0/src/CodeManipulation/Actions/CallRerouting.php#L14"><kbd>CALL_INTERCEPTION_CODE</kbd></a>. Before injection, this code is condensed to a single line to preserve line numbering, so that there wouldn't be any PHP error messages with incorrect line numbers. Also, this code is optimized to achieve minimum performance overhead in cases when the call doesn't have to be intercepted.</p>
 
             <h4>Intercepting Calls</h4>
 

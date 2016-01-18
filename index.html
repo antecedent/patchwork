@@ -142,10 +142,10 @@ size<span class="noise">([</span><span class="number">1</span>, <span class="num
                     <p>1. Define a function</p>
                 </div>
                 <div class="example-box" style="width: 310px;">
-                    <pre><span class="keyword">use function</span> Patchwork<span class="noise">\</span>redefine;
+                    <pre><span class="keyword">use</span> Patchwork <span class="keyword">as</span> p;
 
-redefine<span class="noise">(</span><span class="string">'size'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">) {</span>
-    $u = str_repeat<span class="noise">(</span><span class="string">'u'</span>, count<span class="noise">(</span>$x<span class="noise">))</span>;
+p<span class="noise">\</span>redefine<span class="noise">(</span><span class="string">'size'</span>, <span class="keyword">function</span><span class="noise">(</span><span class="variable">$x</span><span class="noise">) {</span>
+    $u = str_repeat<span class="noise">(</span><span class="string">'u'</span>, <span class="hint" title="Calls the original definition.">p<span class="noise">\</span>relay<span class="noise"></span>()</span>;
     <span class="keyword">return</span> <span class="string">'h'</span> . $u . <span class="string">'ge'</span>;
 <span class="noise">}</span><span class="noise">)</span>;
 
@@ -154,7 +154,7 @@ size<span class="noise">([</span><span class="number">1</span>, <span class="num
                     <p>2. Replace its definition</p>
                 </div>
                 <div class="example-box last" style="width: 248px;">
-                    <pre>Patchwork<span class="noise">\</span>restoreAll<span class="noise">(</span><span class="noise">)</span>;
+                    <pre>p<span class="noise">\</span>restoreAll<span class="noise">(</span><span class="noise">)</span>;
 
 size<span class="noise">([</span><span class="number">1</span>, <span class="number">2</span><span class="noise">])</span>; <span class="comment"># => 2
 </span>

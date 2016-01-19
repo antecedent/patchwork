@@ -377,7 +377,7 @@ table.files td.icon {
 }
 
 kbd, pre, pre span {
-    font-family: Consolas, "Ubuntu Mono", monospace;
+    font-family: "Ubuntu Mono", Consolas, monospace;
 }
 
 kbd {

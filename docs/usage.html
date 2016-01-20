@@ -141,7 +141,7 @@
             <table class="usage-section" id="closures-as-method-bodies">
             <tr>
             <td class="left">
-                <p class="first">When redefining a method, its new body is provided as a closure:</p>
+                <p class="first">The new body for a method being redefined can be taken from any callable, but closures are arguably the most convenient:</p>
                 
                 <pre><code class="php">redefine('Cache::store', function ($key, $value)
 {

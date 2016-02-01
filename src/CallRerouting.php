@@ -57,12 +57,14 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
         foreach (get_class_methods($instance) as $item) {
-            if (Utils\matchWildcard($method, $item) && !$handle->hasTag($item)) {
-                connect([$instance, $method], $target, $handle);
+            if (!$handle->hasTag($item)) {
+                connect([$instance, $item], $target, $handle);
                 $handle->tag($item);
             }
         }
+        $wildcard = $method;
     }
+
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
     foreach ($callables as $callable) {
         if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {

@@ -1,6 +1,6 @@
 {
     "name": "antecedent/patchwork",
-    "description": "Monkey-patching for PHP, in PHP.",
+    "description": "Method redefinition (monkey-patching) functionality for PHP.",
     "keywords": ["testing", "redefinition", "runkit", "monkeypatching", "interception", "aop", "aspect"],
     "license": "MIT",
     "authors": [

@@ -7,4 +7,4 @@
  */
 namespace Patchwork\QuietBootstrap;
 
-@require __DIR__ . '/../Patchwork.php';
+require_once __DIR__ . '/../Patchwork.php';

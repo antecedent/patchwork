@@ -56,13 +56,13 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     $handle = $handle ?: new Handle;
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
-        foreach (get_class_methods($instance) as $item) {
+        foreach (Utils\matchWildcard($method, get_class_methods($instance)) as $item) {
             if (!$handle->hasTag($item)) {
                 connect([$instance, $item], $target, $handle);
                 $handle->tag($item);
             }
         }
-        $wildcard = $method;
+        return $handle;
     }
 
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
@@ -191,7 +191,9 @@ function disconnectAll()
         foreach ($routesByClass as $method => $routes) {
             foreach ($routes as $route) {
                 list($callback, $handle) = $route;
-                $handle->expire();
+                if ($handle !== null) {
+                    $handle->expire();
+                }
             }
         }
     }

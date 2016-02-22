@@ -1,4 +1,4 @@
-# Patchwork 1.4 ([.phar](https://github.com/antecedent/patchwork/releases/download/1.4.0/patchwork.phar))
+# Patchwork 1.4 ([.phar](https://github.com/antecedent/patchwork/releases/download/1.4.2/patchwork.phar))
 
 Patchwork implements the redefinition ([monkey-patching](https://en.wikipedia.org/wiki/Monkey_patch)) of **user-defined** methods in PHP.
 

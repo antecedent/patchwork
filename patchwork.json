@@ -19,6 +19,7 @@
         "_cbdsn_*",
         "Couchbase*",
         "_Couchbase*",
-        "Extract_Phar::*"
+        "Extract_Phar::*",
+        "composer*"
     ]
 }

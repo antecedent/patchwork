@@ -69,6 +69,11 @@ function configure()
     Config\locate();
 }
 
+function hasMissed($callable)
+{
+    return Utils\callableWasMissed($callable);
+}
+
 Utils\alias('Patchwork', [
     'redefine'   => ['replace', 'replaceLater'],
     'relay'      => 'callOriginal',
@@ -79,20 +84,7 @@ Utils\alias('Patchwork', [
 
 configure();
 
-call_user_func(function() {
-    $unwantedCallables = array_filter(
-        Utils\getUserDefinedCallables(),
-        'Patchwork\Utils\isMissedForeignName'
-    );
-    if ($unwantedCallables != []) {
-        trigger_error(
-            'Please import Patchwork from a point in your code where no user-defined function, ' .
-            'class or trait is yet defined. ' . reset($unwantedCallables) . '() and possibly ' .
-            'others currently violate this.',
-            E_USER_WARNING
-        );
-    }
-});
+Utils\markMissedCallables();
 
 if (Utils\runningOnHHVM()) {
     # no preprocessor needed on HHVM;
@@ -115,6 +107,8 @@ CodeManipulation\onImport([
 
 Utils\clearOpcodeCaches();
 
-if (isset($argv) && realpath($argv[0]) === __FILE__) {
-    require 'src/Console.php';
+register_shutdown_function('Patchwork\Utils\clearOpcodeCaches');
+
+if (Utils\wasRunAsConsoleApp()) {
+    require __DIR__ . '/src/Console.php';
 }

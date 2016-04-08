@@ -42,6 +42,5 @@ expectException('Patchwork\Exceptions\StackEmpty', 'Patchwork\Stack\top');
 ?>
 ===DONE===
 
---EXPECTF--
-Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. %s() and possibly others currently violate this. in %s on line %d
+--EXPECT--
 ===DONE===

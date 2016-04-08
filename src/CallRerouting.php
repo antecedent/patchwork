@@ -17,7 +17,7 @@ use Patchwork\Exceptions;
 
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
 
-function connect($source, callable $target, Handle $handle = null)
+function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
 {
     $handle = $handle ?: new Handle;
     list($class, $method) = Utils\interpretCallable($source);
@@ -27,7 +27,7 @@ function connect($source, callable $target, Handle $handle = null)
     if (Utils\isOwnName($class) || Utils\isOwnName($method)) {
         return $handle;
     }
-    validate($source);
+    validate($source, $partOfWildcard);
     if (empty($class)) {
         $handle = connectFunction($method, $target, $handle);
     } else {
@@ -74,7 +74,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
             # Restore lower/upper case distinction
             $callable = (new \ReflectionFunction($callable))->getName();
         }
-        connect($callable, $target, $handle);
+        connect($callable, $target, $handle, true);
         $handle->tag($callable);
     }
     if (!class_exists($class, false)) {
@@ -94,7 +94,7 @@ function attachExistenceAssertion(Handle $handle, $function)
     });
 }
 
-function validate($function)
+function validate($function, $partOfWildcard = false)
 {
     if (!Utils\callableDefined($function)) {
         return;
@@ -106,7 +106,7 @@ function validate($function)
     if (Utils\runningOnHHVM()) {
         return;
     }
-    if (!inPreprocessedFile($function) && Config\shouldWarnAbout($function)) {
+    if (!inPreprocessedFile($function) && !$partOfWildcard) {
         throw new Exceptions\DefinedTooEarly($function);
     }
 }

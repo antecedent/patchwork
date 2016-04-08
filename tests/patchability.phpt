@@ -17,6 +17,8 @@ function functionThatIsNotPreprocessed()
 {
 }
 
+assert(Patchwork\hasMissed('functionThatIsNotPreprocessed'));
+
 if (!Patchwork\Utils\runningOnHHVM()) {
 	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
 	    Patchwork\replace("functionThatIsNotPreprocessed", function() {});
@@ -60,8 +62,6 @@ Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
 ===DONE===
 
 --EXPECTF--
-Warning: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined. %s() and possibly others currently violate this. in %s on line %d
-
 Warning: anotherUndefinedFunction() was never defined during the lifetime of its redefinition in %s on line %d
 ===DONE===
 

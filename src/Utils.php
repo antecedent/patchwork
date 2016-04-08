@@ -227,7 +227,34 @@ function isForeignName($name)
     return !isOwnName($name);
 }
 
-function isMissedForeignName($name)
+function markMissedCallables()
 {
-    return isForeignName($name) && Config\shouldWarnAbout($name);
+    State::$missedCallables = array_map('strtolower', getUserDefinedCallables());
+}
+
+function getMissedCallables()
+{
+    return State::$missedCallables;
+}
+
+function callableWasMissed($name)
+{
+    return in_array(strtolower($name), getMissedCallables());
+}
+
+function endsWith($haystack, $needle)
+{
+    return strpos($haystack, $needle, -strlen($needle)) !== false;
+}
+
+function wasRunAsConsoleApp()
+{
+    return isset($argv) && (
+        endsWith($argv[0], 'patchwork.phar') || endsWith($argv[0], 'Patchwork.php')
+    );
+}
+
+class State
+{
+    static $missedCallables = [];
 }

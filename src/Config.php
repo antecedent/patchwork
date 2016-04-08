@@ -42,7 +42,7 @@ function read($file)
 function set(array $data, $file)
 {
     $keys = array_keys($data);
-    $list = ['blacklist', 'whitelist', 'suppress-warnings', 'cache-path'];
+    $list = ['blacklist', 'whitelist', 'cache-path'];
     $unknown = array_diff($keys, $list);
     if ($unknown != []) {
         throw new Exceptions\ConfigKeyNotRecognized(reset($unknown), $list, $file);
@@ -50,7 +50,6 @@ function set(array $data, $file)
     $root = dirname($file);
     setBlacklist(get($data, 'blacklist'), $root);
     setWhitelist(get($data, 'whitelist'), $root);
-    setSuppressedWarnings(get($data, 'suppress-warnings'));
     setCachePath(get($data, 'cache-path'), $root);
 }
 
@@ -88,22 +87,6 @@ function setWhitelist($data, $root)
 function isWhitelisted($path)
 {
     return isListed($path, State::$whitelist);
-}
-
-function setSuppressedWarnings($data)
-{
-    merge(State::$suppressedWarnings, $data);
-}
-
-function shouldWarnAbout($callable)
-{
-    $callable = Utils\callableToString($callable);
-    foreach (State::$suppressedWarnings as $wildcard) {
-        if (Utils\wildcardMatches($wildcard, $callable)) {
-            return false;
-        }
-    }
-    return true;
 }
 
 function setCachePath($data, $root)
@@ -155,6 +138,5 @@ class State
 {
     static $blacklist = [];
     static $whitelist = [];
-    static $suppressedWarnings = [];
     static $cachePath;
 }

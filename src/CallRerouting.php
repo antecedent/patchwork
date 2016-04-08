@@ -261,6 +261,7 @@ function relay(array $args = null)
 
 function connectOnHHVM($function, Handle $handle)
 {
+    echo PHP_EOL, $function, PHP_EOL;
     fb_intercept($function, function($name, $obj, $args, $data, &$done) {
         deployQueue();
         list($class, $method) = Utils\interpretCallable($name);

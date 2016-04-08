@@ -66,6 +66,9 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
     }
 
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
+
+    var_dump($callables, $wildcard);
+
     foreach ($callables as $callable) {
         if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
             continue;
@@ -261,7 +264,6 @@ function relay(array $args = null)
 
 function connectOnHHVM($function, Handle $handle)
 {
-    echo PHP_EOL, $function, PHP_EOL;
     fb_intercept($function, function($name, $obj, $args, $data, &$done) {
         deployQueue();
         list($class, $method) = Utils\interpretCallable($name);

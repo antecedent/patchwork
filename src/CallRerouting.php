@@ -65,6 +65,8 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
         return $handle;
     }
 
+    var_dump(get_declared_classes());
+
     $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
     foreach ($callables as $callable) {
         if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {

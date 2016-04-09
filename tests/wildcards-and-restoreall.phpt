@@ -11,8 +11,6 @@ error_reporting(E_ALL | E_STRICT);
 require __DIR__ . '/../Patchwork.php';
 require __DIR__ . '/includes/Inheritance.php';
 
-var_dump(get_declared_classes());
-
 Patchwork\redefine('BarObject::*', function() {
     return 'redefined';
 });

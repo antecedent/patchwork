@@ -25,6 +25,8 @@ Patchwork\restoreAll();
 assert($bar->getFoo() === 'foo');
 assert($bar->getBar() === 'bar');
 
+var_dump(get_declared_classes());
+
 ?>
 ===DONE===
 

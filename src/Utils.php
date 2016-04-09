@@ -254,11 +254,18 @@ function callableWasMissed($name)
 
 function endsWith($haystack, $needle)
 {
+    if (strlen($haystack) === strlen($needle)) {
+        return $haystack === $needle;
+    }
+    if (strlen($haystack) < strlen($needle)) {
+        return false;
+    }
     return strpos($haystack, $needle, -strlen($needle)) !== false;
 }
 
 function wasRunAsConsoleApp()
 {
+    global $argv;
     return isset($argv) && (
         endsWith($argv[0], 'patchwork.phar') || endsWith($argv[0], 'Patchwork.php')
     );

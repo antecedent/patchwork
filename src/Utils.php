@@ -18,6 +18,9 @@ const ALIASING_CODE = '
 
 function clearOpcodeCaches()
 {
+    if (function_exists('opcache_reset')) {
+        opcache_reset();
+    }
     if (ini_get('wincache.ocenabled')) {
         wincache_refresh_if_changed();
     }

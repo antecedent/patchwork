@@ -263,7 +263,7 @@ function endsWith($haystack, $needle)
     if (strlen($haystack) < strlen($needle)) {
         return false;
     }
-    return strpos($haystack, $needle, -strlen($needle)) !== false;
+    return substr($haystack, -strlen($needle)) === $needle;
 }
 
 function wasRunAsConsoleApp()

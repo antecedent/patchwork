@@ -44,8 +44,11 @@ function condense($string)
     return preg_replace('/\s*/', '', $string);
 }
 
-function findFirstGreaterThan(array $array, $value)
+function findFirstGreaterThan(array $array, $value, $default = INF)
 {
+    if (empty($array)) {
+        return $default;
+    }
     $low = 0;
     $high = count($array) - 1;
     if ($array[$high] <= $value) {
@@ -59,7 +62,7 @@ function findFirstGreaterThan(array $array, $value)
             $high = $mid;
         }
     }
-    return $low;
+    return $array[$low];
 }
 
 function interpretCallable($callback)
@@ -109,6 +112,28 @@ function append(&$array, $value)
     $array[] = $value;
     end($array);
     return key($array);
+}
+
+function appendUnder(&$array, $path, $value)
+{
+    foreach ((array) $path as $key) {
+        if (!isset($array[$key])) {
+            $array[$key] = [];
+        }
+        $array = &$array[$key];
+    }
+    return append($array, $value);
+}
+
+function access($array, $path, $default = null)
+{
+    foreach ((array) $path as $key) {
+        if (!isset($array[$key])) {
+            return $default;
+        }
+        $array = $array[$key];
+    }
+    return $array;
 }
 
 function normalizePath($path)
@@ -253,25 +278,6 @@ function getMissedCallables()
 function callableWasMissed($name)
 {
     return in_array(strtolower($name), getMissedCallables());
-}
-
-function endsWith($haystack, $needle)
-{
-    if (strlen($haystack) === strlen($needle)) {
-        return $haystack === $needle;
-    }
-    if (strlen($haystack) < strlen($needle)) {
-        return false;
-    }
-    return substr($haystack, -strlen($needle)) === $needle;
-}
-
-function wasRunAsConsoleApp()
-{
-    global $argv;
-    return isset($argv) && (
-        endsWith($argv[0], 'patchwork.phar') || endsWith($argv[0], 'Patchwork.php')
-    );
 }
 
 class State

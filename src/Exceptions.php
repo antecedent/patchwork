@@ -46,17 +46,6 @@ class DefinedTooEarly extends CallbackException
     }
 }
 
-class CachePathUnavailable extends Exception
-{
-    function __construct($location)
-    {
-        parent::__construct(sprintf(
-            "The specified cache path is inexistent or read-only: %s",
-            $location
-        ));
-    }
-}
-
 class ConfigException extends Exception
 {
 }
@@ -83,18 +72,6 @@ class ConfigKeyNotRecognized extends ConfigException
             $key,
             $file,
             join(', ', $list)
-        ));
-    }
-}
-
-class CachePathConflict extends ConfigException
-{
-    function __construct($first, $second)
-    {
-        parent::__construct(sprintf(
-            "Detected configuration files provide conflicting cache paths: %s and %s",
-            $first,
-            $second
         ));
     }
 }

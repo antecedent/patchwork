@@ -14,27 +14,27 @@ class Handle
     private $silenced = false;
     private $tags = [];
 
-    public function __destruct()
+    function __destruct()
     {
         $this->expire();
     }
 
-    public function tag($tag)
+    function tag($tag)
     {
         $this->tags[] = $tag;
     }
 
-    public function hasTag($tag)
+    function hasTag($tag)
     {
         return in_array($tag, $this->tags);
     }
 
-    public function addReference(&$reference)
+    function addReference(&$reference)
     {
         $this->references[] = &$reference;
     }
 
-    public function expire()
+    function expire()
     {
         foreach ($this->references as &$reference) {
             $reference = null;
@@ -47,12 +47,12 @@ class Handle
         $this->expirationHandlers = [];
     }
 
-    public function addExpirationHandler(callable $expirationHandler)
+    function addExpirationHandler(callable $expirationHandler)
     {
         $this->expirationHandlers[] = $expirationHandler;
     }
 
-    public function silence()
+    function silence()
     {
         $this->silenced = true;
     }

@@ -18,12 +18,12 @@ class Decorator
 
     private $patch;
 
-    public function __construct($patch)
+    function __construct($patch)
     {
         $this->patch = $patch;
     }
 
-    public function __invoke()
+    function __invoke()
     {
         $top = Stack\top();
         $superclassMatches = $this->superclassMatches();

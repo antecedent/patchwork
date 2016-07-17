@@ -93,9 +93,11 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-CodeManipulation\Stream::wrap();
+CodeManipulation\StreamWrapper::wrap();
+CodeManipulation\StreamFilter::register();
 
 CodeManipulation\register([
+    CodeManipulation\Actions\CodeManipulation\propagateThroughStreamFilter(),
     CodeManipulation\Actions\CodeManipulation\propagateThroughEval(),
     CodeManipulation\Actions\CallRerouting\injectCallInterceptionCode(),
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
@@ -104,11 +106,3 @@ CodeManipulation\register([
 CodeManipulation\onImport([
     CodeManipulation\Actions\CallRerouting\markPreprocessedFiles(),
 ]);
-
-Utils\clearOpcodeCaches();
-
-register_shutdown_function('Patchwork\Utils\clearOpcodeCaches');
-
-if (Utils\wasRunAsConsoleApp()) {
-    require __DIR__ . '/src/Console.php';
-}

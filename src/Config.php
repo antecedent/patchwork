@@ -42,7 +42,7 @@ function read($file)
 function set(array $data, $file)
 {
     $keys = array_keys($data);
-    $list = ['blacklist', 'whitelist', 'cache-path'];
+    $list = ['blacklist', 'whitelist'];
     $unknown = array_diff($keys, $list);
     if ($unknown != []) {
         throw new Exceptions\ConfigKeyNotRecognized(reset($unknown), $list, $file);
@@ -50,7 +50,6 @@ function set(array $data, $file)
     $root = dirname($file);
     setBlacklist(get($data, 'blacklist'), $root);
     setWhitelist(get($data, 'whitelist'), $root);
-    setCachePath(get($data, 'cache-path'), $root);
 }
 
 function get(array $data, $key)
@@ -89,23 +88,6 @@ function isWhitelisted($path)
     return isListed($path, State::$whitelist);
 }
 
-function setCachePath($data, $root)
-{
-    if ($data === null) {
-        return;
-    }
-    $path = resolvePath($data, $root);
-    if (State::$cachePath !== null && State::$cachePath !== $path) {
-        throw new Exceptions\CachePathConflict(State::$cachePath, $path);
-    }
-    State::$cachePath = $path;
-}
-
-function getCachePath()
-{
-    return State::$cachePath;
-}
-
 function resolvePath($path, $root)
 {
     if ($path === null) {
@@ -138,5 +120,4 @@ class State
 {
     static $blacklist = [];
     static $whitelist = [];
-    static $cachePath;
 }

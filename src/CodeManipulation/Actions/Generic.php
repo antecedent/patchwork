@@ -10,10 +10,11 @@ namespace Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Source;
 use Patchwork\Utils;
 
-const LEFT_PARENTHESIS = "(";
-const RIGHT_PARENTHESIS = ")";
-const LEFT_CURLY_BRACKET = "{";
-const SEMICOLON = ";";
+const LEFT_PARENTHESIS = '(';
+const RIGHT_PARENTHESIS = ')';
+const LEFT_CURLY_BRACKET = '{';
+const RIGHT_CURLY_BRACKET = '}';
+const SEMICOLON = ';';
 
 function markPreprocessedFiles(&$target)
 {
@@ -30,7 +31,7 @@ function prependCodeToFunctions($code)
             if (Utils\generatorsSupported()) {
                 # Skip generators
                 $yield = $s->next(T_YIELD, $bracket);
-                if ($yield < $s->findMatchingBracket($bracket)) {
+                if ($yield < $s->match($bracket)) {
                     continue;
                 }
             }
@@ -48,7 +49,7 @@ function wrapUnaryConstructArguments($construct, $wrapper)
         foreach ($s->all($construct) as $match) {
             $pos = $s->next(LEFT_PARENTHESIS, $match);
             $s->splice($wrapper . LEFT_PARENTHESIS, $pos + 1);
-            $s->splice(RIGHT_PARENTHESIS, $s->findMatchingBracket($pos));
+            $s->splice(RIGHT_PARENTHESIS, $s->match($pos));
         }
     };
 }
@@ -93,7 +94,7 @@ function injectCodeAfterClassDefinitions($code)
             if ($leftBracket === INF) {
                 continue;
             }
-            $rightBracket = $s->findMatchingBracket($leftBracket);
+            $rightBracket = $s->match($leftBracket);
             if ($rightBracket === INF) {
                 continue;
             }

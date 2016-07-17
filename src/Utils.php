@@ -46,13 +46,10 @@ function condense($string)
 
 function findFirstGreaterThan(array $array, $value, $default = INF)
 {
-    if (empty($array)) {
-        return $default;
-    }
     $low = 0;
     $high = count($array) - 1;
-    if ($array[$high] <= $value) {
-        return $high + 1;
+    if (empty($array) || $array[$high] <= $value) {
+        return INF;
     }
     while ($low < $high) {
         $mid = (int)(($low + $high) / 2);

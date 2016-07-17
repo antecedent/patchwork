@@ -1,4 +1,4 @@
-# Patchwork 1.4 ([.phar](https://github.com/antecedent/patchwork/releases/download/1.4.3/patchwork.phar))
+# Patchwork 1.5 ([.phar](https://github.com/antecedent/patchwork/releases/download/1.5.0/patchwork.phar))
 
 Patchwork implements the redefinition ([monkey-patching](https://en.wikipedia.org/wiki/Monkey_patch)) of **user-defined** methods in PHP.
 
@@ -35,7 +35,3 @@ It should be applied prudently, that is, only after making oneself familiar with
 Tests that use monkey-patching are no longer *unit* tests, because they become sensitive to details of implementation, not only those of interface: for example, such a test might no longer pass after switching from `time()` to `DateTime`.
 
 That being said, they still have their place where the only economically viable alternative is having no tests at all.
-
-## Other use cases
-
-The current version of Patchwork is not suggested for [AOP](https://en.wikipedia.org/wiki/Aspect-oriented_programming) and other kinds of production usage. The next one will switch from stream wrappers to [stream filters](http://php.net/manual/en/stream.filters.php), which will ensure interoperability with opcode caches.

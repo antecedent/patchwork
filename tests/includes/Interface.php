@@ -7,5 +7,5 @@ interface D
 	/**
 	 * A doc comment.
 	 */
-	function e();
+	public function e();
 }

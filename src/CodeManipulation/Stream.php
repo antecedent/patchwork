@@ -9,7 +9,7 @@ namespace Patchwork\CodeManipulation;
 
 use Patchwork\Utils;
 
-class StreamWrapper
+class Stream
 {
     const STREAM_OPEN_FOR_INCLUDE = 128;
     const STAT_MTIME_NUMERIC_OFFSET = 9;
@@ -35,7 +35,7 @@ class StreamWrapper
         }
     }
 
-    function stream_open($path, $mode, $options, &$openedPath)
+    public function stream_open($path, $mode, $options, &$openedPath)
     {
         $this->unwrap();
         $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
@@ -53,32 +53,32 @@ class StreamWrapper
         return $this->resource !== false;
     }
 
-    function stream_close()
+    public function stream_close()
     {
         return fclose($this->resource);
     }
 
-    function stream_eof()
+    public function stream_eof()
     {
         return feof($this->resource);
     }
 
-    function stream_flush()
+    public function stream_flush()
     {
         return fflush($this->resource);
     }
 
-    function stream_read($count)
+    public function stream_read($count)
     {
         return fread($this->resource, $count);
     }
 
-    function stream_seek($offset, $whence = SEEK_SET)
+    public function stream_seek($offset, $whence = SEEK_SET)
     {
         return fseek($this->resource, $offset, $whence) === 0;
     }
 
-    function stream_stat()
+    public function stream_stat()
     {
         $result = fstat($this->resource);
         if ($result) {
@@ -88,12 +88,12 @@ class StreamWrapper
         return $result;
     }
 
-    function stream_tell()
+    public function stream_tell()
     {
         return ftell($this->resource);
     }
 
-    function url_stat($path, $flags)
+    public function url_stat($path, $flags)
     {
         $this->unwrap();
         set_error_handler(function() {});
@@ -107,13 +107,13 @@ class StreamWrapper
         return $result;
     }
 
-    function dir_closedir()
+    public function dir_closedir()
     {
         closedir($this->resource);
         return true;
     }
 
-    function dir_opendir($path, $options)
+    public function dir_opendir($path, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -125,18 +125,18 @@ class StreamWrapper
         return $this->resource !== false;
     }
 
-    function dir_readdir()
+    public function dir_readdir()
     {
         return readdir($this->resource);
     }
 
-    function dir_rewinddir()
+    public function dir_rewinddir()
     {
         rewinddir($this->resource);
         return true;
     }
 
-    function mkdir($path, $mode, $options)
+    public function mkdir($path, $mode, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -148,7 +148,7 @@ class StreamWrapper
         return $result;
     }
 
-    function rename($path_from, $path_to)
+    public function rename($path_from, $path_to)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -160,7 +160,7 @@ class StreamWrapper
         return $result;
     }
 
-    function rmdir($path, $options)
+    public function rmdir($path, $options)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -172,12 +172,12 @@ class StreamWrapper
         return $result;
     }
 
-    function stream_cast($cast_as)
+    public function stream_cast($cast_as)
     {
         return $this->resource;
     }
 
-    function stream_lock($operation)
+    public function stream_lock($operation)
     {
         if ($operation === '0') {
             $operation = LOCK_EX;
@@ -185,7 +185,7 @@ class StreamWrapper
         return flock($this->resource, $operation);
     }
 
-    function stream_set_option($option, $arg1, $arg2)
+    public function stream_set_option($option, $arg1, $arg2)
     {
         switch ($option) {
             case STREAM_OPTION_BLOCKING:
@@ -199,12 +199,12 @@ class StreamWrapper
         }
     }
 
-    function stream_write($data)
+    public function stream_write($data)
     {
         return fwrite($this->resource, $data);
     }
 
-    function unlink($path)
+    public function unlink($path)
     {
         $this->unwrap();
         if (isset($this->context)) {
@@ -216,7 +216,7 @@ class StreamWrapper
         return $result;
     }
 
-    function stream_metadata($path, $option, $value)
+    public function stream_metadata($path, $option, $value)
     {
         $this->unwrap();
         switch ($option) {
@@ -243,7 +243,7 @@ class StreamWrapper
         return $result;
     }
 
-    function stream_truncate($new_size)
+    public function stream_truncate($new_size)
     {
         return ftruncate($this->resource, $new_size);
     }

@@ -25,16 +25,16 @@ function markPreprocessedFiles(&$target)
 function prependCodeToFunctions($code)
 {
     return function(Source $s) use ($code) {
-        foreach ($s->all(T_FUNCTION) as $function) {
-            $bracket = $s->next(LEFT_CURLY_BRACKET, $function);
+        foreach ($s->findAll(T_FUNCTION) as $function) {
+            $bracket = $s->findNext(LEFT_CURLY_BRACKET, $function);
             if (Utils\generatorsSupported()) {
                 # Skip generators
-                $yield = $s->next(T_YIELD, $bracket);
+                $yield = $s->findNext(T_YIELD, $bracket);
                 if ($yield < $s->findMatchingBracket($bracket)) {
                     continue;
                 }
             }
-            $semicolon = $s->next(SEMICOLON, $function);
+            $semicolon = $s->findNext(SEMICOLON, $function);
             if ($bracket < $semicolon) {
                 $s->splice($code, $bracket + 1);
             }
@@ -45,8 +45,8 @@ function prependCodeToFunctions($code)
 function wrapUnaryConstructArguments($construct, $wrapper)
 {
     return function(Source $s) use ($construct, $wrapper) {
-        foreach ($s->all($construct) as $match) {
-            $pos = $s->next(LEFT_PARENTHESIS, $match);
+        foreach ($s->findAll($construct) as $match) {
+            $pos = $s->findNext(LEFT_PARENTHESIS, $match);
             $s->splice($wrapper . LEFT_PARENTHESIS, $pos + 1);
             $s->splice(RIGHT_PARENTHESIS, $s->findMatchingBracket($pos));
         }
@@ -56,25 +56,25 @@ function wrapUnaryConstructArguments($construct, $wrapper)
 function injectFalseExpressionAtBeginnings($expression)
 {
     return function(Source $s) use ($expression) {
-        $openingTags = $s->all(T_OPEN_TAG);
-        $openingTagsWithEcho = $s->all(T_OPEN_TAG_WITH_ECHO);
+        $openingTags = $s->findAll(T_OPEN_TAG);
+        $openingTagsWithEcho = $s->findAll(T_OPEN_TAG_WITH_ECHO);
         if (empty($openingTags) && empty($openingTagsWithEcho)) {
             return;
         }
         if (!empty($openingTags) &&
             (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho))) {
             $pos = reset($openingTags);
-            $namespaceKeyword = $s->next(T_NAMESPACE, $pos);
+            $namespaceKeyword = $s->findNext(T_NAMESPACE, $pos);
             if ($namespaceKeyword !== INF) {
-                $semicolon = $s->next(SEMICOLON, $namespaceKeyword);
-                $leftBracket = $s->next(LEFT_CURLY_BRACKET, $namespaceKeyword);
+                $semicolon = $s->findNext(SEMICOLON, $namespaceKeyword);
+                $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $namespaceKeyword);
                 $pos = min($semicolon, $leftBracket);
             }
             $s->splice(' ' . $expression . ";", $pos + 1);
         } else {
             $openingTag = reset($openingTagsWithEcho);
-            $closingTag = $s->next(T_CLOSE_TAG, $openingTag);
-            $semicolon = $s->next(SEMICOLON, $openingTag);
+            $closingTag = $s->findNext(T_CLOSE_TAG, $openingTag);
+            $semicolon = $s->findNext(SEMICOLON, $openingTag);
             $s->splice(' (' . $expression . ') ?: (', $openingTag + 1);
             $s->splice(') ', min($closingTag, $semicolon));
         }
@@ -84,12 +84,12 @@ function injectFalseExpressionAtBeginnings($expression)
 function injectCodeAfterClassDefinitions($code)
 {
     return function(Source $s) use ($code) {
-        foreach ($s->all(T_CLASS) as $match) {
-            if ($s->next(T_DOUBLE_COLON, $match - 3) < $match) {
+        foreach ($s->findAll(T_CLASS) as $match) {
+            if ($s->findNext(T_DOUBLE_COLON, $match - 3) < $match) {
                 # ::class syntax, not a class definition
                 continue;
             }
-            $leftBracket = $s->next(LEFT_CURLY_BRACKET, $match);
+            $leftBracket = $s->findNext(LEFT_CURLY_BRACKET, $match);
             if ($leftBracket === INF) {
                 continue;
             }

@@ -8,8 +8,7 @@
 namespace Patchwork\CodeManipulation;
 
 require __DIR__ . '/CodeManipulation/Source.php';
-require __DIR__ . '/CodeManipulation/StreamWrapper.php';
-require __DIR__ . '/CodeManipulation/StreamFilter.php';
+require __DIR__ . '/CodeManipulation/Stream.php';
 require __DIR__ . '/CodeManipulation/Actions/Generic.php';
 require __DIR__ . '/CodeManipulation/Actions/CallRerouting.php';
 require __DIR__ . '/CodeManipulation/Actions/CodeManipulation.php';
@@ -28,10 +27,9 @@ function transform(Source $s)
     }
 }
 
-function transformString($code, $file = null)
+function transformString($code)
 {
     $source = new Source(token_get_all($code));
-    $source->file = $file;
     transform($source);
     return (string) $source;
 }
@@ -42,24 +40,64 @@ function transformForEval($code)
     return substr(transformString($prefix . $code), strlen($prefix));
 }
 
-function notifyAboutImport($file)
+function cacheEnabled()
 {
-    foreach (State::$importListeners as $listener) {
-        $listener($file);
+    $location = Config\getCachePath();
+    if ($location === null) {
+        return false;
     }
+    if (!is_dir($location) || !is_writable($location)) {
+        throw new Exceptions\CachePathUnavailable($location);
+    }
+    return true;
+}
+
+function getCachedPath($file)
+{
+    return Config\getCachePath() . '/' . urlencode($file);
+}
+
+function availableCached($file)
+{
+    return cacheEnabled() &&
+    file_exists(getCachedPath($file)) &&
+    filemtime($file) <= filemtime(getCachedPath($file));
+}
+
+function internalToCache($file)
+{
+    if (!cacheEnabled()) {
+        return false;
+    }
+    return strpos($file, Config\getCachePath() . '/') === 0
+        || strpos($file, Config\getCachePath() . DIRECTORY_SEPARATOR) === 0;
 }
 
 function transformAndOpen($file)
 {
-    notifyAboutImport($file);
+    foreach (State::$importListeners as $listener) {
+        $listener($file);
+    }
+    if (!internalToCache($file) && availableCached($file)) {
+        return fopen(getCachedPath($file), 'r');
+    }
     $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
     $code = file_get_contents($file, true);
     $source = new Source(token_get_all($code));
     $source->file = $file;
     transform($source);
+    if (!internalToCache($file) && cacheEnabled()) {
+        file_put_contents(getCachedPath($file), $source);
+        return transformAndOpen($file);
+    }
     fwrite($resource, $source);
     rewind($resource);
     return $resource;
+}
+
+function prime($file)
+{
+    fclose(transformAndOpen($file));
 }
 
 function shouldTransform($file)

@@ -14,14 +14,13 @@ require_once __DIR__ . '/src/Utils.php';
 require_once __DIR__ . '/src/Stack.php';
 require_once __DIR__ . '/src/Config.php';
 
-const WARN_IF_NEVER_DEFINED = 1;
-
-function redefine($what, callable $asWhat, $flags = 0)
+function redefine($what, callable $asWhat)
 {
-    $handle = CallRerouting\connect($what, $asWhat);
-    if (!($flags & WARN_IF_NEVER_DEFINED)) {
-        silence($handle);
+    $handle = null;
+    foreach (array_slice(func_get_args(), 1) as $redefinition) {
+        $handle = CallRerouting\connect($what, $redefinition, $handle);
     }
+    $handle->silence();
     return $handle;
 }
 
@@ -48,6 +47,11 @@ function restoreAll()
 function silence(CallRerouting\Handle $handle)
 {
     $handle->silence();
+}
+
+function assertDefinedAtSomePoint(CallRerouting\Handle $handle)
+{
+    $handle->unsilence();
 }
 
 function getClass()
@@ -78,6 +82,13 @@ function configure()
 function hasMissed($callable)
 {
     return Utils\callableWasMissed($callable);
+}
+
+function always($value)
+{
+    return function() use ($value) {
+        return $value;
+    };
 }
 
 Utils\alias('Patchwork', [

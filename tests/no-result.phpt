@@ -18,9 +18,7 @@ Patchwork\replace("getInteger", function() {
 
 assert(getInteger() === 0);
 
-Patchwork\replace("getInteger", function() {
-    return 42;
-});
+Patchwork\replace("getInteger", Patchwork\always(42));
 
 assert(getInteger() === 42);
 

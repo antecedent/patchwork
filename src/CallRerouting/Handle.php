@@ -56,4 +56,9 @@ class Handle
     {
         $this->silenced = true;
     }
+
+    public function unsilence()
+    {
+        $this->silenced = false;
+    }
 }

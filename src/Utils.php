@@ -8,6 +8,7 @@
 namespace Patchwork\Utils;
 
 use Patchwork\Config;
+use Patchwork\CallRerouting;
 
 const ALIASING_CODE = '
     namespace %s;
@@ -44,12 +45,12 @@ function condense($string)
     return preg_replace('/\s*/', '', $string);
 }
 
-function findFirstGreaterThan(array $array, $value)
+function indexOfFirstGreaterThan(array $array, $value)
 {
     $low = 0;
     $high = count($array) - 1;
-    if ($array[$high] <= $value) {
-        return $high + 1;
+    if (empty($array) || $array[$high] <= $value) {
+        return -1;
     }
     while ($low < $high) {
         $mid = (int)(($low + $high) / 2);
@@ -60,6 +61,49 @@ function findFirstGreaterThan(array $array, $value)
         }
     }
     return $low;
+}
+
+function indexOfLastNotGreaterThan(array $array, $value)
+{
+    if (empty($array)) {
+        return -1;
+    }
+    $result = indexOfFirstGreaterThan($array, $value);
+    if ($result === -1) {
+        $result = count($array) - 1;
+    }
+    while ($array[$result] > $value) {
+        $result--;
+    }
+    return $result;
+}
+
+function firstGreaterThan(array $array, $value, $default = INF)
+{
+    $index = indexOfFirstGreaterThan($array, $value);
+    return ($index !== -1) ? $array[$index] : $default;
+}
+
+function lastNotGreaterThan(array $array, $value, $default = INF)
+{
+    $index = indexOfLastNotGreaterThan($array, $value);
+    return ($index !== -1) ? $array[$index] : $default;
+}
+
+function allWithinRange(array $array, $low, $high)
+{
+    $low--;
+    $high++;
+    $index = indexOfFirstGreaterThan($array, $low);
+    if ($index === -1) {
+        return [];
+    }
+    $result = [];
+    while ($index < count($array) && $array[$index] < $high) {
+        $result[] = $array[$index];
+        $index++;
+    }
+    return $result;
 }
 
 function interpretCallable($callback)
@@ -109,6 +153,28 @@ function append(&$array, $value)
     $array[] = $value;
     end($array);
     return key($array);
+}
+
+function appendUnder(&$array, $path, $value)
+{
+    foreach ((array) $path as $key) {
+        if (!isset($array[$key])) {
+            $array[$key] = [];
+        }
+        $array = &$array[$key];
+    }
+    return append($array, $value);
+}
+
+function access($array, $path, $default = null)
+{
+    foreach ((array) $path as $key) {
+        if (!isset($array[$key])) {
+            return $default;
+        }
+        $array = $array[$key];
+    }
+    return $array;
 }
 
 function normalizePath($path)
@@ -232,7 +298,8 @@ function wildcardMatches($wildcard, $subject)
 
 function isOwnName($name)
 {
-    return stripos((string) $name, 'Patchwork\\') === 0;
+    return stripos((string) $name, 'Patchwork\\') === 0
+        && stripos((string) $name, CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\') !== 0;
 }
 
 function isForeignName($name)

@@ -32,7 +32,7 @@ abstract class CallbackException extends Exception
 
 class NotUserDefined extends CallbackException
 {
-    protected $message = "%s is not a user-defined function or method";
+    protected $message = 'Please include {"redefinable-internals": ["%s"]} in your patchwork.json.';
 }
 
 class DefinedTooEarly extends CallbackException
@@ -44,6 +44,18 @@ class DefinedTooEarly extends CallbackException
                          "This is likely a result of an improper setup; see readme for details.";
         parent::__construct($callback);
     }
+}
+
+class InternalMethodsNotSupported extends CallbackException
+{
+    protected $message = "Methods of internal classes (such as %s) are not yet redefinable in " .
+                         "Patchwork 2.0.";
+}
+
+class InternalsNotSupportedOnHHVM extends CallbackException
+{
+    protected $message = "As of version 2.0, Patchwork cannot redefine internal functions and " .
+                         "methods (such as %s) on HHVM.";
 }
 
 class CachePathUnavailable extends Exception

@@ -12,6 +12,8 @@ require __DIR__ . '/CodeManipulation/Stream.php';
 require __DIR__ . '/CodeManipulation/Actions/Generic.php';
 require __DIR__ . '/CodeManipulation/Actions/CallRerouting.php';
 require __DIR__ . '/CodeManipulation/Actions/CodeManipulation.php';
+require __DIR__ . '/CodeManipulation/Actions/Namespaces.php';
+require __DIR__ . '/CodeManipulation/Actions/RedefinitionOfInternals.php';
 
 use Patchwork\Exceptions;
 use Patchwork\Utils;
@@ -29,7 +31,7 @@ function transform(Source $s)
 
 function transformString($code)
 {
-    $source = new Source(token_get_all($code));
+    $source = new Source($code);
     transform($source);
     return (string) $source;
 }
@@ -54,14 +56,32 @@ function cacheEnabled()
 
 function getCachedPath($file)
 {
-    return Config\getCachePath() . '/' . urlencode($file);
+    $file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
+    $segments = explode('/', $file);
+    return Config\getCachePath() . '/' . join('/', array_map('urlencode', $segments));
+}
+
+function storeInCache(Source $source)
+{
+    $path = str_replace(DIRECTORY_SEPARATOR, '/', $source->file);
+    $dirs = explode('/', $path);
+    $file = array_pop($dirs);
+    $cachePath = Config\getCachePath();
+    foreach ($dirs as $dir) {
+        $cachePath .= '/' . urlencode($dir);
+        if (!is_dir($cachePath)) {
+            mkdir($cachePath);
+        }
+    }
+    $cachePath .= '/' . urlencode($file);
+    file_put_contents($cachePath, $source);
 }
 
 function availableCached($file)
 {
     return cacheEnabled() &&
-    file_exists(getCachedPath($file)) &&
-    filemtime($file) <= filemtime(getCachedPath($file));
+           file_exists(getCachedPath($file)) &&
+           filemtime($file) <= filemtime(getCachedPath($file));
 }
 
 function internalToCache($file)
@@ -83,11 +103,11 @@ function transformAndOpen($file)
     }
     $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
     $code = file_get_contents($file, true);
-    $source = new Source(token_get_all($code));
+    $source = new Source($code);
     $source->file = $file;
     transform($source);
     if (!internalToCache($file) && cacheEnabled()) {
-        file_put_contents(getCachedPath($file), $source);
+        storeInCache($source);
         return transformAndOpen($file);
     }
     fwrite($resource, $source);

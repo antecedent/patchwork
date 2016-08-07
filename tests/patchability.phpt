@@ -25,11 +25,7 @@ if (!Patchwork\Utils\runningOnHHVM()) {
 	});
 }
 
-Patchwork\replace("functionThatIsNotDefined", function() {});
-
-expectException('Patchwork\Exceptions\NotUserDefined', function() {
-    Patchwork\replace("str_replace", function() {});
-});
+Patchwork\replace("functionThatIsNotDefined", function() {}, Patchwork\WARN_IF_NEVER_DEFINED);
 
 if (!Patchwork\Utils\runningOnHHVM()) {
 	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
@@ -53,10 +49,10 @@ if (!Patchwork\Utils\runningOnHHVM()) {
 	});
 }
 
-Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}));
+Patchwork\undo(Patchwork\replace('anotherUndefinedFunction', function() {}, Patchwork\WARN_IF_NEVER_DEFINED));
 
 # Should raise no errors
-Patchwork\replace('yetAnotherUndefinedFunction', function() {})->silence();
+Patchwork\replace('yetAnotherUndefinedFunction', function() {});
 
 ?>
 ===DONE===

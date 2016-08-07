@@ -15,6 +15,7 @@ use Patchwork\Stack;
 use Patchwork\Config;
 use Patchwork\Exceptions;
 
+const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
 
 function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
@@ -29,9 +30,15 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
     }
     validate($source, $partOfWildcard);
     if (empty($class)) {
+        if (Utils\callableDefined($source) && (new \ReflectionFunction($method))->isInternal()) {
+            return connect(translateInternal($source), $target, $handle, $partOfWildcard);
+        }
         $handle = connectFunction($method, $target, $handle);
     } else {
         if (Utils\callableDefined($source)) {
+            if ((new \ReflectionMethod($class, $method))->isInternal()) {
+                throw new InternalMethodsNotSupported($source);
+            }
             $handle = connectMethod($source, $target, $handle);
         } else {
             $handle = queueConnection($source, $target, $handle);
@@ -100,13 +107,17 @@ function validate($function, $partOfWildcard = false)
         return;
     }
     $reflection = Utils\reflectCallable($function);
-    if ($reflection->isInternal()) {
+    $name = Utils\callableToString($function);
+    if ($reflection->isInternal() && !in_array($name, Config\getRedefinableInternals())) {
         throw new Exceptions\NotUserDefined($function);
     }
     if (Utils\runningOnHHVM()) {
+        if ($reflection->isInternal()) {
+            throw new Exceptions\InternalsNotSupportedOnHHVM($function);
+        }
         return;
     }
-    if (!inPreprocessedFile($function) && !$partOfWildcard) {
+    if (!$reflection->isInternal() && !inPreprocessedFile($function) && !$partOfWildcard) {
         throw new Exceptions\DefinedTooEarly($function);
     }
 }
@@ -303,6 +314,68 @@ function getRoutesFor($class, $method)
         return [];
     }
     return array_reverse(State::$routes[$class][$method], true);
+}
+
+function dispatchDynamic($callable, array $arguments)
+{
+    list($class, $method) = Utils\interpretCallable($callable);
+    $translation = INTERNAL_REDEFINITION_NAMESPACE . '\\' . $method;
+    if ($class === null && function_exists($translation)) {
+        $callable = $translation;
+    }
+    return call_user_func_array($callable, $arguments);
+}
+
+function translateInternal($name)
+{
+    $namespace = INTERNAL_REDEFINITION_NAMESPACE;
+    if (!function_exists($namespace . '\\' . $name)) {
+        $signature = [];
+        foreach ((new \ReflectionFunction($name))->getParameters() as $argument) {
+            $formal = '';
+            if ($argument->isPassedByReference()) {
+                $formal .= '&';
+            }
+            $formal .= '$' . $argument->getName();
+            $isVariadic = is_callable([$argument, 'isVariadic']) ? $argument->isVariadic() : false;
+            if ($argument->isOptional() || $isVariadic) {
+                continue;
+            }
+            $signature[] = $formal;
+        }
+        eval(sprintf(
+            'namespace %s; function %s(%s) { %s return \call_user_func_array("%s", \func_get_args()); }',
+            $namespace,
+            $name,
+            join(', ', $signature),
+            \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE,
+            $name
+        ));
+    }
+    return $namespace . '\\' . $name;
+}
+
+function connectDefaultInternals()
+{
+    foreach (Config\getDefaultRedefinableInternals() as $function) {
+        $offsets = [];
+        foreach ((new \ReflectionFunction($function))->getParameters() as $offset => $argument) {
+            $name = $argument->getName();
+            if (strpos($name, 'call') || strpos($name, 'func')) {
+                $offsets[] = $offset;
+            }
+        }
+        connect($function, function() use ($offsets) {
+            $args = Stack\top('args');
+            foreach ($offsets as $offset) {
+                $original = $args[$offset];
+                $args[$offset] = function() use ($original) {
+                    return dispatchDynamic($original, func_get_args());
+                };
+            }
+            return relay($args);
+        });
+    }
 }
 
 class State

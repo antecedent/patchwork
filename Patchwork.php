@@ -14,9 +14,15 @@ require_once __DIR__ . '/src/Utils.php';
 require_once __DIR__ . '/src/Stack.php';
 require_once __DIR__ . '/src/Config.php';
 
-function redefine($what, callable $asWhat)
+const WARN_IF_NEVER_DEFINED = 1;
+
+function redefine($what, callable $asWhat, $flags = 0)
 {
-    return CallRerouting\connect($what, $asWhat);
+    $handle = CallRerouting\connect($what, $asWhat);
+    if (!($flags & WARN_IF_NEVER_DEFINED)) {
+        silence($handle);
+    }
+    return $handle;
 }
 
 function relay(array $args = null)
@@ -93,12 +99,18 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
+if (Config\getRedefinableInternals() !== []) {
+    CallRerouting\connectDefaultInternals();
+}
+
 CodeManipulation\Stream::wrap();
 
 CodeManipulation\register([
     CodeManipulation\Actions\CodeManipulation\propagateThroughEval(),
     CodeManipulation\Actions\CallRerouting\injectCallInterceptionCode(),
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
+    CodeManipulation\Actions\RedefinitionOfInternals\spliceNamedFunctionCalls(),
+    CodeManipulation\Actions\RedefinitionOfInternals\spliceDynamicCalls(),
 ]);
 
 CodeManipulation\onImport([

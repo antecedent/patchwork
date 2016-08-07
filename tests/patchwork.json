@@ -1,4 +1,7 @@
 {
+    "redefinable-internals": [
+        "str_replace"
+    ],
     "blacklist": [
         "includes/Singleton.php"
     ]

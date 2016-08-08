@@ -48,7 +48,7 @@ function spliceNamedFunctionCalls()
                             $s->splice('', $previous, 1);
                             $previous = $s->skipBack(Source::junk(), $previous);
                         }
-                        if ($s->is([T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING], $previous)) {
+                        if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW], $previous)) {
                             continue;
                         }
                         $next = $s->skip(Source::junk(), $string);
@@ -81,6 +81,7 @@ function spliceDynamicCallsWithin(Source $s, $first, $last)
 {
     $pos = $first;
     $anchor = INF;
+    $suppress = false;
     while ($pos <= $last) {
         switch ($s->tokens[$pos][Source::TYPE_OFFSET]) {
             case '$':
@@ -88,13 +89,12 @@ function spliceDynamicCallsWithin(Source $s, $first, $last)
                 $anchor = min($pos, $anchor);
                 break;
             case Generic\LEFT_ROUND:
-                if ($anchor !== INF) {
+                if ($anchor !== INF && !$suppress) {
                     $callable = $s->read($anchor, $pos - $anchor);
                     $arguments = $s->read($pos + 1, $s->match($pos) - $pos - 1);
-                    $pos = $s->match($pos) + 1;
+                    $pos = $s->match($pos);
                     $replacement = sprintf(DYNAMIC_CALL_REPLACEMENT, $callable, $arguments);
                     $s->splice($replacement, $anchor, $pos - $anchor + 1);
-                    $pos--;
                 }
                 break;
             case Generic\LEFT_SQUARE:
@@ -106,7 +106,13 @@ function spliceDynamicCallsWithin(Source $s, $first, $last)
             case T_COMMENT:
             case T_DOC_COMMENT:
                 break;
+            case T_OBJECT_OPERATOR:
+            case T_DOUBLE_COLON:
+            case T_NEW:
+                $suppress = true;
+                break;
             default:
+                $suppress = false;
                 $anchor = INF;
         }
         $pos++;

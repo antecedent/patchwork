@@ -61,7 +61,6 @@ function constitutesWildcard($source)
 
 function applyWildcard($wildcard, callable $target, Handle $handle = null)
 {
-    # FIXME for internal functions
     $handle = $handle ?: new Handle;
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
@@ -350,7 +349,8 @@ function createStubsForInternals()
             $signature[] = $formal;
         }
         eval(sprintf(
-            'namespace %s; function %s(%s) { %s return \call_user_func_array("%s", \func_get_args()); }',
+            'namespace %s; function %s(%s) { %s ' .
+            'return \call_user_func_array("%s", \debug_backtrace()[0]["args"]); }',
             $namespace,
             $name,
             join(', ', $signature),
@@ -376,9 +376,29 @@ function connectDefaultInternals()
         connect($function, function() use ($offsets) {
             $args = Stack\top('args');
             foreach ($offsets as $offset) {
-                $original = $args[$offset];
-                $args[$offset] = function() use ($original) {
-                    return dispatchDynamic($original, func_get_args());
+                if (!isset($args[$offset])) {
+                    continue;
+                }
+                $callable = $args[$offset];
+                $args[$offset] = function() use ($callable) {
+                    if ($callable instanceof \Closure) {
+                        return call_user_func_array($callable, func_get_args());
+                    }
+                    list($class, $method, $instance) = Utils\interpretCallable($callable);
+                    if ($class === 'self' || $class === 'static' || $class === 'parent') {
+                        $origin = debug_backtrace()[$frame]['class'];
+                        if ($class === 'parent') {
+                            $origin = get_parent_class($origin);
+                        }
+                        $class = $origin;
+                        $callable = [$class, $method];
+                    }
+                    if ($class !== null && !is_callable([$class, $method])) {
+                        $reflection = new \ReflectionMethod($class, $method);
+                        $reflection->setAccessible(true);
+                        return $reflection->invokeArgs($instance, func_get_args());
+                    }
+                    return dispatchDynamic($callable, func_get_args());
                 };
             }
             return relay($args);

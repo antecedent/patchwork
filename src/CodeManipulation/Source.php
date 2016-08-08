@@ -158,7 +158,8 @@ class Source
     {
         $result = [];
         foreach ((array) $types as $type) {
-            $result = array_merge(Utils\allWithinRange($this->tokensByType[$type], $low, $high), $result);
+            $candidates = isset($this->tokensByType[$type]) ? $this->tokensByType[$type] : [];
+            $result = array_merge(Utils\allWithinRange($candidates, $low, $high), $result);
         }
         return $result;
     }
@@ -168,10 +169,10 @@ class Source
         $result = '';
         $pos = $offset;
         while ($pos < $offset + $count) {
-            if (isset($this->tokens[$offset][self::STRING_OFFSET])) {
-                $result .= $this->tokens[$offset][self::STRING_OFFSET];
+            if (isset($this->tokens[$pos][self::STRING_OFFSET])) {
+                $result .= $this->tokens[$pos][self::STRING_OFFSET];
             } else {
-                $result .= $this->tokens[$offset];
+                $result .= $this->tokens[$pos];
             }
             $pos++;
         }

@@ -119,5 +119,6 @@ function scanQualifiedName(Source $s, $begin)
             default:
                 return $result;
         }
+        $begin++;
     }
 }

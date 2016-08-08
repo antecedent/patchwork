@@ -115,9 +115,6 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-CallRerouting\createStubsForInternals();
-CallRerouting\connectDefaultInternals();
-
 CodeManipulation\Stream::wrap();
 
 CodeManipulation\register([
@@ -135,6 +132,9 @@ CodeManipulation\onImport([
 Utils\clearOpcodeCaches();
 
 register_shutdown_function('Patchwork\Utils\clearOpcodeCaches');
+
+CallRerouting\createStubsForInternals();
+CallRerouting\connectDefaultInternals();
 
 if (Utils\wasRunAsConsoleApp()) {
     require __DIR__ . '/src/Console.php';

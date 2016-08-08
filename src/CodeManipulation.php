@@ -56,32 +56,44 @@ function cacheEnabled()
 
 function getCachedPath($file)
 {
-    $file = str_replace(DIRECTORY_SEPARATOR, '/', $file);
-    $segments = explode('/', $file);
-    return Config\getCachePath() . '/' . join('/', array_map('urlencode', $segments));
+    if (State::$cacheIndexFile === null) {
+        $indexPath = Config\getCachePath() . '/index.csv';
+        if (file_exists($indexPath)) {
+            $table = array_map('str_getcsv', file($indexPath));
+            foreach ($table as $row) {
+                list($key, $value) = $row;
+                State::$cacheIndex[$key] = $value;
+            }
+        }
+        State::$cacheIndexFile = fopen($indexPath, 'a');
+    }
+    $hash = md5($file);
+    $key = $hash;
+    $suffix = 0;
+    while (isset(State::$cacheIndex[$key]) && State::$cacheIndex[$key] !== $file) {
+        $key = $hash . '_' . $suffix++;
+    }
+    if (!isset(State::$cacheIndex[$key])) {
+        fputcsv(State::$cacheIndexFile, [$key, $file]);
+        State::$cacheIndex[$key] = $file;
+    }
+    return Config\getCachePath() . '/' . $key . '.php';
 }
 
 function storeInCache(Source $source)
 {
-    $path = str_replace(DIRECTORY_SEPARATOR, '/', $source->file);
-    $dirs = explode('/', $path);
-    $file = array_pop($dirs);
-    $cachePath = Config\getCachePath();
-    foreach ($dirs as $dir) {
-        $cachePath .= '/' . urlencode($dir);
-        if (!is_dir($cachePath)) {
-            mkdir($cachePath);
-        }
-    }
-    $cachePath .= '/' . urlencode($file);
-    file_put_contents($cachePath, $source);
+    file_put_contents(getCachedPath($source->file), $source);
 }
 
 function availableCached($file)
 {
-    return cacheEnabled() &&
-           file_exists(getCachedPath($file)) &&
-           filemtime($file) <= filemtime(getCachedPath($file));
+    if (!cacheEnabled()) {
+        return false;
+    }
+    $cached = getCachedPath($file);
+    return file_exists($cached) &&
+           filemtime($file) <= filemtime($cached) &&
+           Config\getTimestamp() <= filemtime($cached);
 }
 
 function internalToCache($file)
@@ -139,4 +151,6 @@ class State
 {
     static $actions = [];
     static $importListeners = [];
+    static $cacheIndex = [];
+    static $cacheIndexFile;
 }

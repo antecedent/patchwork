@@ -17,6 +17,7 @@ function locate()
     $alreadyRead = [];
     $paths = array_map('dirname', get_included_files());
     $paths[] = dirname($_SERVER['PHP_SELF']);
+    $paths[] = getcwd();
     foreach ($paths as $path) {
         while (dirname($path) !== $path) {
             $file = $path . '/' . FILE_NAME;

@@ -74,7 +74,7 @@ function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $ty
                 $lastPart = null;
                 $whole = $prefix;
                 break;
-            case T_COMMA:
+            case ',':
                 if ($lastPart !== null) {
                     $aliases[$type][$lastPart] = $whole;
                 }

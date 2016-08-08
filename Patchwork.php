@@ -91,6 +91,11 @@ function always($value)
     };
 }
 
+function noOp()
+{
+    return function() {};
+}
+
 Utils\alias('Patchwork', [
     'redefine'   => ['replace', 'replaceLater'],
     'relay'      => 'callOriginal',
@@ -110,9 +115,8 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
-if (Config\getRedefinableInternals() !== []) {
-    CallRerouting\connectDefaultInternals();
-}
+CallRerouting\createStubsForInternals();
+CallRerouting\connectDefaultInternals();
 
 CodeManipulation\Stream::wrap();
 

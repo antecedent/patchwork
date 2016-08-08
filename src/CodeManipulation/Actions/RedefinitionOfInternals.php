@@ -22,7 +22,7 @@ function spliceNamedFunctionCalls()
     }
     $names = [];
     foreach (Config\getRedefinableInternals() as $name) {
-        $names[$name] = true;
+        $names[strtolower($name)] = true;
     }
     return function(Source $s) use ($names) {
         foreach (Namespaces\collectNamespaceBoundaries($s) as $boundaryList) {
@@ -32,6 +32,8 @@ function spliceNamedFunctionCalls()
                 foreach ($aliases as $alias => $qualified) {
                     if (!isset($names[$qualified])) {
                         unset($aliases[$alias]);
+                    } else {
+                        $aliases[strtolower($alias)] = strtolower($qualified);
                     }
                 }
                 foreach ($s->within(T_STRING, $begin, $end) as $string) {
@@ -47,14 +49,17 @@ function spliceNamedFunctionCalls()
                             $previous = $s->skipBack(Source::junk(), $previous);
                         }
                         if ($s->is([T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING], $previous)) {
-                            var_dump($s->read($previous));
                             continue;
                         }
                         $next = $s->skip(Source::junk(), $string);
                         if (!$s->is(Generic\LEFT_ROUND, $next)) {
                             continue;
                         }
-                        $s->splice('\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\', $string);
+                        if (isset($aliases[$original])) {
+                            $original = $aliases[$original];
+                        }
+                        $splice = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\' . $original;
+                        $s->splice($splice, $string, 1);
                     }
                 }
             }
@@ -76,32 +81,34 @@ function spliceDynamicCallsWithin(Source $s, $first, $last)
 {
     $pos = $first;
     $anchor = INF;
-    // while ($pos <= $last) {
-    //     switch ($s->tokens[$pos][Source::TYPE_OFFSET]) {
-    //         case '$':
-    //         case T_VARIABLE:
-    //             $anchor = min($pos, $anchor);
-    //             break;
-    //         case Generic\LEFT_ROUND:
-    //             if ($anchor !== INF) {
-    //                 $callable = $s->read($anchor, $pos - $anchor);
-    //                 $arguments = $s->read($pos + 1, $s->match($pos) - $pos - 1);
-    //                 $pos = $s->match($pos) + 1;
-    //                 $replacement = sprintf(DYNAMIC_CALL_REPLACEMENT, $callable, $arguments);
-    //                 $s->splice($replacement, $anchor, $pos - $anchor + 1);
-    //             }
-    //             break;
-    //         case Generic\LEFT_SQUARE:
-    //         case Generic\LEFT_CURLY:
-    //             spliceDynamicCallsWithin($s, $pos + 1, $s->match($pos) - 1);
-    //             $pos = $s->match($pos);
-    //             break;
-    //         case T_WHITESPACE:
-    //         case T_COMMENT:
-    //         case T_DOC_COMMENT:
-    //             break;
-    //         default:
-    //             $anchor = INF;
-    //     }
-    // }
+    while ($pos <= $last) {
+        switch ($s->tokens[$pos][Source::TYPE_OFFSET]) {
+            case '$':
+            case T_VARIABLE:
+                $anchor = min($pos, $anchor);
+                break;
+            case Generic\LEFT_ROUND:
+                if ($anchor !== INF) {
+                    $callable = $s->read($anchor, $pos - $anchor);
+                    $arguments = $s->read($pos + 1, $s->match($pos) - $pos - 1);
+                    $pos = $s->match($pos) + 1;
+                    $replacement = sprintf(DYNAMIC_CALL_REPLACEMENT, $callable, $arguments);
+                    $s->splice($replacement, $anchor, $pos - $anchor + 1);
+                    $pos--;
+                }
+                break;
+            case Generic\LEFT_SQUARE:
+            case Generic\LEFT_CURLY:
+                spliceDynamicCallsWithin($s, $pos + 1, $s->match($pos) - 1);
+                $pos = $s->match($pos);
+                break;
+            case T_WHITESPACE:
+            case T_COMMENT:
+            case T_DOC_COMMENT:
+                break;
+            default:
+                $anchor = INF;
+        }
+        $pos++;
+    }
 }

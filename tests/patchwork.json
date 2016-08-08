@@ -1,6 +1,10 @@
 {
     "redefinable-internals": [
-        "str_replace"
+        "str_replace",
+        "time",
+        "strtolower",
+        "sort",
+        "strlen"
     ],
     "blacklist": [
         "includes/Singleton.php"

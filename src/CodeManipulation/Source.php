@@ -112,6 +112,8 @@ class Source
             Utils\appendUnder($this->tokensByLevel, $level, $offset);
             Utils\appendUnder($this->tokensByLevelAndType, [$level, $type], $offset);
         }
+        Utils\appendUnder($this->levelBeginnings, 0, -1);
+        Utils\appendUnder($this->levelEndings, 0, count($this->tokens));
     }
 
     function has($types)

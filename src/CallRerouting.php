@@ -31,7 +31,8 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
     validate($source, $partOfWildcard);
     if (empty($class)) {
         if (Utils\callableDefined($source) && (new \ReflectionFunction($method))->isInternal()) {
-            return connect(translateInternal($source), $target, $handle, $partOfWildcard);
+            $stub = INTERNAL_REDEFINITION_NAMESPACE . '\\' . $source;
+            return connect($stub, $target, $handle, $partOfWildcard);
         }
         $handle = connectFunction($method, $target, $handle);
     } else {
@@ -60,6 +61,7 @@ function constitutesWildcard($source)
 
 function applyWildcard($wildcard, callable $target, Handle $handle = null)
 {
+    # FIXME for internal functions
     $handle = $handle ?: new Handle;
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
@@ -209,6 +211,7 @@ function disconnectAll()
         }
     }
     State::$routes = [];
+    connectDefaultInternals();
 }
 
 function dispatchTo(callable $target)
@@ -326,10 +329,13 @@ function dispatchDynamic($callable, array $arguments)
     return call_user_func_array($callable, $arguments);
 }
 
-function translateInternal($name)
+function createStubsForInternals()
 {
     $namespace = INTERNAL_REDEFINITION_NAMESPACE;
-    if (!function_exists($namespace . '\\' . $name)) {
+    foreach (Config\getRedefinableInternals() as $name) {
+        if (function_exists($namespace . '\\' . $name)) {
+            continue;
+        }
         $signature = [];
         foreach ((new \ReflectionFunction($name))->getParameters() as $argument) {
             $formal = '';
@@ -352,16 +358,18 @@ function translateInternal($name)
             $name
         ));
     }
-    return $namespace . '\\' . $name;
 }
 
 function connectDefaultInternals()
 {
+    if (Config\getRedefinableInternals() === []) {
+        return;
+    }
     foreach (Config\getDefaultRedefinableInternals() as $function) {
         $offsets = [];
         foreach ((new \ReflectionFunction($function))->getParameters() as $offset => $argument) {
             $name = $argument->getName();
-            if (strpos($name, 'call') || strpos($name, 'func')) {
+            if (strpos($name, 'call') !== false || strpos($name, 'func') !== false) {
                 $offsets[] = $offset;
             }
         }

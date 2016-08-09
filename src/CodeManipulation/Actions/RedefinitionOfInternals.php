@@ -40,13 +40,11 @@ function spliceNamedFunctionCalls()
                     $original = strtolower($s->read($string));
                     if (isset($names[$original]) || isset($aliases[$original])) {
                         $previous = $s->skipBack(Source::junk(), $string);
-                        $hadBackslash = false;
                         if ($s->is(T_NS_SEPARATOR, $previous)) {
                              if (!isset($names[$original])) {
                                 # use-aliased name cannot have a leading backslash
                                 continue;
                             }
-                            $hadBackslash = true;
                             $s->splice('', $previous, 1);
                             $previous = $s->skipBack(Source::junk(), $previous);
                         }
@@ -60,20 +58,8 @@ function spliceNamedFunctionCalls()
                         if (isset($aliases[$original])) {
                             $original = $aliases[$original];
                         }
-                        $prefix = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\';
-                        if (empty($namespace) || $hadBackslash) {
-                            $s->splice($prefix . $original, $string, 1);
-                        } else {
-                            $span = $s->match($next) - $string + 1;
-                            $expression = $s->read($string, $span);
-                            $splice = sprintf(
-                                '(\function_exists(__NAMESPACE__ . "\\\\%s") ? %s : %s)',
-                                $original,
-                                $expression,
-                                $prefix . $expression
-                            );
-                            $s->splice($splice, $string, $span);
-                        }
+                        $splice = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\' . $original;
+                        $s->splice($splice, $string, 1);
                     }
                 }
             }

@@ -4,7 +4,8 @@
         "time",
         "strtolower",
         "sort",
-        "strlen"
+        "strlen",
+        "get_declared_classes"
     ],
     "blacklist": [
         "includes/Singleton.php"

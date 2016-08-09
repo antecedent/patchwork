@@ -218,6 +218,11 @@ function getUserDefinedCallables()
     return array_merge(get_defined_functions()['user'], getUserDefinedMethods());
 }
 
+function getRedefinableCallables()
+{
+    return array_merge(getUserDefinedCallables(), Config\getRedefinableInternals());
+}
+
 function getUserDefinedMethods()
 {
     static $result = [];

@@ -26,11 +26,6 @@ $function = 'str' . 'len';
 p\redefine('strlen', p\always('?!'));
 assert($function('test') === '?!');
 
-# Dynamic calls: syntax only available since ASTs
-# if (version_compare(PHP_VERSION, "7.0", ">=")) {
-#     eval('assert(("str" . "len")("value") === "?!");');
-# }
-
 # Leading backslashes
 $array = [2, 1, 3];
 p\redefine('sort', function(&$array) {

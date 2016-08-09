@@ -73,7 +73,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
         return $handle;
     }
 
-    $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
+    $callables = Utils\matchWildcard($wildcard, Utils\getRedefinableCallables());
     foreach ($callables as $callable) {
         if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
             continue;

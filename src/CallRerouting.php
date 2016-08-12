@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
@@ -15,7 +16,20 @@ use Patchwork\Stack;
 use Patchwork\Config;
 use Patchwork\Exceptions;
 
+const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
+
+const INTERNAL_STUB_CODE = '
+    namespace @ns_for_redefinitions;
+    function @name(@signature) {
+        $__pwArgs = \array_slice(\debug_backtrace()[0]["args"], 1);
+        if (!empty($__pwNamespace) && \function_exists($__pwNamespace . "\\\\@name")) {
+            return \call_user_func_array($__pwNamespace . "\\\\@name", $__pwArgs);
+        }
+        @interceptor;
+        return \call_user_func_array("@name", $__pwArgs);
+    }
+';
 
 function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
 {
@@ -29,9 +43,16 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
     }
     validate($source, $partOfWildcard);
     if (empty($class)) {
+        if (Utils\callableDefined($source) && (new \ReflectionFunction($method))->isInternal()) {
+            $stub = INTERNAL_REDEFINITION_NAMESPACE . '\\' . $source;
+            return connect($stub, $target, $handle, $partOfWildcard);
+        }
         $handle = connectFunction($method, $target, $handle);
     } else {
         if (Utils\callableDefined($source)) {
+            if ((new \ReflectionMethod($class, $method))->isInternal()) {
+                throw new InternalMethodsNotSupported($source);
+            }
             $handle = connectMethod($source, $target, $handle);
         } else {
             $handle = queueConnection($source, $target, $handle);
@@ -65,7 +86,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
         return $handle;
     }
 
-    $callables = Utils\matchWildcard($wildcard, Utils\getUserDefinedCallables());
+    $callables = Utils\matchWildcard($wildcard, Utils\getRedefinableCallables());
     foreach ($callables as $callable) {
         if (!inPreprocessedFile($callable) || $handle->hasTag($callable)) {
             continue;
@@ -100,13 +121,17 @@ function validate($function, $partOfWildcard = false)
         return;
     }
     $reflection = Utils\reflectCallable($function);
-    if ($reflection->isInternal()) {
+    $name = Utils\callableToString($function);
+    if ($reflection->isInternal() && !in_array($name, Config\getRedefinableInternals())) {
         throw new Exceptions\NotUserDefined($function);
     }
     if (Utils\runningOnHHVM()) {
+        if ($reflection->isInternal()) {
+            throw new Exceptions\InternalsNotSupportedOnHHVM($function);
+        }
         return;
     }
-    if (!inPreprocessedFile($function) && !$partOfWildcard) {
+    if (!$reflection->isInternal() && !inPreprocessedFile($function) && !$partOfWildcard) {
         throw new Exceptions\DefinedTooEarly($function);
     }
 }
@@ -198,6 +223,7 @@ function disconnectAll()
         }
     }
     State::$routes = [];
+    connectDefaultInternals();
 }
 
 function dispatchTo(callable $target)
@@ -207,6 +233,12 @@ function dispatchTo(callable $target)
 
 function dispatch($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
+    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0 && $args === null) {
+        # Mind the namespace-of-origin argument
+        $trace = debug_backtrace();
+        $args = array_reverse($trace)[$frame - 1]['args'];
+        array_shift($args);
+    }
     $success = false;
     Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
         foreach (getRoutesFor($class, $method) as $offset => $route) {
@@ -240,6 +272,9 @@ function relay(array $args = null)
     $top = Stack\top();
     if ($args === null) {
         $args = $top['args'];
+    }
+    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0) {
+        array_unshift($args, '');
     }
     try {
         if (isset($top['class'])) {
@@ -303,6 +338,93 @@ function getRoutesFor($class, $method)
         return [];
     }
     return array_reverse(State::$routes[$class][$method], true);
+}
+
+function dispatchDynamic($callable, array $arguments)
+{
+    list($class, $method) = Utils\interpretCallable($callable);
+    $translation = INTERNAL_REDEFINITION_NAMESPACE . '\\' . $method;
+    if ($class === null && function_exists($translation)) {
+        $callable = $translation;
+        # Mind the namespace-of-origin argument
+        array_unshift($arguments, '');
+    }
+    return call_user_func_array($callable, $arguments);
+}
+
+function createStubsForInternals()
+{
+    $namespace = INTERNAL_REDEFINITION_NAMESPACE;
+    foreach (Config\getRedefinableInternals() as $name) {
+        if (function_exists($namespace . '\\' . $name)) {
+            continue;
+        }
+        $signature = ['$__pwNamespace'];
+        foreach ((new \ReflectionFunction($name))->getParameters() as $argument) {
+            $formal = '';
+            if ($argument->isPassedByReference()) {
+                $formal .= '&';
+            }
+            $formal .= '$' . $argument->getName();
+            $isVariadic = is_callable([$argument, 'isVariadic']) ? $argument->isVariadic() : false;
+            if ($argument->isOptional() || $isVariadic) {
+                continue;
+            }
+            $signature[] = $formal;
+        }
+        eval(strtr(INTERNAL_STUB_CODE, [
+            '@name' => $name,
+            '@signature' => join(', ', $signature),
+            '@interceptor' => \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE,
+            '@ns_for_redefinitions' => INTERNAL_REDEFINITION_NAMESPACE,
+        ]));
+    }
+}
+
+function connectDefaultInternals()
+{
+    if (Config\getRedefinableInternals() === []) {
+        return;
+    }
+    foreach (Config\getDefaultRedefinableInternals() as $function) {
+        $offsets = [];
+        foreach ((new \ReflectionFunction($function))->getParameters() as $offset => $argument) {
+            $name = $argument->getName();
+            if (strpos($name, 'call') !== false || strpos($name, 'func') !== false) {
+                $offsets[] = $offset;
+            }
+        }
+        connect($function, function() use ($offsets) {
+            $args = Stack\top('args');
+            foreach ($offsets as $offset) {
+                if (!isset($args[$offset])) {
+                    continue;
+                }
+                $callable = $args[$offset];
+                $args[$offset] = function() use ($callable) {
+                    if ($callable instanceof \Closure) {
+                        return call_user_func_array($callable, func_get_args());
+                    }
+                    list($class, $method, $instance) = Utils\interpretCallable($callable);
+                    if ($class === 'self' || $class === 'static' || $class === 'parent') {
+                        $origin = debug_backtrace()[$frame]['class'];
+                        if ($class === 'parent') {
+                            $origin = get_parent_class($origin);
+                        }
+                        $class = $origin;
+                        $callable = [$class, $method];
+                    }
+                    if ($class !== null && !is_callable([$class, $method])) {
+                        $reflection = new \ReflectionMethod($class, $method);
+                        $reflection->setAccessible(true);
+                        return $reflection->invokeArgs($instance, func_get_args());
+                    }
+                    return dispatchDynamic($callable, func_get_args());
+                };
+            }
+            return relay($args);
+        });
+    }
 }
 
 class State

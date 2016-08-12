@@ -18,9 +18,6 @@ Patchwork\redefine('*', function() {
 assert(getInteger() === 'Whammy!');
 assert(getClosure() === 'Whammy!');
 
-# Not yet equal in version 1.4
-assert(get_declared_classes() !== 'Whammy!');
-
 require __DIR__ . '/includes/NamespacedFunctions.php';
 
 Patchwork\CallRerouting\deployQueue();

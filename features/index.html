@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Patchwork</title>
+    <title>Features - Patchwork</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -67,26 +67,48 @@
         </div>
     </nav>
 
-    <main class="vertical-center">
-        <div class="center container" style="margin-bottom: 10px; margin-top: 45px; max-width: 600px;">
-            <div class="row">
-                <p><img alt="Logo" src="/icons/logo.png" height="140" width="140" style="margin-top: 45px;"></p>
-            </div>
-            <div class="row">
-                <h1 style="margin-top: 20px; margin-bottom: 0px;">Write tests for your PHP code,</h1>
-                <h2 style="margin-top: 3px;">not code for the tests.</h2>
-            </div>
-            <div class="row">
-                <p style="margin-top: 0px;">Among other uses, Patchwork's function redefinition functionality allows any callable<br>to be replaced with a test double, be it static, private or internal:</p>
-            </div>
-            <div class="row">
-                <pre style="width: 425px; margin: 5px auto; margin-bottom: 35px; text-align: left;"><code class="php">redefine('time', always(strtotime('Dec 31, 1999')));
-echo date('Y-m-d', time()); # => 1999-12-31</code></pre>
-            </div>
-            <div class="row">
-                <p><a href="https://github.com/antecedent/releases/download/2.0.0/patchwork.phar"><button type="button" class="btn btn-primary">Download Patchwork</button></a></p>
-                <p><small>PHAR, version 2.0.0 for PHP &ge; 5.4</small></p>
-            </div>
+    <main class="features">
+        <div class="container center" style="max-width: 600px;">
+            <h1>Features</h3>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">1</div>
+
+            <h2 style="margin-top: 15px; margin-bottom: 7px;">Does not miss any internal calls:</h2>
+            <p>Not only does Patchwork behave indifferently to namespacing circumstances, it will also handle calls that are resolved at runtime, like <kbd>$var()</kbd> or <kbd>call_user_func($func)</kbd>, and ones that are made indirectly through internal functions, like <kbd>array_map('count', $matrix)</kbd>.</p>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">2</div>
+
+            <h2 style="margin-top: 15px; margin-bottom: 7px;">Accepts wildcards:</h2>
+            <p><kbd>redefine('Cache::*', $body)</kbd> is a perfectly valid call, and so is <kbd>redefine('*', $body)</kbd>: just remember that for internal functions, it will only cover those that are listed in patchwork.json.</p>
+
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">3</div>
+
+            <h2 style="margin-top: 15px; margin-bottom: 7px;">Can redefine the redefinitions again:</h2>
+            <p>A function or method that is already redefined can have arbitrarily many more redefinitions &ldquo;stacked&rdquo; on top of the first one, and if you were to call <kbd>relay()</kbd>, it would respect the ordering as well.</p>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">4</div>
+
+            <h2 style="margin-top: 15px; margin-bottom: 7px;">Preserves file names and line numbers:</h2>
+            <p>Even though Patchwork has to modify your code in order to work, it does so in an unobtrusive way. It goes without saying as well that this does not involve altering the original files.</p>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">5</div>
+
+            <h2 style="margin-top: 15px; margin-bottom: 7px;">Can cache the transformed code files:</h2>
+            <p>If you put <kbd>{"cache-path": "any-path-here"}</kbd> in your <kbd>patchwork.json</kbd>, it will use the directory named <kbd>any-path-here</kbd> to store transformed code. This will result in a significant performance boost; however, it will still probably be insufficient for production.</p>
+
+
+
         </div>
     </main>
 

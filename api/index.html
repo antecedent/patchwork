@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>API - Patchwork</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/style.css">
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-20483190-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/tomorrow.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <ul class="nav navbar-nav">
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/examples/">Examples</a></li>
+                  <li><a href="/api/">API</a></li>
+                  <li><a href="/features/">Features</a></li>
+                  <li><a href="/limitations/">Limitations</a></li>
+                  <li><a href="/changelog/">Changelog</a></li>
+                  <li><a href="https://github.com/antecedent/patchwork">GitHub</a></li>
+              </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="usage">
+        <div class="container center"  style="max-width: 600px;">
+            <h1>API</h1>
+            <div class="divider" style="margin-top: 40px;"></div>
+            <h2 style="margin-top: 40px;">The Patchwork Namespace</h2>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">redefine</span>(<abbr style="color: #693;" title="Not required to be defined at time of call. Wildcards also accepted.">callable</abbr> <span style="color: #369;">$subject</span>, <span style="color: #693;">callable</span> <span style="color: #369;">$content</span>) : <abbr style="color: #369;" title="Patchwork\CallRerouting\Handle">Handle</abbr></kbd></p>
+                <p>Makes all future calls to <kbd>$subject</kbd> go to <kbd>$content</kbd> instead, as if the former were redefined.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">relay</span>([<abbr style="color: #693;">array</abbr> <span style="color: #369;">$arguments</span>]) : <abbr style="color: #369;">mixed</abbr></kbd></p>
+                <p>To be called from inside a redefinition; this way, it invokes the original definition and passes on its return value. Arguments default to the ones originally received by the redefinition.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">restore</span>(<abbr style="color: #369;" title="Patchwork\CallRerouting\Handle">Handle</abbr> <span style="color: #369;">$returnValueOfRedefine</span>) : <abbr style="color: #693;">void</abbr></kbd></p>
+                <p>Reverses the effects of <kbd>redefine()</kbd>.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">restoreAll</span>() : <abbr style="color: #693;">void</abbr></kbd></p>
+                <p>Reverses the effects of all past calls to <kbd>redefine()</kbd>; in other words, makes all future calls behave in the usual manner.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">getClass</span>() : <abbr style="color: #693;">string</abbr></kbd></p>
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">getCalledClass</span>() : <abbr style="color: #693;">string</abbr></kbd></p>
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">getFunction</span>() : <abbr style="color: #693;">string</abbr></kbd></p>
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">getMethod</span>() : <abbr style="color: #693;">string</abbr></kbd></p>
+                <p>These are alternatives to magic constants and other kinds of self-reference that will not work as expected inside redefinitions.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">always</span>(<span style="color: #369;">mixed</span> <span style="color: #369;">$value</span>) : <abbr style="color: #693;" title="\Closure">Closure</abbr></kbd></p>
+                <p>Returns a constant-valued callable for use as a redefinition.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">hasMissed</span>(<abbr style="color: #693;">callable</abbr> <span style="color: #369;">$callable</span>) : <abbr style="color: #693;">bool</abbr></kbd></p>
+                <p>Patchwork will be unable to redefine user-defined functions that are compiled earlier than itself. This checks for the aforementioned condition.</p>
+            </div>
+            <div class="api-entry">
+                <p class="api-signature"><kbd style="background: #F3F3F3; padding: 10px; color: #737373;"><span style="color: #369;">assertEventuallyDefined</span>(<abbr style="color: #369;" title="Patchwork\CallRerouting\Handle">Handle</abbr> <span style="color: #369;">$returnValueOfRedefine</span>) : <abbr style="color: #693;">void</abbr></kbd></p>
+                <p>Schedules a shutdown-time check to make sure the redefined function's original definition ever appeared.</p>
+            </div>
+        </div>
+    </main>
+
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

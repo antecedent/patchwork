@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="/patchwork/style.css">
+    <link rel="stylesheet" href="/style.css">
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -19,22 +19,22 @@
     </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" sizes="57x57" href="/patchwork/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/patchwork/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/patchwork/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/patchwork/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/patchwork/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/patchwork/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/patchwork/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/patchwork/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/patchwork/icons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/patchwork/icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/patchwork/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/patchwork/icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/patchwork/icons/favicon-16x16.png">
-    <link rel="manifest" href="/patchwork/icons/manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/manifest.json">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/patchwork/icons/ms-icon-144x144.png">
+    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/tomorrow.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
@@ -55,12 +55,12 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar">
               <ul class="nav navbar-nav">
-                  <li><a href="/patchwork/">Home</a></li>
-                  <li><a href="/patchwork/examples/">Examples</a></li>
-                  <li><a href="/patchwork/api/">API</a></li>
-                  <li><a href="/patchwork/features/">Features</a></li>
-                  <li><a href="/patchwork/limitations/">Limitations</a></li>
-                  <li><a href="/patchwork/changelog/">Changelog</a></li>
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/examples/">Examples</a></li>
+                  <li><a href="/api/">API</a></li>
+                  <li><a href="/features/">Features</a></li>
+                  <li><a href="/limitations/">Limitations</a></li>
+                  <li><a href="/changelog/">Changelog</a></li>
                   <li><a href="https://github.com/antecedent/patchwork">GitHub</a></li>
               </ul>
             </div>
@@ -98,7 +98,7 @@
                     <div class="circle">4</div>
 
                     <h2 style="margin-top: 15px; margin-bottom: 7px;">Magic constants will not expand as expected:</h2>
-                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. We have disobeyed the metaphor in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/patchwork/api">API</a>.</p>
+                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. We have disobeyed the metaphor in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/api">API</a>.</p>
 
                     <div class="divider" style="margin: 40px 0;"></div>
 

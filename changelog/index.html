@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="/patchwork/style.css">
+    <link rel="stylesheet" href="/style.css">
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -19,22 +19,22 @@
     </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" sizes="57x57" href="/patchwork/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/patchwork/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/patchwork/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/patchwork/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/patchwork/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/patchwork/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/patchwork/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/patchwork/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/patchwork/icons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="/patchwork/icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/patchwork/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/patchwork/icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/patchwork/icons/favicon-16x16.png">
-    <link rel="manifest" href="/patchwork/icons/manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/manifest.json">
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/patchwork/icons/ms-icon-144x144.png">
+    <meta name="msapplication-TileImage" content="/icons/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/tomorrow.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
@@ -55,12 +55,12 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar">
               <ul class="nav navbar-nav">
-                  <li><a href="/patchwork/">Home</a></li>
-                  <li><a href="/patchwork/examples/">Examples</a></li>
-                  <li><a href="/patchwork/api/">API</a></li>
-                  <li><a href="/patchwork/features/">Features</a></li>
-                  <li><a href="/patchwork/limitations/">Limitations</a></li>
-                  <li><a href="/patchwork/changelog/">Changelog</a></li>
+                  <li><a href="/">Home</a></li>
+                  <li><a href="/examples/">Examples</a></li>
+                  <li><a href="/api/">API</a></li>
+                  <li><a href="/features/">Features</a></li>
+                  <li><a href="/limitations/">Limitations</a></li>
+                  <li><a href="/changelog/">Changelog</a></li>
                   <li><a href="https://github.com/antecedent/patchwork">GitHub</a></li>
               </ul>
             </div>
@@ -82,8 +82,8 @@
             <h2 class="minor version">1.4.3</h2>
 
             <ul class="changes">
-                <li>Fixed: <a href="https://github.com/antecedent/patchwork/issues/40">Warning: strpos(): Offset not contained in string</a>.</li>
-                <li>Fixed: <a href="https://github.com/antecedent/patchwork/issues/39">Fatal error: Call to undefined function patchwork\callrerouting\deployqueue()</a>.</li>
+                <li>Fixed: <a href="https://github.com/antecedent/issues/40">Warning: strpos(): Offset not contained in string</a>.</li>
+                <li>Fixed: <a href="https://github.com/antecedent/issues/39">Fatal error: Call to undefined function patchwork\callrerouting\deployqueue()</a>.</li>
                 <li>Fixed: wildcard issues in HHVM due to the non-incremental ordering of get_declared_classes().</li>
                 <li>No more warnings when Patchwork is not the first imported file. In case of unexpected behavior, use Patchwork\hasMissed($callable) : bool to check if your callable shows up too early to be redefinable.</li>
                 <li>Removed the suppress-warnings key from patchwork.json, which is now redundant per previous point.</li>
@@ -92,8 +92,8 @@
             <h2 class="minor version">1.4.2</h2>
 
             <ul class="changes">
-                <li>Fixed: <a href="https://github.com/antecedent/patchwork/issues/37">Error: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined (BrainMonkey + PHPUnit).</a></li>
-                <li>Fixed: <a href="https://github.com/antecedent/patchwork/issues/38">Patchwork warning when included in PHPUnit bootstrap</a>.</li>
+                <li>Fixed: <a href="https://github.com/antecedent/issues/37">Error: Please import Patchwork from a point in your code where no user-defined function, class or trait is yet defined (BrainMonkey + PHPUnit).</a></li>
+                <li>Fixed: <a href="https://github.com/antecedent/issues/38">Patchwork warning when included in PHPUnit bootstrap</a>.</li>
             </ul>
 
             <h2 class="minor version">1.4.1</h2>
@@ -111,32 +111,32 @@
                 <li>Optional configuration files (<kbd>patchwork.json</kbd>) are now used to blacklist/whitelist files for preprocessing, suppress warnings and specify a cache path.</li>
                 <li>The cache used by Patchwork can now be primed by running <kbd>patchwork.phar</kbd> from the command line.</li>
                 <li><kbd>redefine</kbd>, <kbd>restore[All]</kbd> and <kbd>relay</kbd> are now the main aliases of <kbd>replace</kbd>, <kbd>undo[All]</kbd> and <kbd>callOriginal</kbd>.</li>
-            <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/27">issues with <kbd>flock()</kbd></kbd></a>.</li>
+            <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/27">issues with <kbd>flock()</kbd></kbd></a>.</li>
             </ul>
 
             <h2 class="minor version">1.3.5</h2>
 
             <ul class="changes">
                 <li><span class="fixed">Fixed:</span> faulty HHVM support.</li>
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/26">incompatibility with WinCache</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/26">incompatibility with WinCache</a>.</li>
             </ul>
 
             <h2 class="minor version">1.3.4</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/21">apply scheduled patches only once</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/pull/21">apply scheduled patches only once</a>.</li>
             </ul>
 
             <h2 class="minor version">1.3.2</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/15">Fatal error: Generators cannot return values using "return"</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/pull/15">Fatal error: Generators cannot return values using "return"</a>.</li>
             </ul>
 
             <h2 class="minor version">1.3.1</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/16">Buggy reimplementation of binary search</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/pull/16">Buggy reimplementation of binary search</a>.</li>
             </ul>
 
             <h2 class="major version">1.3.0</h2>
@@ -153,41 +153,41 @@
 
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/14">Unexpected T_NS_SEPARATOR when using ::class syntax</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/pull/14">Unexpected T_NS_SEPARATOR when using ::class syntax</a>.</li>
             </ul>
 
             <h2 class="minor version">1.2.8</h2>
 
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/pull/13">Another standard output leak</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/pull/13">Another standard output leak</a>.</li>
             </ul>
 
             <h2 class="minor version">1.2.7</h2>
 
 
             <ul class="changes">
-                <li><a href="https://github.com/antecedent/patchwork/pull/11">Improved the error message for <kbd>Patchwork\Exceptions\DefinedTooEarly</kbd></a>.</li>
+                <li><a href="https://github.com/antecedent/pull/11">Improved the error message for <kbd>Patchwork\Exceptions\DefinedTooEarly</kbd></a>.</li>
             </ul>
 
             <h2 class="minor version">1.2.6</h2>
 
 
             <ul class="changes">
-                <li><a href="https://github.com/antecedent/patchwork/pull/9">Added a <kbd>composer.json</kbd></a>.</li>
+                <li><a href="https://github.com/antecedent/pull/9">Added a <kbd>composer.json</kbd></a>.</li>
                 <li>Moved the PHAR from the main repository.</li>
             </ul>
 
             <h2 class="minor version">1.2.5</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/6"><kbd>Patchwork\Preprocessor\Stream::stream_set_option</kbd> was left unimplemented</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/6"><kbd>Patchwork\Preprocessor\Stream::stream_set_option</kbd> was left unimplemented</a>.</li>
             </ul>
 
             <h2 class="minor version">1.2.4</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/7"><kbd>Patchwork\Preprocessor\Stream::rmdir</kbd> passes a wrong parameter to <kbd>rmdir</kbd></a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/7"><kbd>Patchwork\Preprocessor\Stream::rmdir</kbd> passes a wrong parameter to <kbd>rmdir</kbd></a>.</li>
                 <li>The stream wrapper now has <a href="http://www.php.net/manual/en/streamwrapper.stream-metadata.php"><kbd>stream_metadata</kbd></a> and <a href="http://www.php.net/manual/en/streamwrapper.stream-truncate.php"><kbd>stream_truncate</kbd></a> methods.</li>
             </ul>
 
@@ -200,7 +200,7 @@
             <h2 class="minor version">1.2.2</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/4#issuecomment-12097422">Preprocessor leaks data to standard output</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/4#issuecomment-12097422">Preprocessor leaks data to standard output</a>.</li>
             </ul>
 
             <h2 class="minor version">1.2.1</h2>
@@ -213,26 +213,26 @@
             <h2 class="major version">1.2.0</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/5">Aliased methods imported from a trait misidentify themselves by their original name during call interception</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/5">Aliased methods imported from a trait misidentify themselves by their original name during call interception</a>.</li>
                 <li>Static and instance method redefinitions are now heritable. This means that redefining <kbd>A::foo</kbd> now also redefines <kbd>B::foo</kbd>, if <kbd>B extends A</kbd> and <kbd>foo</kbd> is not overridden in <kbd>B</kbd>.</li>
             </ul>
 
             <h2 class="minor version">1.1.3</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/4">Referring to a namespaced function with a leading backslash causes redefinition to silently fail</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/4">Referring to a namespaced function with a leading backslash causes redefinition to silently fail</a>.</li>
             </ul>
 
             <h2 class="minor version">1.1.2</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/2">Error: &ldquo;Only variables should be passed by reference&rdquo;</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/2">Error: &ldquo;Only variables should be passed by reference&rdquo;</a>.</li>
             </ul>
 
             <h2 class="minor version">1.1.1</h2>
 
             <ul class="changes">
-                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/patchwork/issues/1">Error: &ldquo;Using $this when not in object context in \lib\Preprocessor.php(40) : eval()'d code on line 1&rdquo;</a>.</li>
+                <li><span class="fixed">Fixed:</span> <a href="https://github.com/antecedent/issues/1">Error: &ldquo;Using $this when not in object context in \lib\Preprocessor.php(40) : eval()'d code on line 1&rdquo;</a>.</li>
             </ul>
 
             <h2 class="major version">1.1.0</h2>

@@ -98,7 +98,7 @@ redefine('pg_query', function($query, ...$params) use ($pdo) {
 });
 
 redefine('pg_fetch_assoc', function(PDOStatement $stmt) {
-    $stmt-&gt;fetchAssoc();
+    return $stmt-&gt;fetchAssoc();
 });
 
 # These will use SQLite instead:

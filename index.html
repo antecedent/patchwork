@@ -77,10 +77,10 @@
                 <h2 style="margin-top: 3px;">not code for the tests.</h2>
             </div>
             <div class="row">
-                <p style="margin-top: 0px;">Among other uses, Patchwork's function redefinition functionality allows any callable<br>to be replaced with a test double, be it static, private or internal:</p>
+                <p style="margin-top: 0px;">Among other uses, Patchwork's function redefinition functionality allows any callable to be replaced with a test double, be it static, private or internal:</p>
             </div>
             <div class="row">
-                <pre style="width: 425px; margin: 5px auto; margin-bottom: 35px; text-align: left;"><code class="php">redefine('time', always(strtotime('Dec 31, 1999')));
+                <pre style="max-width: 425px; margin: 5px auto; margin-bottom: 35px; text-align: left;"><code class="php">redefine('time', always(strtotime('Dec 31, 1999')));
 echo date('Y-m-d', time()); # => 1999-12-31</code></pre>
             </div>
             <div class="row">

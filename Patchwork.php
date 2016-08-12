@@ -14,11 +14,11 @@ require_once __DIR__ . '/src/Utils.php';
 require_once __DIR__ . '/src/Stack.php';
 require_once __DIR__ . '/src/Config.php';
 
-function redefine($what, callable $asWhat)
+function redefine($subject, callable $content)
 {
     $handle = null;
-    foreach (array_slice(func_get_args(), 1) as $redefinition) {
-        $handle = CallRerouting\connect($what, $redefinition, $handle);
+    foreach (array_slice(func_get_args(), 1) as $content) {
+        $handle = CallRerouting\connect($subject, $content, $handle);
     }
     $handle->silence();
     return $handle;
@@ -49,7 +49,7 @@ function silence(CallRerouting\Handle $handle)
     $handle->silence();
 }
 
-function assertDefinedAtSomePoint(CallRerouting\Handle $handle)
+function assertEventuallyDefined(CallRerouting\Handle $handle)
 {
     $handle->unsilence();
 }
@@ -89,11 +89,6 @@ function always($value)
     return function() use ($value) {
         return $value;
     };
-}
-
-function noOp()
-{
-    return function() {};
 }
 
 Utils\alias('Patchwork', [

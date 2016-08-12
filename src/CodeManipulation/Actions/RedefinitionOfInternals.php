@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
@@ -29,6 +30,7 @@ function spliceNamedFunctionCalls()
             foreach ($boundaryList as $boundaries) {
                 list($begin, $end) = $boundaries;
                 $aliases = Namespaces\collectUseDeclarations($s, $begin)['function'];
+                # Receive all aliases, leave only those for redefinable internals
                 foreach ($aliases as $alias => $qualified) {
                     if (!isset($names[$qualified])) {
                         unset($aliases[$alias]);
@@ -36,35 +38,50 @@ function spliceNamedFunctionCalls()
                         $aliases[strtolower($alias)] = strtolower($qualified);
                     }
                 }
-                foreach ($s->within(T_STRING, $begin, $end) as $string) {
-                    $original = strtolower($s->read($string));
-                    if (isset($names[$original]) || isset($aliases[$original])) {
-                        $previous = $s->skipBack(Source::junk(), $string);
-                        if ($s->is(T_NS_SEPARATOR, $previous)) {
-                             if (!isset($names[$original])) {
-                                # use-aliased name cannot have a leading backslash
-                                continue;
-                            }
-                            $s->splice('', $previous, 1);
-                            $previous = $s->skipBack(Source::junk(), $previous);
-                        }
-                        if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW], $previous)) {
-                            continue;
-                        }
-                        $next = $s->skip(Source::junk(), $string);
-                        if (!$s->is(Generic\LEFT_ROUND, $next)) {
-                            continue;
-                        }
-                        if (isset($aliases[$original])) {
-                            $original = $aliases[$original];
-                        }
-                        $splice = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\' . $original;
-                        $s->splice($splice, $string, 1);
-                    }
-                }
+                spliceNamedCallsWithin($s, $begin, $end, $names, $aliases);
             }
         }
     };
+}
+
+function spliceNamedCallsWithin(Source $s, $begin, $end, array $names, array $aliases)
+{
+    foreach ($s->within(T_STRING, $begin, $end) as $string) {
+        $original = strtolower($s->read($string));
+        if (isset($names[$original]) || isset($aliases[$original])) {
+            $previous = $s->skipBack(Source::junk(), $string);
+            $hadBackslash = false;
+            if ($s->is(T_NS_SEPARATOR, $previous)) {
+                 if (!isset($names[$original])) {
+                    # use-aliased name cannot have a leading backslash
+                    continue;
+                }
+                $s->splice('', $previous, 1);
+                $previous = $s->skipBack(Source::junk(), $previous);
+                $hadBackslash = true;
+            }
+            if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW], $previous)) {
+                continue;
+            }
+            $next = $s->skip(Source::junk(), $string);
+            if (!$s->is(Generic\LEFT_ROUND, $next)) {
+                continue;
+            }
+            if (isset($aliases[$original])) {
+                $original = $aliases[$original];
+            }
+            $secondNext = $s->skip(Source::junk(), $next);
+            $splice = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\';
+            $splice .= $original . Generic\LEFT_ROUND;
+            # prepend a namespace-of-origin argument to handle cases like Acme\time() vs time()
+            $splice .= !$hadBackslash ? '__NAMESPACE__' : '""';
+            if (!$s->is(Generic\RIGHT_ROUND, $secondNext)) {
+                # right parenthesis doesn't follow immediately => there are arguments
+                $splice .= ', ';
+            }
+            $s->splice($splice, $string, $secondNext - $string);
+        }
+    }
 }
 
 function spliceDynamicCalls()

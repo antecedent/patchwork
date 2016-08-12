@@ -6,9 +6,6 @@ use Patchwork as p;
 
 echo 'BEGIN', PHP_EOL;
 
-# Not implementing this yet; previous implemetation would break line numbering
-
-/*
 function time()
 {
     return 'local-scoped time()';
@@ -20,14 +17,19 @@ function strtolower($str)
 }
 
 p\redefine('time', p\always(1));
+p\redefine('time', function() {
+    return p\relay() + 10;
+});
+p\redefine('time', function() {
+    return p\relay() + 100;
+});
 p\redefine('strtolower', p\always('*'));
 
 assert(time() === 'local-scoped time()');
-assert(\time() === 1);
+assert(\time() === 111);
 assert(strtolower('foo') === 'local-scoped strtolower(foo)');
 assert(\strtolower('foo') === '*');
 
 p\restoreAll();
-*/
 
 echo 'END', PHP_EOL;

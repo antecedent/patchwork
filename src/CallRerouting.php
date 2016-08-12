@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
  * @copyright  2010-2016 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
@@ -17,6 +18,18 @@ use Patchwork\Exceptions;
 
 const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
+
+const INTERNAL_STUB_CODE = '
+    namespace @ns_for_redefinitions;
+    function @name(@signature) {
+        $__pwArgs = \array_slice(\debug_backtrace()[0]["args"], 1);
+        if (!empty($__pwNamespace) && \function_exists($__pwNamespace . "\\\\@name")) {
+            return \call_user_func_array($__pwNamespace . "\\\\@name", $__pwArgs);
+        }
+        @interceptor;
+        return \call_user_func_array("@name", $__pwArgs);
+    }
+';
 
 function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
 {
@@ -220,6 +233,12 @@ function dispatchTo(callable $target)
 
 function dispatch($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
+    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0 && $args === null) {
+        # Mind the namespace-of-origin argument
+        $trace = debug_backtrace();
+        $args = array_reverse($trace)[$frame - 1]['args'];
+        array_shift($args);
+    }
     $success = false;
     Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
         foreach (getRoutesFor($class, $method) as $offset => $route) {
@@ -253,6 +272,9 @@ function relay(array $args = null)
     $top = Stack\top();
     if ($args === null) {
         $args = $top['args'];
+    }
+    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0) {
+        array_unshift($args, '');
     }
     try {
         if (isset($top['class'])) {
@@ -324,6 +346,8 @@ function dispatchDynamic($callable, array $arguments)
     $translation = INTERNAL_REDEFINITION_NAMESPACE . '\\' . $method;
     if ($class === null && function_exists($translation)) {
         $callable = $translation;
+        # Mind the namespace-of-origin argument
+        array_unshift($arguments, '');
     }
     return call_user_func_array($callable, $arguments);
 }
@@ -335,7 +359,7 @@ function createStubsForInternals()
         if (function_exists($namespace . '\\' . $name)) {
             continue;
         }
-        $signature = [];
+        $signature = ['$__pwNamespace'];
         foreach ((new \ReflectionFunction($name))->getParameters() as $argument) {
             $formal = '';
             if ($argument->isPassedByReference()) {
@@ -348,15 +372,12 @@ function createStubsForInternals()
             }
             $signature[] = $formal;
         }
-        eval(sprintf(
-            'namespace %s; function %s(%s) { %s ' .
-            'return \call_user_func_array("%s", \debug_backtrace()[0]["args"]); }',
-            $namespace,
-            $name,
-            join(', ', $signature),
-            \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE,
-            $name
-        ));
+        eval(strtr(INTERNAL_STUB_CODE, [
+            '@name' => $name,
+            '@signature' => join(', ', $signature),
+            '@interceptor' => \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE,
+            '@ns_for_redefinitions' => INTERNAL_REDEFINITION_NAMESPACE,
+        ]));
     }
 }
 

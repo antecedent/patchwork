@@ -68,7 +68,7 @@
     </nav>
 
     <main class="vertical-center">
-        <div class="center container" style="margin-bottom: 10px; margin-top: 45px;">
+        <div class="center container" style="margin-bottom: 10px; margin-top: 45px; max-width: 600px;">
             <div class="row">
                 <p><img alt="Logo" src="/icons/logo.png" height="140" width="140" style="margin-top: 45px;"></p>
             </div>
@@ -77,7 +77,7 @@
                 <h2 style="margin-top: 3px;">not code for the tests.</h2>
             </div>
             <div class="row">
-                <p style="margin-top: 0px;">With Patchwork, any function or method can be replaced with a test double:</p>
+                <p style="margin-top: 0px;">Among other uses, Patchwork's function redefinition functionality allows any callable<br>to be replaced with a test double, be it static, private or internal:</p>
             </div>
             <div class="row">
                 <pre style="width: 425px; margin: 5px auto; margin-bottom: 35px; text-align: left;"><code class="php">redefine('time', always(strtotime('Dec 31, 1999')));

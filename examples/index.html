@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Examples - Patchwork</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/patchwork/style.css">
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-20483190-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="/patchwork/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/patchwork/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/patchwork/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/patchwork/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/patchwork/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/patchwork/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/patchwork/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/patchwork/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/patchwork/icons/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/patchwork/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/patchwork/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/patchwork/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/patchwork/icons/favicon-16x16.png">
+    <link rel="manifest" href="/patchwork/icons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/patchwork/icons/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/tomorrow.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <ul class="nav navbar-nav">
+                  <li><a href="/patchwork/">Home</a></li>
+                  <li><a href="/patchwork/examples/">Examples</a></li>
+                  <li><a href="/patchwork/api/">API</a></li>
+                  <li><a href="/patchwork/features/">Features</a></li>
+                  <li><a href="/patchwork/limitations/">Limitations</a></li>
+                  <li><a href="/patchwork/changelog/">Changelog</a></li>
+                  <li><a href="https://github.com/antecedent/patchwork">GitHub</a></li>
+              </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="examples">
+        <div class="container center" style="max-width: 600px;">
+            <h1>Examples</h1>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <div class="circle">1</div>
+            <h2 style="margin-top: 30px;">Switching DB Drivers</h2>
+            <div class="example">
+                    <ul class="nav nav-tabs" style="border-bottom: none; width: 98%; margin: 0 auto;">
+                      <li role="presentation" class="active"><a href="#">pgsql_to_sqlite.php</a></li>
+                      <li role="presentation"><a href="#">index.php</a></li>
+                      <li role="presentation"><a href="#">patchwork.json</a></li>
+                    </ul>
+                    <div class="panel panel-default">
+                    <div class="files panel-body">
+                    <pre class="small-font"><code class="php">&lt;?php
+
+use Patchwork\{redefine, getFunction, always};
+
+$pdo = new PDO('sqlite:/tmp/demo.db');
+
+redefine('pg_connect', always(null));
+
+redefine('pg_query', function($query, ...$params) use ($pdo) {
+    $stmt = $pdo-&gt;prepare($query);
+    $stmt-&gt;execute($params);
+    return $stmt;
+});
+
+redefine('pg_fetch_assoc', function(PDOStatement $stmt) {
+    $stmt-&gt;fetchAssoc();
+});
+
+# These will use SQLite instead:
+
+pgsql_connect();
+$result = pg_query('SELECT * FROM posts');
+var_dump(pg_fetch_assoc($result));</code></pre>
+
+<pre class="small-font" style="display: none;"><code class="php">&lt;?php
+
+# Patchwork has to be imported first, as it will not work on any script
+# compiled earlier than itself. See <a href="/patchwork/limitations/">Limitations</a>.
+
+require __DIR__ . '/patchwork.phar';
+require __DIR__ . '/profiler.php';
+
+# No more code here: this file is also compiled earlier than Patchwork,
+# so moving the contents of pgsql_to_sqlite.php here would make this fail.</code></pre>
+
+<pre class="small-font" style="display:none;"><code class="json">{
+    "redefinable-internals": [
+        "pg_connect",
+        "pg_query",
+        "pg_fetch_assoc"
+    ]
+}</code></pre></div>
+    </div>
+</div>
+
+
+        <div class="divider" style="margin: 40px 0;"></div>
+
+        <div class="circle">2</div>
+
+        <h2 style="margin-top: 30px;">A Do-It-Yourself Profiler</h2>
+        <div class="example">
+                <ul class="nav nav-tabs" style="border-bottom: none; width: 98%; margin: 0 auto;">
+                  <li role="presentation" class="active"><a href="#">profiler.php</a></li>
+                  <li role="presentation"><a href="#">index.php</a></li>
+                </ul>
+                <div class="panel panel-default">
+                <div class="files panel-body">
+                <pre class="small-font"><code class="php">&lt;?php
+
+use function Patchwork\{redefine, relay, getMethod};
+
+$profiling = fopen('profiling.csv', 'w');
+
+redefine('App\*', function(...$args) use ($profiling) {
+    $begin = microtime(true);
+    relay();
+    $end = microtime(true);
+    fputcsv($profiling, [getMethod(), $end - $begin]);
+});</code></pre>
+
+<pre class="small-font" style="display: none;"><code class="php">&lt;?php
+
+# Patchwork has to be imported first, as it will not work on any script
+# compiled earlier than itself. See <a href="/patchwork/limitations/">Limitations</a>.
+
+require __DIR__ . '/patchwork.phar';
+require __DIR__ . '/pgsql_to_sqlite.php';
+
+# No more code here: this file is also compiled earlier than Patchwork,
+# so moving the contents of profiler.php here would make this fail.</code></div>
+</div>
+</div>
+
+
+
+
+
+        <div class="divider" style="margin: 40px 0;"></div>
+
+        <div class="circle">3</div>
+
+        <h2 style="margin-top: 30px;">A Test Case Using PHPUnit</h2>
+<div class="example">
+        <ul class="nav nav-tabs" style="border-bottom: none; width: 98%; margin: 0 auto;">
+          <li role="presentation" class="active"><a href="#">AutoloaderTest.php</a></li>
+          <li role="presentation"><a href="#">Autoloader.php</a></li>
+          <li role="presentation"><a href="#">patchwork.json</a></li>
+        </ul>
+        <div class="panel panel-default">
+        <div class="files panel-body">
+        <pre class="small-font"><code class="php">&lt;?php
+</code></pre>
+
+<pre class="small-font" style="display: none;"><code class="php">&lt;?php
+</code></pre>
+
+<pre class="small-font" style="display:none;"><code class="json">{
+    "redefinable-internals": [
+        "file_exists"
+    ]
+}</code></pre></div>
+</div>
+</div>
+
+             </div>
+    </main>
+
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+        <script>
+            $(function() {
+                $('.example .nav li a').click(function() {
+                    $(this).closest('.example').find('pre').hide();
+                    $(this).closest('.example').find('.files pre:nth-child(' + ($(this).parent().index() + 1) + ')').show();
+                    $(this).closest('ul').find('li').removeClass('active');
+                    $(this).parent().addClass('active');
+                    return false;
+                });
+            });
+        </script>
+
+</body>
+
+</html>

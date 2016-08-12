@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Patchwork</title>
+    <title>Limitations - Patchwork</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -67,26 +67,47 @@
         </div>
     </nav>
 
-    <main class="vertical-center">
-        <div class="center container" style="margin-bottom: 10px; margin-top: 45px;">
-            <div class="row">
-                <p><img alt="Logo" src="/patchwork/icons/logo.png" height="140" width="140" style="margin-top: 45px;"></p>
-            </div>
-            <div class="row">
-                <h1 style="margin-top: 20px; margin-bottom: 0px;">Write tests for your PHP code,</h1>
-                <h2 style="margin-top: 3px;">not code for the tests.</h2>
-            </div>
-            <div class="row">
-                <p style="margin-top: 0px;">With Patchwork, any function or method can be replaced with a test double:</p>
-            </div>
-            <div class="row">
-                <pre style="width: 425px; margin: 5px auto; margin-bottom: 35px; text-align: left;"><code class="php">redefine('time', always(strtotime('Dec 31, 1999')));
-echo date('Y-m-d', time()); # => 1999-12-31</code></pre>
-            </div>
-            <div class="row">
-                <p><a href="https://github.com/antecedent/patchwork/releases/download/2.0.0/patchwork.phar"><button type="button" class="btn btn-primary">Download Patchwork</button></a></p>
-                <p><small>PHAR, version 2.0.0 for PHP &ge; 5.4</small></p>
-            </div>
+    <main class="limitations">
+        <div class="container center" style="max-width: 600px;">
+            <h1>Limitations</h3>
+
+
+                    <div class="divider" style="margin: 40px 0;"></div>
+
+                    <div class="circle">1</div>
+
+                    <h2 style="margin-top: 15px; margin-bottom: 7px;">Internal functions, but not methods:</h2>
+                    <p>For example, <kbd>PDO::prepare</kbd> is still impossible to redefine in version 2.0. This, however, is a priority item in Patchwork's roadmap.</p>
+
+                    <div class="divider" style="margin: 40px 0;"></div>
+
+                    <div class="circle">2</div>
+
+                    <h2 style="margin-top: 15px; margin-bottom: 7px;">Too slow for production:</h2>
+                    <p>Even with the built-in caching mechanism, the boost will be insufficient as of now. If used every <em>n</em>-th request, though, which would make sense for profiling, it would probably not cause any big issues.</p>
+
+                    <div class="divider" style="margin: 40px 0;"></div>
+
+                    <div class="circle">3</div>
+
+                    <h2 style="margin-top: 15px; margin-bottom: 7px;">Only pre-declared internal functions:</h2>
+                    <p>Patchwork will fail on every attempt to redefine an internal function that is missing from the <kbd>redefinable-internals</kbd> array of your <kbd>patchwork.json</kbd>.</p>
+
+                    <div class="divider" style="margin: 40px 0;"></div>
+
+                    <div class="circle">4</div>
+
+                    <h2 style="margin-top: 15px; margin-bottom: 7px;">Magic constants will not expand as expected:</h2>
+                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. We have disobeyed the metaphor in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/patchwork/api">API</a>.</p>
+
+                    <div class="divider" style="margin: 40px 0;"></div>
+
+                    <div class="circle">5</div>
+
+                    <h2 style="margin-top: 15px; margin-bottom: 7px;">Picky about importing:</h2>
+                    <p>Make sure you import Patchwork as early as possible, since any files imported earlier, including the one from which the importing takes place, will be missed by Patchwork's code preprocessor.</p>
+
+
         </div>
     </main>
 

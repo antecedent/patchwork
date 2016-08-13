@@ -112,6 +112,8 @@ var_dump(pg_fetch_assoc($result));</code></pre>
 # Patchwork has to be imported first, as it will not work on any script
 # compiled earlier than itself. See <a href="/limitations/">Limitations</a>.
 
+# If using Composer, import /vendor/antecedent/patchwork/Patchwork.php.
+
 require __DIR__ . '/patchwork.phar';
 require __DIR__ . '/profiler.php';
 
@@ -158,6 +160,8 @@ redefine('App\*', function(...$args) use ($profiling) {
 
 # Patchwork has to be imported first, as it will not work on any script
 # compiled earlier than itself. See <a href="/limitations/">Limitations</a>.
+
+# If using Composer, import /vendor/antecedent/patchwork/Patchwork.php.
 
 require __DIR__ . '/patchwork.phar';
 require __DIR__ . '/pgsql_to_sqlite.php';

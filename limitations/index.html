@@ -98,14 +98,14 @@
                     <div class="circle">4</div>
 
                     <h2 style="margin-top: 15px; margin-bottom: 7px;">Magic constants will not expand as expected:</h2>
-                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. We have disobeyed the metaphor in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/api">API</a>.</p>
+                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. The metaphor has been disregarded in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/api">API</a>.</p>
 
                     <div class="divider" style="margin: 40px 0;"></div>
 
                     <div class="circle">5</div>
 
                     <h2 style="margin-top: 15px; margin-bottom: 7px;">Picky about importing:</h2>
-                    <p>Make sure you import Patchwork as early as possible, since any files imported earlier, including the one from which the importing takes place, will be missed by Patchwork's code preprocessor.</p>
+                    <p>Make sure that Patchwork is imported as early as possible, since any files imported earlier, including the one from which the importing takes place, will be missed by Patchwork's code preprocessor.</p>
 
 
         </div>

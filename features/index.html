@@ -76,14 +76,14 @@
             <div class="circle">1</div>
 
             <h2 style="margin-top: 15px; margin-bottom: 7px;">Does not miss any internal calls:</h2>
-            <p>Not only does Patchwork behave indifferently to namespacing circumstances, it will also handle calls that are resolved at runtime, like <kbd>$var()</kbd> or <kbd>call_user_func($func)</kbd>, and ones that are made indirectly through internal functions, like <kbd>array_map('count', $matrix)</kbd>.</p>
+            <p>Patchwork does away with <a href="http://www.giorgiosironi.com/2010/09/monkey-patching-in-php.html">namespace tricks</a>, it will also handle calls that are resolved at runtime, like <kbd>$var()</kbd> or <kbd>call_user_func($func)</kbd>, and ones that are made indirectly through internal functions, like <kbd>array_map('count', $matrix)</kbd>.</p>
 
             <div class="divider" style="margin: 40px 0;"></div>
 
             <div class="circle">2</div>
 
             <h2 style="margin-top: 15px; margin-bottom: 7px;">Accepts wildcards:</h2>
-            <p><kbd>redefine('Cache::*', $body)</kbd> is a perfectly valid call, and so is <kbd>redefine('*', $body)</kbd>: just remember that for internal functions, it will only cover those that are listed in patchwork.json.</p>
+            <p><kbd>redefine('Cache::*', $body)</kbd> is a perfectly valid operation, and so is <kbd>redefine('*', $body)</kbd>: just remember that for internal functions, it will only cover those that are listed in <kbd>patchwork.json</kbd>.</p>
 
 
             <div class="divider" style="margin: 40px 0;"></div>
@@ -105,7 +105,7 @@
             <div class="circle">5</div>
 
             <h2 style="margin-top: 15px; margin-bottom: 7px;">Can cache the transformed code files:</h2>
-            <p>If you put <kbd>{"cache-path": "any-path-here"}</kbd> in your <kbd>patchwork.json</kbd>, it will use the directory named <kbd>any-path-here</kbd> to store transformed code. This will result in a significant performance boost; however, it will still probably be insufficient for production.</p>
+            <p>Inserting <kbd>{"cache-path": "any-path-here"}</kbd> in a <kbd>patchwork.json</kbd> will make Patchwork use the directory named <kbd>any-path-here</kbd> to store transformed code. This will result in a significant performance boost; however, it will still probably be insufficient for production.</p>
 
 
 

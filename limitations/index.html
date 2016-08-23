@@ -98,7 +98,7 @@
                     <div class="circle">4</div>
 
                     <h2 style="margin-top: 15px; margin-bottom: 7px;">Magic constants will not expand as expected:</h2>
-                    <p>The workings of Patchwork are termed &ldquo;redefinition&rdquo; all over this site, but it is actually an call-intercepting process under the hood. The metaphor has been disregarded in this aspect, because IDEs would make no sense of <kbd>get_called_class()</kbd> inside a closure and the like. Therefore, <kbd>getFunction()</kbd> has to be used instead of <kbd>__FUNCTION__</kbd> and so on: see <a href="/api">API</a>.</p>
+                    <p>In redefinitions, <kbd>__FUNCTION__</kbd>, <kbd>self::class</kbd> and other means of self-reference will not work as the &ldquo;redefinition&rdquo; metaphor would make one expect to. The latter is just a metaphor; the &ldquo;new code&rdquo; is not plugged in anywhere, so the constants will just resolve to their own physical scope. See <a href="/api">API</a> for substitutes.</p>
 
                     <div class="divider" style="margin: 40px 0;"></div>
 

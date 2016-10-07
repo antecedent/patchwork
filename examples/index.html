@@ -115,7 +115,7 @@ var_dump(pg_fetch_assoc($result));</code></pre>
 # If using Composer, import /vendor/antecedent/patchwork/Patchwork.php.
 
 require __DIR__ . '/patchwork.phar';
-require __DIR__ . '/profiler.php';
+require __DIR__ . '/pgsql_to_sqlite.php';
 
 # No more code here: this file is also compiled earlier than Patchwork,
 # so moving the contents of pgsql_to_sqlite.php here would make this fail.</code></pre>
@@ -167,7 +167,7 @@ redefine('App\*', function(...$args) use ($profiling) {
 # If using Composer, import /vendor/antecedent/patchwork/Patchwork.php.
 
 require __DIR__ . '/patchwork.phar';
-require __DIR__ . '/pgsql_to_sqlite.php';
+require __DIR__ . '/profiler.php';
 
 # No more code here: this file is also compiled earlier than Patchwork,
 # so moving the contents of profiler.php here would make this fail.</code></div>

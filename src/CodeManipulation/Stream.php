@@ -32,7 +32,9 @@ class Stream
     public static function unwrap()
     {
         foreach (static::$protocols as $protocol) {
+            set_error_handler(function() {});
             stream_wrapper_restore($protocol);
+            restore_error_handler();
         }
     }
 

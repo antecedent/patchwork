@@ -7,6 +7,10 @@
  */
 namespace Patchwork;
 
+if (function_exists('Patchwork\replace')) {
+    return;
+}
+
 require_once __DIR__ . '/src/Exceptions.php';
 require_once __DIR__ . '/src/CallRerouting.php';
 require_once __DIR__ . '/src/CodeManipulation.php';
@@ -118,6 +122,7 @@ CodeManipulation\register([
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
     CodeManipulation\Actions\RedefinitionOfInternals\spliceNamedFunctionCalls(),
     CodeManipulation\Actions\RedefinitionOfInternals\spliceDynamicCalls(),
+    CodeManipulation\Actions\ConflictPrevention\preventImportingOtherCopiesOfPatchwork(),
 ]);
 
 CodeManipulation\onImport([

@@ -437,19 +437,21 @@ function connectDefaultInternals()
                 # and not directly call_user_func itself (or usort, or any other of those).
                 # We must compensate for scope that is lost, and that callback-taking functions
                 # can make use of.
-                if ($class === 'self' || $class === 'static' || $class === 'parent') {
-                    # We do not discriminate between early and late static binding here: FIXME.
-                    $actualClass = $caller['class'];
-                    if ($class === 'parent') {
-                        $actualClass = get_parent_class($actualClass);
+                if (!empty($class)) {
+                    if ($class === 'self' || $class === 'static' || $class === 'parent') {
+                        # We do not discriminate between early and late static binding here: FIXME.
+                        $actualClass = $caller['class'];
+                        if ($class === 'parent') {
+                            $actualClass = get_parent_class($actualClass);
+                        }
+                        $class = $actualClass;
                     }
-                    $class = $actualClass;
+                    $reflection = new \ReflectionMethod($class, $method);
+                    $reflection->setAccessible(true);
+                    $args[$offset] = function() use ($reflection, $instance) {
+                        return $reflection->invokeArgs($instance, func_get_args());
+                    };
                 }
-                $reflection = new \ReflectionMethod($class, $method);
-                $reflection->setAccessible(true);
-                $args[$offset] = function() use ($reflection, $instance) {
-                    return $reflection->invokeArgs($instance, func_get_args());
-                };
             }
             # Give the inspected arguments back to the callback-taking function
             return relay($args);

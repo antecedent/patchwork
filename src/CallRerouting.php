@@ -18,6 +18,7 @@ use Patchwork\Exceptions;
 
 const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
+const NUM_STACK_FRAMES_NEEDED_FOR_INTERCEPTION_OF_CALL_USER_FUNC_ETC = 12;
 
 const INTERNAL_STUB_CODE = '
     namespace @ns_for_redefinitions;
@@ -407,6 +408,7 @@ function connectDefaultInternals()
                     }
                     list($class, $method, $instance) = Utils\interpretCallable($callable);
                     if ($class === 'self' || $class === 'static' || $class === 'parent') {
+                        $frame = NUM_STACK_FRAMES_NEEDED_FOR_INTERCEPTION_OF_CALL_USER_FUNC_ETC;
                         $origin = debug_backtrace()[$frame]['class'];
                         if ($class === 'parent') {
                             $origin = get_parent_class($origin);

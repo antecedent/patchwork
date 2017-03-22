@@ -18,7 +18,6 @@ use Patchwork\Exceptions;
 
 const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
-const NUM_STACK_FRAMES_NEEDED_FOR_INTERCEPTION_OF_CALL_USER_FUNC_ETC = 12;
 
 const INTERNAL_STUB_CODE = '
     namespace @ns_for_redefinitions;
@@ -382,12 +381,27 @@ function createStubsForInternals()
     }
 }
 
+/**
+ * This is needed, for instance, to intercept the time() call in call_user_func('time').
+ *
+ * For that to happen, we require that if at least one internal function is redefinable, then
+ * call_user_func, preg_replace_callback and other callback-taking internal functions also be
+ * redefinable: see Patchwork\Config.
+ *
+ * Here, we go through the callback-taking internals and add argument-inspecting patches
+ * (redefinitions) to them.
+ *
+ * The patches are then expected to find the "nested" internal calls, such as the 'time' argument
+ * in call_user_func('time'), and invoke their respective redefinitions, if any.
+ */
 function connectDefaultInternals()
 {
+    # call_user_func() etc. are not a problem if no other internal functions are redefined
     if (Config\getRedefinableInternals() === []) {
         return;
     }
     foreach (Config\getDefaultRedefinableInternals() as $function) {
+        # Which arguments are callbacks? Store their offsets in the following array.
         $offsets = [];
         foreach ((new \ReflectionFunction($function))->getParameters() as $offset => $argument) {
             $name = $argument->getName();
@@ -396,34 +410,48 @@ function connectDefaultInternals()
             }
         }
         connect($function, function() use ($offsets) {
+            # This is the argument-inspecting patch.
             $args = Stack\top('args');
+            $caller = Stack\all()[1];
             foreach ($offsets as $offset) {
+                # Callback absent
                 if (!isset($args[$offset])) {
                     continue;
                 }
                 $callable = $args[$offset];
-                $args[$offset] = function() use ($callable) {
-                    if ($callable instanceof \Closure) {
-                        return call_user_func_array($callable, func_get_args());
+                # Callback is a closure => definitely not internal
+                if ($callable instanceof \Closure) {
+                    continue;
+                }
+                list($class, $method, $instance) = Utils\interpretCallable($callable);
+                if (empty($class)) {
+                    # Callback is global function, which might be internal too.
+                    $args[$offset] = function() use ($callable) {
+                        return dispatchDynamic($callable, func_get_args());
+                    };
+                }
+                # Callback involves a class => not internal either, since the only internals that
+                # Patchwork can handle as of 2.0 are global functions.
+                # However, we must handle all kinds of opaque access here too, such as self:: and
+                # private methods, because we're actually patching a stub (see INTERNAL_STUB_CODE)
+                # and not directly call_user_func itself (or usort, or any other of those).
+                # We must compensate for scope that is lost, and that callback-taking functions
+                # can make use of.
+                if ($class === 'self' || $class === 'static' || $class === 'parent') {
+                    # We do not discriminate between early and late static binding here: FIXME.
+                    $actualClass = $caller['class'];
+                    if ($class === 'parent') {
+                        $actualClass = get_parent_class($actualClass);
                     }
-                    list($class, $method, $instance) = Utils\interpretCallable($callable);
-                    if ($class === 'self' || $class === 'static' || $class === 'parent') {
-                        $frame = NUM_STACK_FRAMES_NEEDED_FOR_INTERCEPTION_OF_CALL_USER_FUNC_ETC;
-                        $origin = debug_backtrace()[$frame]['class'];
-                        if ($class === 'parent') {
-                            $origin = get_parent_class($origin);
-                        }
-                        $class = $origin;
-                        $callable = [$class, $method];
-                    }
-                    if ($class !== null && !is_callable([$class, $method])) {
-                        $reflection = new \ReflectionMethod($class, $method);
-                        $reflection->setAccessible(true);
-                        return $reflection->invokeArgs($instance, func_get_args());
-                    }
-                    return dispatchDynamic($callable, func_get_args());
+                    $class = $actualClass;
+                }
+                $reflection = new \ReflectionMethod($class, $method);
+                $reflection->setAccessible(true);
+                $args[$offset] = function() use ($reflection, $instance) {
+                    return $reflection->invokeArgs($instance, func_get_args());
                 };
             }
+            # Give the inspected arguments back to the callback-taking function
             return relay($args);
         });
     }

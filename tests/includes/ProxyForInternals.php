@@ -21,6 +21,23 @@ assert(array_map('strtolower', ['Foo', 'BAR', 'baz']) === [
     'baz, but in lowercase',
 ]);
 
+# Preserve behavior of call_user_func etc.
+class SelfCaller
+{
+    static function first($x)
+    {
+        return call_user_func('self::second', $x);
+    }
+
+    static function second($x)
+    {
+        return $x * 2;
+    }
+}
+
+assert(SelfCaller::first(21) === 42);
+
+
 # Dynamic calls
 $function = 'str' . 'len';
 p\redefine('strlen', p\always('?!'));

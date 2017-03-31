@@ -154,9 +154,10 @@ $profiling = fopen('profiling.csv', 'w');
 
 redefine('App\*', function(...$args) use ($profiling) {
     $begin = microtime(true);
-    relay();
+    $result = relay();
     $end = microtime(true);
     fputcsv($profiling, [getMethod(), $end - $begin]);
+    return $result;
 });</code></pre>
 
 <pre class="small-font" style="display: none;"><code class="php">&lt;?php

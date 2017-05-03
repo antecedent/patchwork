@@ -100,7 +100,11 @@ class Stream
     {
         $this->unwrap();
         set_error_handler(function() {});
-        $result = stat($path);
+        try {
+            $result = stat($path);
+        } catch (\Exception $e) {
+            $result = null;
+        }
         restore_error_handler();
         $this->wrap();
         if ($result) {

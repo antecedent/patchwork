@@ -446,11 +446,16 @@ function connectDefaultInternals()
                         }
                         $class = $actualClass;
                     }
-                    $reflection = new \ReflectionMethod($class, $method);
-                    $reflection->setAccessible(true);
-                    $args[$offset] = function() use ($reflection, $instance) {
-                        return $reflection->invokeArgs($instance, func_get_args());
-                    };
+                    try {
+                        $reflection = new \ReflectionMethod($class, $method);
+                        $reflection->setAccessible(true);
+                        $args[$offset] = function() use ($reflection, $instance) {
+                            return $reflection->invokeArgs($instance, func_get_args());
+                        };
+                    } catch (\ReflectionException $e) {
+                        # If it's an invalid callable, then just prevent the unexpected propagation
+                        # of ReflectionExceptions.
+                    }
                 }
             }
             # Give the inspected arguments back to the callback-taking function

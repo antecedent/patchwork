@@ -21,7 +21,7 @@ function locate()
     $paths[] = getcwd();
     foreach ($paths as $path) {
         while (dirname($path) !== $path) {
-            $file = $path . '/' . FILE_NAME;
+            $file = $path . DIRECTORY_SEPARATOR . FILE_NAME;
             if (is_file($file) && !isset($alreadyRead[$file])) {
                 read($file);
                 State::$timestamp = max(filemtime($file), State::$timestamp);

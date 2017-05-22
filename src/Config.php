@@ -10,6 +10,7 @@ namespace Patchwork\Config;
 
 use Patchwork\Utils;
 use Patchwork\Exceptions;
+use Patchwork\CodeManipulation\Actions\RedefinitionOfLanguageConstructs;
 
 const FILE_NAME = 'patchwork.json';
 
@@ -153,6 +154,15 @@ function getRedefinableInternals()
 function setRedefinableInternals($names)
 {
     merge(State::$redefinableInternals, $names);
+    $allConstructs = array_keys(RedefinitionOfLanguageConstructs\getMappingOfConstructs());
+    $constructs = array_intersect(State::$redefinableInternals, $allConstructs);
+    State::$redefinableLanguageConstructs = array_merge(State::$redefinableLanguageConstructs, $constructs);
+    State::$redefinableInternals = array_diff(State::$redefinableInternals, $constructs);
+}
+
+function getRedefinableLanguageConstructs()
+{
+    return State::$redefinableLanguageConstructs;
 }
 
 function getCachePath()
@@ -199,5 +209,6 @@ class State
     static $whitelist = [];
     static $cachePath;
     static $redefinableInternals = [];
+    static $redefinableLanguageConstructs = [];
     static $timestamp = 0;
 }

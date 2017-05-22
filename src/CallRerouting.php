@@ -15,6 +15,7 @@ use Patchwork\Utils;
 use Patchwork\Stack;
 use Patchwork\Config;
 use Patchwork\Exceptions;
+use Patchwork\CodeManipulation\Actions\RedefinitionOfLanguageConstructs;
 
 const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
@@ -33,6 +34,7 @@ const INTERNAL_STUB_CODE = '
 
 function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
 {
+    $source = Utils\translateCallable($source);
     $handle = $handle ?: new Handle;
     list($class, $method) = Utils\interpretCallable($source);
     if (constitutesWildcard($source)) {
@@ -233,7 +235,9 @@ function dispatchTo(callable $target)
 
 function dispatch($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
-    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0 && $args === null) {
+    $isInternalStub = strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0;
+    $isLanguageConstructStub = strpos($method, RedefinitionOfLanguageConstructs\LANGUAGE_CONSTRUCT_PREFIX) === 0;
+    if ($isInternalStub && !$isLanguageConstructStub && $args === null) {
         # Mind the namespace-of-origin argument
         $trace = debug_backtrace();
         $args = array_reverse($trace)[$frame - 1]['args'];
@@ -273,7 +277,9 @@ function relay(array $args = null)
     if ($args === null) {
         $args = $top['args'];
     }
-    if (strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0) {
+    $isInternalStub = strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0;
+    $isLanguageConstructStub = strpos($method, RedefinitionOfLanguageConstructs\LANGUAGE_CONSTRUCT_PREFIX) === 0;
+    if ($isInternalStub && !$isLanguageConstructStub) {
         array_unshift($args, '');
     }
     try {

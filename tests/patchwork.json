@@ -5,7 +5,11 @@
         "strtolower",
         "sort",
         "strlen",
-        "get_declared_classes"
+        "get_declared_classes",
+        "die",
+        "exit",
+        "echo",
+        "print"
     ],
     "blacklist": [
         "includes/Singleton.php"

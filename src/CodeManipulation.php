@@ -15,6 +15,7 @@ require __DIR__ . '/CodeManipulation/Actions/CallRerouting.php';
 require __DIR__ . '/CodeManipulation/Actions/CodeManipulation.php';
 require __DIR__ . '/CodeManipulation/Actions/Namespaces.php';
 require __DIR__ . '/CodeManipulation/Actions/RedefinitionOfInternals.php';
+require __DIR__ . '/CodeManipulation/Actions/RedefinitionOfLanguageConstructs.php';
 require __DIR__ . '/CodeManipulation/Actions/ConflictPrevention.php';
 
 use Patchwork\Exceptions;

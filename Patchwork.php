@@ -136,6 +136,12 @@ register_shutdown_function('Patchwork\Utils\clearOpcodeCaches');
 CallRerouting\createStubsForInternals();
 CallRerouting\connectDefaultInternals();
 
+require __DIR__ . '/src/Redefinitions/LanguageConstructs.php';
+
+CodeManipulation\register([
+    CodeManipulation\Actions\RedefinitionOfLanguageConstructs\spliceAllConfiguredLanguageConstructs(),
+]);
+
 if (Utils\wasRunAsConsoleApp()) {
     require __DIR__ . '/src/Console.php';
 }

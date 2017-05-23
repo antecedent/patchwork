@@ -67,6 +67,7 @@ function getInnerTokens()
         T_CONSTANT_ENCAPSED_STRING,
         T_COMMENT,
         T_DOC_COMMENT,
+        T_VARIABLE,
     ];
 }
 

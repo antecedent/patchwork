@@ -52,6 +52,7 @@ assert($calls['exit'] == [
 assert($calls['echo'] == [
     ['This is a string'],
     ['This is a string', ' and this is another one'],
+    ['Hello ', 'world'],
 ]);
 
 assert($calls['print'] == [

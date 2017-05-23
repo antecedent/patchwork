@@ -34,7 +34,7 @@ const INTERNAL_STUB_CODE = '
 
 function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
 {
-    $source = Utils\translateCallable($source);
+    $source = translateIfLanguageConstruct($source);
     $handle = $handle ?: new Handle;
     list($class, $method) = Utils\interpretCallable($source);
     if (constitutesWildcard($source)) {
@@ -467,6 +467,26 @@ function connectDefaultInternals()
             # Give the inspected arguments back to the callback-taking function
             return relay($args);
         });
+    }
+}
+
+/**
+ * @since 2.0.5
+ *
+ * As of version 2.0.5, this is used to accommodate language constructs
+ * (echo, eval, exit and others) within the concept of callable.
+ */
+function translateIfLanguageConstruct($callable)
+{
+    if (!is_string($callable)) {
+        return $callable;
+    }
+    if (in_array($callable, Config\getRedefinableLanguageConstructs())) {
+        return RedefinitionOfLanguageConstructs\LANGUAGE_CONSTRUCT_PREFIX . $callable;
+    } elseif (in_array($callable, Config\getSupportedLanguageConstructs())) {
+        throw new Exceptions\NotUserDefined($callable);
+    } else {
+        return $callable;
     }
 }
 

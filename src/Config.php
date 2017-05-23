@@ -154,8 +154,7 @@ function getRedefinableInternals()
 function setRedefinableInternals($names)
 {
     merge(State::$redefinableInternals, $names);
-    $allConstructs = array_keys(RedefinitionOfLanguageConstructs\getMappingOfConstructs());
-    $constructs = array_intersect(State::$redefinableInternals, $allConstructs);
+    $constructs = array_intersect(State::$redefinableInternals, getSupportedLanguageConstructs());
     State::$redefinableLanguageConstructs = array_merge(State::$redefinableLanguageConstructs, $constructs);
     State::$redefinableInternals = array_diff(State::$redefinableInternals, $constructs);
 }
@@ -163,6 +162,11 @@ function setRedefinableInternals($names)
 function getRedefinableLanguageConstructs()
 {
     return State::$redefinableLanguageConstructs;
+}
+
+function getSupportedLanguageConstructs()
+{
+    return array_keys(RedefinitionOfLanguageConstructs\getMappingOfConstructs());
 }
 
 function getCachePath()

@@ -225,25 +225,6 @@ function getRedefinableCallables()
     return array_merge(getUserDefinedCallables(), Config\getRedefinableInternals());
 }
 
-/**
- * @since 2.0.5
- *
- * As of version 2.0.5, this is used to accommodate language constructs
- * (echo, eval, exit and others) within the concept of callable.
- */
-function translateCallable($callable)
-{
-    if (!is_string($callable)) {
-        return $callable;
-    }
-    $constructs = Config\getRedefinableLanguageConstructs();
-    if (in_array($callable, $constructs)) {
-        return CodeManipulation\Actions\RedefinitionOfLanguageConstructs\LANGUAGE_CONSTRUCT_PREFIX . $callable;
-    } else {
-        return $callable;
-    }
-}
-
 function getUserDefinedMethods()
 {
     static $result = [];

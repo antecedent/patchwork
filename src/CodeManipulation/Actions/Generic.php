@@ -30,6 +30,11 @@ function prependCodeToFunctions($code)
 {
     return function(Source $s) use ($code) {
         foreach ($s->all(T_FUNCTION) as $function) {
+            # Skip "use function"
+            $previous = $s->skipBack(Source::junk(), $function);
+            if ($s->is(T_USE, $previous)) {
+                continue;
+            }
             $bracket = $s->next(LEFT_CURLY, $function);
             if (Utils\generatorsSupported()) {
                 # Skip generators

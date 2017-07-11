@@ -14,7 +14,7 @@ use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Actions\Namespaces;
 
-const DYNAMIC_CALL_REPLACEMENT = '\Patchwork\CallRerouting\dispatchDynamic(%s, [%s])';
+const DYNAMIC_CALL_REPLACEMENT = '\Patchwork\CallRerouting\dispatchDynamic(%s, \Patchwork\Utils\args(%s))';
 
 function spliceNamedFunctionCalls()
 {

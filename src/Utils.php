@@ -348,6 +348,11 @@ function wasRunAsConsoleApp()
     );
 }
 
+function args()
+{
+    return func_get_args();
+}
+
 class State
 {
     static $missedCallables = [];

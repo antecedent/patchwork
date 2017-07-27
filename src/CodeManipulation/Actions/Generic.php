@@ -26,13 +26,16 @@ function markPreprocessedFiles(&$target)
     };
 }
 
-function prependCodeToFunctions($code)
+function prependCodeToFunctions($code, $skipVoidTyped = true)
 {
-    return function(Source $s) use ($code) {
+    return function(Source $s) use ($code, $skipVoidTyped) {
         foreach ($s->all(T_FUNCTION) as $function) {
             # Skip "use function"
             $previous = $s->skipBack(Source::junk(), $function);
             if ($s->is(T_USE, $previous)) {
+                continue;
+            }
+            if ($skipVoidTyped && isVoidTyped($s, $function)) {
                 continue;
             }
             $bracket = $s->next(LEFT_CURLY, $function);
@@ -49,6 +52,16 @@ function prependCodeToFunctions($code)
             }
         }
     };
+}
+
+function isVoidTyped(Source $s, $function)
+{
+    $parenthesis = $s->next(LEFT_ROUND, $function);
+    $next = $s->skip(Source::junk(), $s->match($parenthesis));
+    if ($s->is(':', $next)) {
+        return $s->read($s->skip(Source::junk(), $next), 1) === 'void';
+    }
+    return false;
 }
 
 function wrapUnaryConstructArguments($construct, $wrapper)

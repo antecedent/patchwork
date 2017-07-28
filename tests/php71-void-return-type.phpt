@@ -1,5 +1,5 @@
 --TEST--
-https://github.com/antecedent/patchwork/issues/63
+https://github.com/antecedent/patchwork/issues/64
 
 --SKIPIF--
 <?php version_compare(PHP_VERSION, "7.1", ">=")

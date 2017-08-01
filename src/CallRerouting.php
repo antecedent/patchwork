@@ -52,7 +52,7 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
         $handle = connectFunction($method, $target, $handle);
     } else {
         if (Utils\callableDefined($source)) {
-            if ((new \ReflectionMethod($class, $method))->isInternal()) {
+            if ($method !== 'new' && (new \ReflectionMethod($class, $method))->isInternal()) {
                 throw new InternalMethodsNotSupported($source);
             }
             $handle = connectMethod($source, $target, $handle);
@@ -119,7 +119,8 @@ function attachExistenceAssertion(Handle $handle, $function)
 
 function validate($function, $partOfWildcard = false)
 {
-    if (!Utils\callableDefined($function)) {
+    list($class, $method) = Utils\interpretCallable($function);
+    if (!Utils\callableDefined($function) || $method === 'new') {
         return;
     }
     $reflection = Utils\reflectCallable($function);
@@ -487,6 +488,20 @@ function translateIfLanguageConstruct($callable)
         throw new Exceptions\NotUserDefined($callable);
     } else {
         return $callable;
+    }
+}
+
+/**
+ * @since 2.1.0
+ */
+function dispatchInstantiation($class, array $args)
+{
+    $success = dispatch($class, $class, 'new', count(debug_backtrace()), $result, $args);
+    if ($success) {
+        return $result;
+    } else {
+        $reflection = new \ReflectionClass($class);
+        return $reflection->newInstanceArgs($args);
     }
 }
 

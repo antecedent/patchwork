@@ -68,6 +68,7 @@ function getInnerTokens()
         T_COMMENT,
         T_DOC_COMMENT,
         T_VARIABLE,
+        T_ENCAPSED_AND_WHITESPACE,
     ];
 }
 
@@ -78,6 +79,7 @@ function getBracketTokens()
         Generic\LEFT_SQUARE,
         Generic\LEFT_CURLY,
         T_CURLY_OPEN,
+        T_DOLLAR_OPEN_CURLY_BRACES,
     ];
 }
 

@@ -11,41 +11,101 @@ namespace Patchwork\CodeManipulation\Actions\Namespaces;
 use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 
+/**
+ * @since 2.1.0
+ */
+function resolveName(Source $s, $pos, $type = 'class')
+{
+    $name = scanQualifiedName($s, $pos);
+    $uses = collectUseDeclarations($s, $pos);
+    if (isset($uses[$type][$name])) {
+        return $uses[$type][$name];
+    }
+    list($prefix, $suffix) = splitQualifiedName($name);
+    if (isset($uses['class'][$prefix])) {
+        $prefix = $uses['class'][$prefix];
+    } else {
+        $prefix = getNamespaceAt($s, $pos);
+    }
+    return joinQualifiedName($prefix, $suffix);
+}
+
+/**
+ * @since 2.1.0
+ */
+function splitQualifiedName($name)
+{
+    if (strpos($name, '\\') === false) {
+        return [$name, ''];
+    }
+    return explode('\\', $name, 2);
+}
+
+/**
+ * @since 2.1.0
+ */
+function joinQualifiedName($prefix, $suffix)
+{
+    if (empty($suffix)) {
+        return $prefix;
+    }
+    return '\\' . $prefix . '\\' . $suffix;
+}
+
+/**
+ * @since 2.1.0
+ */
+function getNamespaceAt(Source $s, $pos)
+{
+    foreach (collectNamespaceBoundaries($s) as $namespace => $boundaries) {
+        list($begin, $end) = $boundaries;
+        if ($pos >= $begin && $pos <= $end) {
+            return $namespace;
+        }
+    }
+    return '';
+}
+
 function collectNamespaceBoundaries(Source $s)
 {
-    if (!$s->has(T_NAMESPACE)) {
-        return ['' => [[0, INF]]];
-    }
-    $result = [];
-    foreach ($s->all(T_NAMESPACE) as $keyword) {
-        if ($s->next(';', $keyword) < $s->next(Generic\LEFT_CURLY, $keyword)) {
-            return [scanQualifiedName($s, $keyword + 1) => [[0, INF]]];
+    return $s->cache([], function() {
+        if (!$this->has(T_NAMESPACE)) {
+            return ['' => [[0, INF]]];
         }
-        $begin = $s->next(Generic\LEFT_CURLY, $keyword) + 1;
-        $end = $s->match($begin) - 1;
-        $name = scanQualifiedName($s, $keyword + 1);
-        if (!isset($result[$name])) {
-            $result[$name] = [];
+        $result = [];
+        foreach ($this->all(T_NAMESPACE) as $keyword) {
+            if ($this->next(';', $keyword) < $this->next(Generic\LEFT_CURLY, $keyword)) {
+                return [scanQualifiedName($this, $keyword + 1) => [[0, INF]]];
+            }
+            $begin = $this->next(Generic\LEFT_CURLY, $keyword) + 1;
+            $end = $this->match($begin) - 1;
+            $name = scanQualifiedName($this, $keyword + 1);
+            if (!isset($result[$name])) {
+                $result[$name] = [];
+            }
+            $result[$name][] = [$begin, $end];
         }
-        $result[$name][] = [$begin, $end];
-    }
-    return $result;
+        return $result;
+    });
 }
 
 function collectUseDeclarations(Source $s, $begin)
 {
-    $result = ['class' => [], 'function' => [], 'const' => []];
-    # only tokens that are siblings bracket-wise are considered,
-    # so trait-use instances are not an issue
-    foreach ($s->siblings(T_USE, $begin) as $keyword) {
-        # skip if closure-use
-        $next = $s->skip(Source::junk(), $keyword);
-        if ($s->is(Generic\LEFT_ROUND, $next)) {
-            continue;
+    $begin = $s->lastSibling($begin);
+    return $s->cache([$begin], function($begin) {
+        $result = ['class' => [], 'function' => [], 'const' => []];
+        # only tokens that are siblings bracket-wise are considered,
+        # so trait-use instances are not an issue
+        foreach ($this->siblings(T_USE, $begin) as $keyword) {
+            # skip if closure-use
+            $next = $this->skip(Source::junk(), $keyword);
+            if ($this->is(Generic\LEFT_ROUND, $next)) {
+                continue;
+            }
+            parseUseDeclaration($this, $next, $result);
         }
-        parseUseDeclaration($s, $next, $result);
-    }
-    return $result;
+        return $result;
+    });
 }
 
 function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $type = 'class')

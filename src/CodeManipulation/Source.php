@@ -33,6 +33,7 @@ class Source
     public $levelEndings;
     public $tokensByLevel;
     public $tokensByLevelAndType;
+    public $cache;
 
     function __construct($string)
     {
@@ -49,6 +50,7 @@ class Source
         $this->collectLevelInfo();
         $this->splices = [];
         $this->spliceLengths = [];
+        $this->cache = [];
     }
 
     function indexTokensByType()
@@ -308,5 +310,30 @@ class Source
     function flush()
     {
         $this->initialize(token_get_all($this));
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    function cache(array $args, \Closure $function)
+    {
+        $found = true;
+        $trace = debug_backtrace()[1];
+        $location = $trace['file'] . ':' , $trace['line'];
+        $result = &$this->cache;
+        foreach (array_merge([$location], $args) as $step) {
+            if (!is_scalar($step)) {
+                throw new \LogicException('???'); # FIXME
+            }
+            if (!isset($result[$step])) {
+                $result[$step] = [];
+                $found = false;
+            }
+            $result = &$result[$step];
+        }
+        if (!$found) {
+            $result = call_user_func_array($function->bindTo($this), $args);
+        }
+        return $result;
     }
 }

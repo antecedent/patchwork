@@ -58,6 +58,9 @@ function isVoidTyped(Source $s, $function)
 {
     $parenthesis = $s->next(LEFT_ROUND, $function);
     $next = $s->skip(Source::junk(), $s->match($parenthesis));
+    if ($s->is(T_USE, $next)) {
+        $next = $s->skip(Source::junk(), $s->match($s->next(LEFT_ROUND, $next)));
+    }
     if ($s->is(':', $next)) {
         return $s->read($s->skip(Source::junk(), $next), 1) === 'void';
     }

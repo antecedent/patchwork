@@ -56,6 +56,7 @@ class Decorator
     private function methodMatches(array $top)
     {
         return $this->method === null ||
+               $this->method === 'new' ||
                $top["function"] === $this->method;
     }
 }

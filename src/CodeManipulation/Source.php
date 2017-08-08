@@ -115,8 +115,8 @@ class Source
             Utils\appendUnder($this->tokensByLevel, $level, $offset);
             Utils\appendUnder($this->tokensByLevelAndType, [$level, $type], $offset);
         }
-        Utils\appendUnder($this->levelBeginnings, 0, -1);
-        Utils\appendUnder($this->levelEndings, 0, count($this->tokens));
+        Utils\appendUnder($this->levelBeginnings, 0, 0);
+        Utils\appendUnder($this->levelEndings, 0, count($this->tokens) - 1);
     }
 
     function has($types)
@@ -319,11 +319,11 @@ class Source
     {
         $found = true;
         $trace = debug_backtrace()[1];
-        $location = $trace['file'] . ':' , $trace['line'];
+        $location = $trace['file'] . ':' . $trace['line'];
         $result = &$this->cache;
         foreach (array_merge([$location], $args) as $step) {
             if (!is_scalar($step)) {
-                throw new \LogicException('???'); # FIXME
+                throw new \LogicException;
             }
             if (!isset($result[$step])) {
                 $result[$step] = [];

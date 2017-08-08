@@ -15,6 +15,8 @@ use Patchwork\CodeManipulation\Actions\Namespaces;
 const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', \Patchwork\Utils\args(%s))';
 const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, \Patchwork\Utils\args(%s))';
 
+const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';
+
 /**
  * @since 2.1.0
  */
@@ -25,7 +27,7 @@ function spliceAllInstantiations(Source $s)
         $end = scanInnerTokens($s, $begin, $dynamic);
         $afterEnd = $s->skip(Source::junk(), $end);
         list($argsOpen, $argsClose) = [null, null];
-        if ($s->is(Generic\LEFT_ROUND), $afterEnd) {
+        if ($s->is(Generic\LEFT_ROUND, $afterEnd)) {
             list($argsOpen, $argsClose) = [$afterEnd, $s->match($afterEnd)];
         }
         spliceInstantiation($s, $new, $begin, $end, $argsOpen, $argsClose, $dynamic);
@@ -34,11 +36,11 @@ function spliceAllInstantiations(Source $s)
 
 function spliceInstantiation(Source $s, $new, $begin, $end, $argsOpen, $argsClose, $dynamic)
 {
-    $class = $s->read($begin, $end - $begin + 1)
+    $class = $s->read($begin, $end - $begin + 1);
     $args = '';
     $length = $end - $new + 1;
     if ($argsOpen !== null) {
-        $args = $s->read($argsOpen + 1, $argsClose - $argsOpen);
+        $args = $s->read($argsOpen + 1, $argsClose - $argsOpen - 1);
         $length = $argsClose - $new + 1;
     }
     $replacement = DYNAMIC_INSTANTIATION_REPLACEMENT;
@@ -84,7 +86,6 @@ function getDynamicTokens()
         '$',
         T_OBJECT_OPERATOR,
         T_DOUBLE_COLON,
-        T_STRING,
         T_LNUMBER,
         T_DNUMBER,
         T_CONSTANT_ENCAPSED_STRING,

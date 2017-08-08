@@ -195,7 +195,7 @@ function connectMethod($function, callable $target, Handle $handle = null)
     $target->superclass = $class;
     $target->method = $method;
     $target->instance = $instance;
-    $reflection = new \ReflectionMethod($class, $method);
+    $reflection = Utils\reflectCallable($function);
     $declaringClass = $reflection->getDeclaringClass();
     $class = $declaringClass->getName();
     if (!Utils\runningOnHHVM()) {
@@ -496,11 +496,27 @@ function translateIfLanguageConstruct($callable)
  */
 function dispatchInstantiation($class, array $args)
 {
-    $success = dispatch($class, $class, 'new', count(debug_backtrace()), $result, $args);
+    if (in_array($class, ['\self', '\static', '\parent'])) {
+        $frame = debug_backtrace()[1];
+        if ($class == '\self') {
+            $class = $frame['class'];
+        } else {
+            $reflection = new \ReflectionClass($frame['class'], $frame['function']);
+            $reflection = $reflection->getDeclaringClass();
+            if ($class == '\parent') {
+                $reflection = $reflection->getParentClass();
+            }
+            $class = $reflection->name;
+        }
+    }
+    $class = ltrim($class, '\\');
+    $success = dispatch($class, $class, 'new', count(debug_backtrace()) - 1, $result, $args);
     if ($success) {
         return $result;
     } else {
-        $reflection = new \ReflectionClass($class);
+        if (!isset($reflection)) {
+            $reflection = new \ReflectionClass($class);
+        }
         return $reflection->newInstanceArgs($args);
     }
 }

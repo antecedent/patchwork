@@ -124,7 +124,7 @@ function interpretCallable($callback)
         return [$class, $method, $instance];
     }
     if (substr($callback, 0, 4) === 'new ') {
-        return [ltrim($callback, substr($callback, 4)), 'new', null];
+        return [ltrim(substr($callback, 4)), 'new', null];
     }
     $callback = ltrim($callback, "\\");
     if (strpos($callback, "::")) {
@@ -142,9 +142,9 @@ function callableDefined($callable, $shouldAutoload = false)
     }
     if (isset($class)) {
         return classOrTraitExists($class, $shouldAutoload) &&
-               method_exists($class, $method);
+               (method_exists($class, $method) || $method === 'new');
     }
-    return $method === 'new' || function_exists($method);
+    return function_exists($method);
 }
 
 function classOrTraitExists($classOrTrait, $shouldAutoload = true)
@@ -194,6 +194,9 @@ function reflectCallable($callback)
     }
     list($class, $method) = interpretCallable($callback);
     if (isset($class)) {
+        if ($method === 'new') {
+            return (new \ReflectionClass($class))->getConstructor();
+        }
         return new \ReflectionMethod($class, $method);
     }
     return new \ReflectionFunction($method);
@@ -349,6 +352,11 @@ function wasRunAsConsoleApp()
     return isset($argv) && (
         endsWith($argv[0], 'patchwork.phar') || endsWith($argv[0], 'Patchwork.php')
     );
+}
+
+function args()
+{
+    return func_get_args();
 }
 
 class State

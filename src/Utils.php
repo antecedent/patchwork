@@ -194,9 +194,6 @@ function reflectCallable($callback)
     }
     list($class, $method) = interpretCallable($callback);
     if (isset($class)) {
-        if ($method === 'new') {
-            return (new \ReflectionClass($class))->getConstructor();
-        }
         return new \ReflectionMethod($class, $method);
     }
     return new \ReflectionFunction($method);

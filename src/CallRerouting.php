@@ -52,10 +52,13 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
         $handle = connectFunction($method, $target, $handle);
     } else {
         if (Utils\callableDefined($source)) {
-            if ($method !== 'new' && (new \ReflectionMethod($class, $method))->isInternal()) {
+            if ($method === 'new') {
+                $handle = connectInstantiation($class, $target, $handle);
+            } elseif ((new \ReflectionMethod($class, $method))->isUserDefined()) {
+                $handle = connectMethod($source, $target, $handle);
+            } else {
                 throw new InternalMethodsNotSupported($source);
             }
-            $handle = connectMethod($source, $target, $handle);
         } else {
             $handle = queueConnection($source, $target, $handle);
             if (Utils\runningOnHHVM()) {
@@ -210,6 +213,15 @@ function connectMethod($function, callable $target, Handle $handle = null)
     if (Utils\runningOnHHVM()) {
         connectOnHHVM("$class::$method", $handle);
     }
+    return $handle;
+}
+
+function connectInstantiation($class, callable $target, Handle $handle = null)
+{
+    $handle = $handle ?: new Handle;
+    $routes = &State::$routes[$class]['new'];
+    $offset = Utils\append($routes, [$target, $handle]);
+    $handle->addReference($routes[$offset]);
     return $handle;
 }
 

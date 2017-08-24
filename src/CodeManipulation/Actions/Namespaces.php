@@ -24,7 +24,7 @@ function resolveName(Source $s, $pos, $type = 'class')
     list($prefix, $suffix) = splitQualifiedName($name);
     if (isset($uses['class'][$prefix])) {
         $prefix = $uses['class'][$prefix];
-    } elseif (!empty($prefix)) {
+    } elseif ($prefix === null) {
         $prefix = getNamespaceAt($s, $pos);
     }
     return joinQualifiedName($prefix, $suffix);
@@ -36,7 +36,7 @@ function resolveName(Source $s, $pos, $type = 'class')
 function splitQualifiedName($name)
 {
     if (strpos($name, '\\') === false) {
-        return ['', $name];
+        return [null, $name];
     }
     return explode('\\', $name, 2);
 }
@@ -60,7 +60,6 @@ function getNamespaceAt(Source $s, $pos)
     foreach (collectNamespaceBoundaries($s) as $namespace => $boundaryPairs) {
         foreach ($boundaryPairs as $boundaries) {
             list($begin, $end) = $boundaries;
-            echo "($begin, $end, )";
             if ($pos >= $begin && $pos <= $end) {
                 return $namespace;
             }

@@ -52,10 +52,13 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
         $handle = connectFunction($method, $target, $handle);
     } else {
         if (Utils\callableDefined($source)) {
-            if ((new \ReflectionMethod($class, $method))->isInternal()) {
+            if ($method === 'new') {
+                $handle = connectInstantiation($class, $target, $handle);
+            } elseif ((new \ReflectionMethod($class, $method))->isUserDefined()) {
+                $handle = connectMethod($source, $target, $handle);
+            } else {
                 throw new InternalMethodsNotSupported($source);
             }
-            $handle = connectMethod($source, $target, $handle);
         } else {
             $handle = queueConnection($source, $target, $handle);
             if (Utils\runningOnHHVM()) {
@@ -119,7 +122,8 @@ function attachExistenceAssertion(Handle $handle, $function)
 
 function validate($function, $partOfWildcard = false)
 {
-    if (!Utils\callableDefined($function)) {
+    list($class, $method) = Utils\interpretCallable($function);
+    if (!Utils\callableDefined($function) || $method === 'new') {
         return;
     }
     $reflection = Utils\reflectCallable($function);
@@ -194,7 +198,7 @@ function connectMethod($function, callable $target, Handle $handle = null)
     $target->superclass = $class;
     $target->method = $method;
     $target->instance = $instance;
-    $reflection = new \ReflectionMethod($class, $method);
+    $reflection = Utils\reflectCallable($function);
     $declaringClass = $reflection->getDeclaringClass();
     $class = $declaringClass->getName();
     if (!Utils\runningOnHHVM()) {
@@ -209,6 +213,15 @@ function connectMethod($function, callable $target, Handle $handle = null)
     if (Utils\runningOnHHVM()) {
         connectOnHHVM("$class::$method", $handle);
     }
+    return $handle;
+}
+
+function connectInstantiation($class, callable $target, Handle $handle = null)
+{
+    $handle = $handle ?: new Handle;
+    $routes = &State::$routes[$class]['new'];
+    $offset = Utils\append($routes, [$target, $handle]);
+    $handle->addReference($routes[$offset]);
     return $handle;
 }
 
@@ -487,6 +500,36 @@ function translateIfLanguageConstruct($callable)
         throw new Exceptions\NotUserDefined($callable);
     } else {
         return $callable;
+    }
+}
+
+/**
+ * @since 2.1.0
+ */
+function dispatchInstantiation($class, array $args)
+{
+    if (in_array($class, ['\self', '\static', '\parent'])) {
+        $frame = debug_backtrace()[1];
+        if ($class == '\self') {
+            $class = $frame['class'];
+        } else {
+            $reflection = new \ReflectionClass($frame['class'], $frame['function']);
+            $reflection = $reflection->getDeclaringClass();
+            if ($class == '\parent') {
+                $reflection = $reflection->getParentClass();
+            }
+            $class = $reflection->name;
+        }
+    }
+    $class = ltrim($class, '\\');
+    $success = dispatch($class, $class, 'new', count(debug_backtrace()) - 1, $result, $args);
+    if ($success) {
+        return $result;
+    } else {
+        if (!isset($reflection)) {
+            $reflection = new \ReflectionClass($class);
+        }
+        return $reflection->newInstanceArgs($args);
     }
 }
 

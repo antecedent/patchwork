@@ -33,6 +33,7 @@ class Source
     public $levelEndings;
     public $tokensByLevel;
     public $tokensByLevelAndType;
+    public $cache;
 
     function __construct($string)
     {
@@ -49,6 +50,7 @@ class Source
         $this->collectLevelInfo();
         $this->splices = [];
         $this->spliceLengths = [];
+        $this->cache = [];
     }
 
     function indexTokensByType()
@@ -113,8 +115,8 @@ class Source
             Utils\appendUnder($this->tokensByLevel, $level, $offset);
             Utils\appendUnder($this->tokensByLevelAndType, [$level, $type], $offset);
         }
-        Utils\appendUnder($this->levelBeginnings, 0, -1);
-        Utils\appendUnder($this->levelEndings, 0, count($this->tokens));
+        Utils\appendUnder($this->levelBeginnings, 0, 0);
+        Utils\appendUnder($this->levelEndings, 0, count($this->tokens) - 1);
     }
 
     function has($types)
@@ -308,5 +310,30 @@ class Source
     function flush()
     {
         $this->initialize(token_get_all($this));
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    function cache(array $args, \Closure $function)
+    {
+        $found = true;
+        $trace = debug_backtrace()[1];
+        $location = $trace['file'] . ':' . $trace['line'];
+        $result = &$this->cache;
+        foreach (array_merge([$location], $args) as $step) {
+            if (!is_scalar($step)) {
+                throw new \LogicException;
+            }
+            if (!isset($result[$step])) {
+                $result[$step] = [];
+                $found = false;
+            }
+            $result = &$result[$step];
+        }
+        if (!$found) {
+            $result = call_user_func_array($function->bindTo($this), $args);
+        }
+        return $result;
     }
 }

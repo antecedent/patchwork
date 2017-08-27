@@ -123,6 +123,9 @@ function interpretCallable($callback)
         $class = ltrim($class, "\\");
         return [$class, $method, $instance];
     }
+    if (substr($callback, 0, 4) === 'new ') {
+        return [ltrim(substr($callback, 4)), 'new', null];
+    }
     $callback = ltrim($callback, "\\");
     if (strpos($callback, "::")) {
         list($class, $method) = explode("::", $callback);
@@ -139,7 +142,7 @@ function callableDefined($callable, $shouldAutoload = false)
     }
     if (isset($class)) {
         return classOrTraitExists($class, $shouldAutoload) &&
-               method_exists($class, $method);
+               (method_exists($class, $method) || $method === 'new');
     }
     return function_exists($method);
 }

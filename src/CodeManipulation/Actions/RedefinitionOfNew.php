@@ -31,6 +31,9 @@ function spliceAllInstantiations(Source $s)
             list($argsOpen, $argsClose) = [$afterEnd, $s->match($afterEnd)];
         }
         spliceInstantiation($s, $new, $begin, $end, $argsOpen, $argsClose, $dynamic);
+        if (hasExtraParentheses($s, $new)) {
+            removeExtraParentheses($s, $new);
+        }
     }
 }
 
@@ -110,4 +113,21 @@ function scanInnerTokens(Source $s, $begin, &$dynamic = null)
         }
     }
     return $pos - 1;
+}
+
+function hasExtraParentheses(Source $s, $new)
+{
+    $left = $s->skipBack(Source::junk(), $new);
+    if (!$s->is(Generic\LEFT_ROUND, $left)) {
+        return false;
+    }
+    $beforeLeft = $s->skipBack(Source::junk(), $left);
+    return !$s->is([T_STRING, T_VARIABLE], $beforeLeft);
+}
+
+function removeExtraParentheses(Source $s, $new)
+{
+    $left = $s->skipBack(Source::junk(), $new);
+    $s->splice('', $left, 1);
+    $s->splice('', $s->match($left), 1);
 }

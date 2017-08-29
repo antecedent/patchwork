@@ -138,7 +138,7 @@ function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $ty
                 $type = 'class';
                 break;
             case Generic\LEFT_CURLY:
-                parseUseDeclaration($s, $pos, $aliases, $prefix . '\\', $type);
+                parseUseDeclaration($s, $pos + 1, $aliases, $prefix . '\\', $type);
                 break;
             case T_WHITESPACE:
             case T_COMMENT:

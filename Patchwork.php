@@ -123,6 +123,7 @@ CodeManipulation\register([
     CodeManipulation\Actions\RedefinitionOfInternals\spliceNamedFunctionCalls(),
     CodeManipulation\Actions\RedefinitionOfInternals\spliceDynamicCalls(),
     CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations,
+    CodeManipulation\Actions\RedefinitionOfNew\publicizeConstructors,
     CodeManipulation\Actions\ConflictPrevention\preventImportingOtherCopiesOfPatchwork(),
 ]);
 

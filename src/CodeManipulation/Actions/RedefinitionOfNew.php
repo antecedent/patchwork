@@ -16,6 +16,7 @@ const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInsta
 const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, \Patchwork\Utils\args(%s))';
 
 const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';
+const publicizeConstructors = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstructors';
 
 /**
  * @since 2.1.0
@@ -33,6 +34,17 @@ function spliceAllInstantiations(Source $s)
         spliceInstantiation($s, $new, $begin, $end, $argsOpen, $argsClose, $dynamic);
         if (hasExtraParentheses($s, $new)) {
             removeExtraParentheses($s, $new);
+        }
+    }
+}
+
+function publicizeConstructors(Source $s)
+{
+    foreach ($s->all([T_PRIVATE, T_PROTECTED]) as $first) {
+        $second = $s->skip(Source::junk(), $first);
+        $third = $s->skip(Source::junk(), $second);
+        if ($s->is(T_FUNCTION, $second) && $s->read($third, 1) === '__construct') {
+            $s->splice('public', $first, 1);
         }
     }
 }
@@ -70,6 +82,7 @@ function getInnerTokens()
         T_DOC_COMMENT,
         T_VARIABLE,
         T_ENCAPSED_AND_WHITESPACE,
+        T_STATIC,
     ];
 }
 
@@ -117,12 +130,25 @@ function scanInnerTokens(Source $s, $begin, &$dynamic = null)
 
 function hasExtraParentheses(Source $s, $new)
 {
+    $doNotRemoveAfter = [
+        T_STRING,
+        T_STATIC,
+        T_VARIABLE,
+        T_FOREACH,
+        T_FOR,
+        T_IF,
+        T_ELSEIF,
+        T_WHILE,
+        T_ARRAY,
+        T_PRINT,
+        T_ECHO
+    ];
     $left = $s->skipBack(Source::junk(), $new);
     if (!$s->is(Generic\LEFT_ROUND, $left)) {
         return false;
     }
     $beforeLeft = $s->skipBack(Source::junk(), $left);
-    return !$s->is([T_STRING, T_VARIABLE], $beforeLeft);
+    return !$s->is($doNotRemoveAfter, $beforeLeft);
 }
 
 function removeExtraParentheses(Source $s, $new)

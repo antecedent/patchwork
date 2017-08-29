@@ -199,31 +199,6 @@ class Source
         }
     }
 
-    function nextSibling($types, $offset)
-    {
-        $level = $this->levels[$offset];
-        $end = Utils\firstGreaterThan(Utils\access($this->levelEndings, $level, []), $offset);
-        if ($types === self::ANY) {
-            return Utils\firstGreaterThan($this->tokensByLevel[$level], $offset);
-        } else {
-            $next = INF;
-            foreach ((array) $types as $type) {
-                $candidates = Utils\access($this->tokensByLevelAndType, [$level, $type], []);
-                $next = min(Utils\firstGreaterThan($candidates, $offset), $next);
-            }
-            return ($next < $endpoint) ? $next : INF;
-        }
-    }
-
-    function lastSibling($offset)
-    {
-        $level = $this->levels[$offset];
-        if (!isset($this->levelEndings[$level])) {
-            $this->levelEndings[$level] = [];
-        }
-        return Utils\firstGreaterThan($this->levelEndings[$level], $offset);
-    }
-
     function next($types, $offset)
     {
         if (!is_array($types)) {

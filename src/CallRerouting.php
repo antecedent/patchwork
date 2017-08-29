@@ -508,14 +508,16 @@ function translateIfLanguageConstruct($callable)
  */
 function dispatchInstantiation($class, array $args)
 {
-    if (in_array($class, ['\self', '\static', '\parent'])) {
+    $pieces = explode('\\', $class);
+    $last = array_pop($pieces);
+    if (in_array($last, ['self', 'static', 'parent'])) {
         $frame = debug_backtrace()[1];
-        if ($class == '\self') {
+        if ($class == 'self') {
             $class = $frame['class'];
         } else {
-            $reflection = new \ReflectionClass($frame['class'], $frame['function']);
+            $reflection = new \ReflectionMethod($frame['class'], $frame['function']);
             $reflection = $reflection->getDeclaringClass();
-            if ($class == '\parent') {
+            if ($last == 'parent') {
                 $reflection = $reflection->getParentClass();
             }
             $class = $reflection->name;

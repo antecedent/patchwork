@@ -17,39 +17,23 @@ use Patchwork\CodeManipulation\Actions\Generic;
 function resolveName(Source $s, $pos, $type = 'class')
 {
     $name = scanQualifiedName($s, $pos);
+    $pieces = explode('\\', $name);
+    if ($pieces[0] === '') {
+        return $name;
+    }
     $uses = collectUseDeclarations($s, $pos);
+    foreach ($uses as &$map) {
+        $map = array_flip($map);
+    }
     if (isset($uses[$type][$name])) {
-        return $uses[$type][$name];
+        return '\\' . ltrim($uses[$type][$name], ' \\');
     }
-    list($prefix, $suffix) = splitQualifiedName($name);
-    if (isset($uses['class'][$prefix])) {
-        $prefix = $uses['class'][$prefix];
-    } elseif ($prefix === null) {
-        $prefix = getNamespaceAt($s, $pos);
+    if (isset($uses['class'][$name[0]])) {
+        $name = '\\' . ltrim($uses['class'][$name[0]] . '\\' . $name, '\\');
+    } else {
+        $name = '\\' . ltrim(getNamespaceAt($s, $pos) . '\\' . $name, '\\');
     }
-    return joinQualifiedName($prefix, $suffix);
-}
-
-/**
- * @since 2.1.0
- */
-function splitQualifiedName($name)
-{
-    if (strpos($name, '\\') === false) {
-        return [null, $name];
-    }
-    return explode('\\', $name, 2);
-}
-
-/**
- * @since 2.1.0
- */
-function joinQualifiedName($prefix, $suffix)
-{
-    if (empty($suffix)) {
-        return $prefix;
-    }
-    return '\\' . ltrim($prefix . '\\' . $suffix, '\\');
+    return $name;
 }
 
 /**
@@ -60,7 +44,7 @@ function getNamespaceAt(Source $s, $pos)
     foreach (collectNamespaceBoundaries($s) as $namespace => $boundaryPairs) {
         foreach ($boundaryPairs as $boundaries) {
             list($begin, $end) = $boundaries;
-            if ($pos >= $begin && $pos <= $end) {
+            if ($begin <= $pos && $pos <= $end) {
                 return $namespace;
             }
         }
@@ -80,7 +64,7 @@ function collectNamespaceBoundaries(Source $s)
                 return [scanQualifiedName($this, $keyword + 1) => [[0, INF]]];
             }
             $begin = $this->next(Generic\LEFT_CURLY, $keyword) + 1;
-            $end = $this->match($begin) - 1;
+            $end = $this->match($begin - 1) - 1;
             $name = scanQualifiedName($this, $keyword + 1);
             if (!isset($result[$name])) {
                 $result[$name] = [];
@@ -93,7 +77,15 @@ function collectNamespaceBoundaries(Source $s)
 
 function collectUseDeclarations(Source $s, $begin)
 {
-    $begin = $s->lastSibling($begin);
+    foreach (collectNamespaceBoundaries($s) as $boundaryPairs) {
+        foreach ($boundaryPairs as $boundaries) {
+            list($leftBoundary, $rightBoundary) = $boundaries;
+            if ($leftBoundary <= $begin && $begin <= $rightBoundary) {
+                $begin = $leftBoundary;
+                break;
+            }
+        }
+    }
     return $s->cache([$begin], function($begin) {
         $result = ['class' => [], 'function' => [], 'const' => []];
         # only tokens that are siblings bracket-wise are considered,
@@ -173,6 +165,7 @@ function scanQualifiedName(Source $s, $begin)
                 }
                 # fall through
             case T_STRING:
+            case T_STATIC:
                 $result .= $s->tokens[$begin][Source::STRING_OFFSET];
                 break;
             case T_WHITESPACE:
@@ -180,7 +173,7 @@ function scanQualifiedName(Source $s, $begin)
             case T_DOC_COMMENT:
                 break;
             default:
-                return $result;
+                return str_replace('\\\\', '\\', $result);
         }
         $begin++;
     }

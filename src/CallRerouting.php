@@ -506,21 +506,19 @@ function translateIfLanguageConstruct($callable)
 /**
  * @since 2.1.0
  */
-function dispatchInstantiation($class, array $args)
+function dispatchInstantiation($class, $calledClass, array $args)
 {
     $pieces = explode('\\', $class);
     $last = array_pop($pieces);
     if (in_array($last, ['self', 'static', 'parent'])) {
         $frame = debug_backtrace()[1];
-        if ($class == 'self') {
+        if ($last == 'self') {
             $class = $frame['class'];
-        } else {
+        } elseif ($last == 'parent') {
             $reflection = new \ReflectionMethod($frame['class'], $frame['function']);
-            $reflection = $reflection->getDeclaringClass();
-            if ($last == 'parent') {
-                $reflection = $reflection->getParentClass();
-            }
-            $class = $reflection->name;
+            $class =  $reflection->getDeclaringClass()->getParentClass()->name;
+        } elseif ($last == 'static') {
+            $class = $calledClass;
         }
     }
     $class = ltrim($class, '\\');

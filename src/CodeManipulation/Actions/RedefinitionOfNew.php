@@ -12,8 +12,8 @@ use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Actions\Namespaces;
 
-const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', \Patchwork\Utils\args(%s))';
-const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, \Patchwork\Utils\args(%s))';
+const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', \get_called_class(), \Patchwork\Utils\args(%s))';
+const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, \get_called_class(), \Patchwork\Utils\args(%s))';
 
 const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';
 const publicizeConstructors = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstructors';

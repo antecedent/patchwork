@@ -515,20 +515,17 @@ function dispatchInstantiation($class, $calledClass, array $args)
         if ($last == 'self') {
             $class = $frame['class'];
         } elseif ($last == 'parent') {
-            $reflection = new \ReflectionMethod($frame['class'], $frame['function']);
-            $class =  $reflection->getDeclaringClass()->getParentClass()->name;
+            $class = get_parent_class($frame['class']);
         } elseif ($last == 'static') {
             $class = $calledClass;
         }
     }
     $class = ltrim($class, '\\');
-    $success = dispatch($class, $class, 'new', count(debug_backtrace()) - 1, $result, $args);
+    $success = dispatch($class, $calledClass ?: $class, 'new', count(debug_backtrace()) - 1, $result, $args);
     if ($success) {
         return $result;
     } else {
-        if (!isset($reflection)) {
-            $reflection = new \ReflectionClass($class);
-        }
+        $reflection = new \ReflectionClass($class);
         return $reflection->newInstanceArgs($args);
     }
 }

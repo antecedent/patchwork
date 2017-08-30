@@ -12,8 +12,9 @@ use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Actions\Namespaces;
 
-const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', \get_called_class(), \Patchwork\Utils\args(%s))';
-const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, \get_called_class(), \Patchwork\Utils\args(%s))';
+const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', $calledClass, \Patchwork\Utils\args(%s))';
+const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, $calledClass, \Patchwork\Utils\args(%s))';
+const CALLED_CLASS = '((__CLASS__ && __FUNCTION__ !== (__NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}")) ? \get_called_class() : null)';
 
 const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';
 const publicizeConstructors = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\publicizeConstructors';
@@ -58,10 +59,10 @@ function spliceInstantiation(Source $s, $new, $begin, $end, $argsOpen, $argsClos
         $args = $s->read($argsOpen + 1, $argsClose - $argsOpen - 1);
         $length = $argsClose - $new + 1;
     }
-    $replacement = DYNAMIC_INSTANTIATION_REPLACEMENT;
+    $replacement = strtr(DYNAMIC_INSTANTIATION_REPLACEMENT, ['$calledClass' => CALLED_CLASS]);
     if (!$dynamic) {
         $class = Namespaces\resolveName($s, $begin);
-        $replacement = STATIC_INSTANTIATION_REPLACEMENT;
+        $replacement = strtr(STATIC_INSTANTIATION_REPLACEMENT, ['$calledClass' => CALLED_CLASS]);
     }
     $s->splice(sprintf($replacement, $class, $args), $new, $length);
 }

@@ -28,8 +28,8 @@ function resolveName(Source $s, $pos, $type = 'class')
     if (isset($uses[$type][$name])) {
         return '\\' . ltrim($uses[$type][$name], ' \\');
     }
-    if (isset($uses['class'][$name[0]])) {
-        $name = '\\' . ltrim($uses['class'][$name[0]] . '\\' . $name, '\\');
+    if (isset($uses['class'][$pieces[0]])) {
+        $name = '\\' . ltrim($uses['class'][$pieces[0]] . '\\' . join('\\', array_slice($pieces, 1)), '\\');
     } else {
         $name = '\\' . ltrim(getNamespaceAt($s, $pos) . '\\' . $name, '\\');
     }

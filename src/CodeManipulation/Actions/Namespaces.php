@@ -143,7 +143,7 @@ function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $ty
                 break;
             default:
                 if ($lastPart !== null) {
-                    $aliases[$type][$whole] = $lastPart;
+                    $aliases[$type][$lastPart] = $whole;
                 }
                 return;
         }

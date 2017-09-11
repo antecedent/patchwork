@@ -23,7 +23,7 @@ function preventImportingOtherCopiesOfPatchwork()
             return;
         }
         if ($s->read($namespaceKeyword, 4) == 'namespace Patchwork;') {
-            $pattern = '/@copyright\s+2010-\d+ Ignas Rudaitis/';
+            $pattern = '/@copyright\s+2010(-\d+)? Ignas Rudaitis/';
             if (preg_match($pattern, $s->read($namespaceKeyword - 2))) {
                 # Clear the file completely (in memory)
                 $s->splice('', 0, count($s->tokens));

@@ -22,9 +22,6 @@ function resolveName(Source $s, $pos, $type = 'class')
         return $name;
     }
     $uses = collectUseDeclarations($s, $pos);
-    foreach ($uses as &$map) {
-        $map = array_flip($map);
-    }
     if (isset($uses[$type][$name])) {
         return '\\' . ltrim($uses[$type][$name], ' \\');
     }

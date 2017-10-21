@@ -6,7 +6,7 @@ use Patchwork as p;
 
 p\redefine('new PDO', p\always(new \stdClass));
 
-assert(new \PDO instanceof \stdClass);
+assert(new \PDO('DSN') instanceof \stdClass);
 
 class Foo
 {

@@ -12,8 +12,8 @@ use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Actions\Namespaces;
 
-const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(\'%s\', $calledClass, \Patchwork\Utils\args(%s))';
-const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\dispatchInstantiation(%s, $calledClass, \Patchwork\Utils\args(%s))';
+const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(\'%s\', %s)->instantiate(%s)';
+const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(%s, %s)->instantiate(%s)';
 const CALLED_CLASS = '((__CLASS__ && __FUNCTION__ !== (__NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}")) ? \get_called_class() : null)';
 
 const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';
@@ -24,6 +24,9 @@ const publicizeConstructors = 'Patchwork\CodeManipulation\Actions\RedefinitionOf
  */
 function spliceAllInstantiations(Source $s)
 {
+    if (!State::$enabled) {
+        return;
+    }
     foreach ($s->all(T_NEW) as $new) {
         $begin = $s->skip(Source::junk(), $new);
         $end = scanInnerTokens($s, $begin, $dynamic);
@@ -59,12 +62,12 @@ function spliceInstantiation(Source $s, $new, $begin, $end, $argsOpen, $argsClos
         $args = $s->read($argsOpen + 1, $argsClose - $argsOpen - 1);
         $length = $argsClose - $new + 1;
     }
-    $replacement = strtr(DYNAMIC_INSTANTIATION_REPLACEMENT, ['$calledClass' => CALLED_CLASS]);
+    $replacement = DYNAMIC_INSTANTIATION_REPLACEMENT;
     if (!$dynamic) {
         $class = Namespaces\resolveName($s, $begin);
-        $replacement = strtr(STATIC_INSTANTIATION_REPLACEMENT, ['$calledClass' => CALLED_CLASS]);
+        $replacement = STATIC_INSTANTIATION_REPLACEMENT;
     }
-    $s->splice(sprintf($replacement, $class, $args), $new, $length);
+    $s->splice(sprintf($replacement, $class, CALLED_CLASS, $args), $new, $length);
 }
 
 function getInnerTokens()
@@ -157,4 +160,24 @@ function removeExtraParentheses(Source $s, $new)
     $left = $s->skipBack(Source::junk(), $new);
     $s->splice('', $left, 1);
     $s->splice('', $s->match($left), 1);
+}
+
+function suspendFor(callable $function)
+{
+    State::$enabled = false;
+    $exception = null;
+    try {
+        $function();
+    } catch (\Exception $e) {
+        $exception = $e;
+    }
+    State::$enabled = true;
+    if ($exception) {
+        throw $exception;
+    }
+}
+
+class State
+{
+    static $enabled = true;
 }

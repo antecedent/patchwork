@@ -15,7 +15,9 @@ use Patchwork\Utils;
 use Patchwork\Stack;
 use Patchwork\Config;
 use Patchwork\Exceptions;
+use Patchwork\CodeManipulation;
 use Patchwork\CodeManipulation\Actions\RedefinitionOfLanguageConstructs;
+use Patchwork\CodeManipulation\Actions\RedefinitionOfNew;
 
 const INTERNAL_REDEFINITION_NAMESPACE = 'Patchwork\Redefinitions';
 const EVALUATED_CODE_FILE_NAME_SUFFIX = '/\(\d+\) : eval\(\)\'d code$/';
@@ -219,7 +221,8 @@ function connectMethod($function, callable $target, Handle $handle = null)
 function connectInstantiation($class, callable $target, Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
-    $routes = &State::$routes[$class]['new'];
+    $class = strtr($class, ['\\' => '__']);
+    $routes = &State::$routes["Patchwork\\Instantiators\\$class"]['instantiate'];
     $offset = Utils\append($routes, [$target, $handle]);
     $handle->addReference($routes[$offset]);
     return $handle;
@@ -503,15 +506,12 @@ function translateIfLanguageConstruct($callable)
     }
 }
 
-/**
- * @since 2.1.0
- */
-function dispatchInstantiation($class, $calledClass, array $args)
+function resolveClassToInstantiate($class, $calledClass)
 {
     $pieces = explode('\\', $class);
     $last = array_pop($pieces);
     if (in_array($last, ['self', 'static', 'parent'])) {
-        $frame = debug_backtrace()[1];
+        $frame = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3)[2];
         if ($last == 'self') {
             $class = $frame['class'];
         } elseif ($last == 'parent') {
@@ -520,14 +520,30 @@ function dispatchInstantiation($class, $calledClass, array $args)
             $class = $calledClass;
         }
     }
-    $class = ltrim($class, '\\');
-    $success = dispatch($class, $calledClass ?: $class, 'new', count(debug_backtrace()) - 1, $result, $args);
-    if ($success) {
-        return $result;
-    } else {
-        $reflection = new \ReflectionClass($class);
-        return $reflection->newInstanceArgs($args);
+    return ltrim($class, '\\');
+}
+
+function getInstantiator($class, $calledClass)
+{
+    $class = resolveClassToInstantiate($class, $calledClass);
+    $namespace = 'Patchwork\Instantiators';
+    $adaptedName = strtr($class, ['\\' => '__']);
+    if (!class_exists("$namespace\\$adaptedName")) {
+        $code = 'namespace %s; class %s { function instantiate(%s) { return new \%s(%s); } }';
+        $constructor = (new \ReflectionClass($class))->getConstructor();
+        list($parameters, $arguments) = Utils\getParameterAndArgumentLists($constructor);
+        $code = sprintf($code, $namespace, $adaptedName, $parameters, $class, $arguments);
+        RedefinitionOfNew\suspendFor(function() use ($code) {
+            eval(CodeManipulation\transformForEval($code));
+        });
     }
+    $instantiator = "$namespace\\$adaptedName";
+    return new $instantiator;
+}
+
+function getDynamicDispatcher($function)
+{
+    # TODO
 }
 
 class State

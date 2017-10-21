@@ -351,9 +351,26 @@ function wasRunAsConsoleApp()
     );
 }
 
-function args()
+function getParameterAndArgumentLists(\ReflectionMethod $reflection = null)
 {
-    return func_get_args();
+    $parameters = [];
+    $arguments = [];
+    if ($reflection) {
+        foreach ($reflection->getParameters() as $p) {
+            $parameter = '$' . $p->name;
+            if ($p->isOptional()) {
+                try {
+                    $value = var_export($p->getDefaultValue(), true);
+                } catch (\ReflectionException $e) {
+                    $value = 'null'; # FIXME
+                }
+                $parameter .= ' = ' . $value;
+            }
+            $parameters[] = $parameter;
+            $arguments[] = '$' . $p->name;
+        }
+    }
+    return [join(', ' , $parameters), join(', ', $arguments)];
 }
 
 class State

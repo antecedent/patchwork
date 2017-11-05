@@ -11,6 +11,7 @@
         "echo",
         "print"
     ],
+    "new-keyword-redefinable": true,
     "blacklist": [
         "includes/Singleton.php"
     ]

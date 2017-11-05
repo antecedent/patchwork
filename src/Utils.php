@@ -362,7 +362,7 @@ function getParameterAndArgumentLists(\ReflectionMethod $reflection = null)
                 try {
                     $value = var_export($p->getDefaultValue(), true);
                 } catch (\ReflectionException $e) {
-                    $value = 'null'; # FIXME
+                    $value = var_export(CallRerouting\INSTANTIATOR_DEFAULT_ARGUMENT, true);
                 }
                 $parameter .= ' = ' . $value;
             }
@@ -371,6 +371,11 @@ function getParameterAndArgumentLists(\ReflectionMethod $reflection = null)
         }
     }
     return [join(', ' , $parameters), join(', ', $arguments)];
+}
+
+function args()
+{
+    return func_get_args();
 }
 
 class State

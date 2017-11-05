@@ -46,7 +46,7 @@ function read($file)
 function set(array $data, $file)
 {
     $keys = array_keys($data);
-    $list = ['blacklist', 'whitelist', 'cache-path', 'redefinable-internals'];
+    $list = ['blacklist', 'whitelist', 'cache-path', 'redefinable-internals', 'new-keyword-redefinable'];
     $unknown = array_diff($keys, $list);
     if ($unknown != []) {
         throw new Exceptions\ConfigKeyNotRecognized(reset($unknown), $list, $file);
@@ -56,6 +56,7 @@ function set(array $data, $file)
     setWhitelist(get($data, 'whitelist'), $root);
     setCachePath(get($data, 'cache-path'), $root);
     setRedefinableInternals(get($data, 'redefinable-internals'), $root);
+    setNewKeywordRedefinability(get($data, 'new-keyword-redefinable'), $root);
 }
 
 function get(array $data, $key)
@@ -159,6 +160,11 @@ function setRedefinableInternals($names)
     State::$redefinableInternals = array_diff(State::$redefinableInternals, $constructs);
 }
 
+function setNewKeywordRedefinability($value)
+{
+    State::$newKeywordRedefinable = State::$newKeywordRedefinable || $value;
+}
+
 function getRedefinableLanguageConstructs()
 {
     return State::$redefinableLanguageConstructs;
@@ -167,6 +173,11 @@ function getRedefinableLanguageConstructs()
 function getSupportedLanguageConstructs()
 {
     return array_keys(RedefinitionOfLanguageConstructs\getMappingOfConstructs());
+}
+
+function isNewKeywordRedefinable()
+{
+    return State::$newKeywordRedefinable;
 }
 
 function getCachePath()
@@ -214,5 +225,6 @@ class State
     static $cachePath;
     static $redefinableInternals = [];
     static $redefinableLanguageConstructs = [];
+    static $newKeywordRedefinable = false;
     static $timestamp = 0;
 }

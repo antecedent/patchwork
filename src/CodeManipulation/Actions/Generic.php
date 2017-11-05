@@ -110,8 +110,8 @@ function injectCodeAfterClassDefinitions($code)
 {
     return function(Source $s) use ($code) {
         foreach ($s->all(T_CLASS) as $match) {
-            if ($s->next(T_DOUBLE_COLON, $match - 3) < $match) {
-                # ::class syntax, not a class definition
+            if ($s->is([T_DOUBLE_COLON, T_NEW], $s->skipBack(Source::junk(), $match))) {
+                # Not a proper class definition: either ::class syntax or anonymous class
                 continue;
             }
             $leftBracket = $s->next(LEFT_CURLY, $match);

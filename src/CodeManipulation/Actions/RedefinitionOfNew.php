@@ -11,6 +11,7 @@ namespace Patchwork\CodeManipulation\Actions\RedefinitionOfNew;
 use Patchwork\CodeManipulation\Source;
 use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\CodeManipulation\Actions\Namespaces;
+use Patchwork\Config;
 
 const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(\'%s\', %s)->instantiate(%s)';
 const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(%s, %s)->instantiate(%s)';
@@ -24,11 +25,15 @@ const publicizeConstructors = 'Patchwork\CodeManipulation\Actions\RedefinitionOf
  */
 function spliceAllInstantiations(Source $s)
 {
-    if (!State::$enabled) {
+    if (!State::$enabled || !Config\isNewKeywordRedefinable()) {
         return;
     }
     foreach ($s->all(T_NEW) as $new) {
         $begin = $s->skip(Source::junk(), $new);
+        if ($s->is(T_CLASS, $begin)) {
+            # Anonymous class
+            continue;
+        }
         $end = scanInnerTokens($s, $begin, $dynamic);
         $afterEnd = $s->skip(Source::junk(), $end);
         list($argsOpen, $argsClose) = [null, null];
@@ -44,6 +49,9 @@ function spliceAllInstantiations(Source $s)
 
 function publicizeConstructors(Source $s)
 {
+    if (!Config\isNewKeywordRedefinable()) {
+        return;
+    }
     foreach ($s->all([T_PRIVATE, T_PROTECTED]) as $first) {
         $second = $s->skip(Source::junk(), $first);
         $third = $s->skip(Source::junk(), $second);

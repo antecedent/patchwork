@@ -9,7 +9,8 @@
         "die",
         "exit",
         "echo",
-        "print"
+        "print",
+        "define"
     ],
     "new-keyword-redefinable": true,
     "blacklist": [

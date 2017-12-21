@@ -428,14 +428,14 @@ function createStubsForInternals()
             continue;
         }
         $signature = ['$__pwNamespace'];
-        foreach ((new \ReflectionFunction($name))->getParameters() as $argument) {
+        foreach ((new \ReflectionFunction($name))->getParameters() as $offset => $argument) {
             $formal = '';
             if ($argument->isPassedByReference()) {
                 $formal .= '&';
             }
             $formal .= '$' . $argument->getName();
             $isVariadic = is_callable([$argument, 'isVariadic']) ? $argument->isVariadic() : false;
-            if ($argument->isOptional() || $isVariadic) {
+            if ($argument->isOptional() || $isVariadic || ($name === 'define' && $offset === 2)) {
                 continue;
             }
             $signature[] = $formal;

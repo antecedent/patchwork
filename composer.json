@@ -12,6 +12,12 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "free2wait/composer-free2wait": "*"
+    },
+    "free2wait": {
+        "to": {
+            "paypal": "your.paypal.to.receive.payouts@example.com"
+        }
     }
 }

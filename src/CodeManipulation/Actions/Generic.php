@@ -89,6 +89,11 @@ function injectFalseExpressionAtBeginnings($expression)
         if (!empty($openingTags) &&
             (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho))) {
             $pos = reset($openingTags);
+            # Skip initial declare() statements
+            while ($s->read($s->skip(Source::junk(), $pos)) === 'declare') {
+                $pos = $s->next(SEMICOLON, $pos);
+            }
+            # Enter first namespace
             $namespaceKeyword = $s->next(T_NAMESPACE, $pos);
             if ($namespaceKeyword !== INF) {
                 $semicolon = $s->next(SEMICOLON, $namespaceKeyword);

@@ -514,6 +514,11 @@ function connectDefaultInternals()
                         }
                         $class = $actualClass;
                     }
+                    # When calling a parent constructor, the reference to the object being
+                    # constructed needs to be extracted from the stack info
+                    if (is_null($instance) && $method === '__construct') {
+                        $instance = $caller['object'];
+                    }
                     try {
                         $reflection = new \ReflectionMethod($class, $method);
                         $reflection->setAccessible(true);

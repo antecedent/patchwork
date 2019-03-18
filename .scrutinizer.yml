@@ -1,0 +1,64 @@
+---
+checks:
+    php:
+        code_rating: true
+        duplication: true
+filter:
+    excluded_paths:
+    - "tests/"
+    - "vendor/"
+coding_style:
+    php:
+        indentation:
+            general:
+                use_tabs: true
+        spaces:
+            around_operators:
+                concatenation: true
+                negation: true
+
+build:
+    cache:
+        directories:
+        - vendor/
+    nodes:
+
+        php-coding-standards:
+            environment:
+                php: 7.1
+            tests:
+                override:
+                - idle_timeout: 4800
+                  command: "phpcs-run ./"
+
+        phpunit:
+            environment:
+                php: 5.6
+            tests:
+                override:
+                - idle_timeout: 4800
+                  command: "./vendor/bin/phpunit --coverage-clover ./coverage.xml"
+                  coverage:
+                      file: coverage.xml
+                      format: php-clover
+
+        php70:
+            environment:
+                php: 7.0
+
+        php71:
+            environment:
+                php: 7.1
+
+        php72:
+            environment:
+                php: 7.2
+
+        php73:
+            environment:
+                php: 7.3
+
+    tests:
+        override:
+        - idle_timeout: 4800
+          command: "./vendor/bin/phpunit"

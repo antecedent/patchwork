@@ -71,13 +71,16 @@ function setBlacklist($data, $root)
 
 function isListed($path, array $list)
 {
-    $path = rtrim($path, '\\/');
-    foreach ($list as $item) {
-        if (strpos($path, $item) === 0) {
-            return true;
-        }
-    }
-    return false;
+	$path = rtrim($path, '\\/');
+	foreach ($list as $item) {
+		if (!is_string($item)) {
+			$item = chr($item);
+		}
+		if (strpos($path, $item) === 0) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function isBlacklisted($path)

@@ -17,7 +17,7 @@ const CALL_INTERCEPTION_CODE = '
     $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
-        $__pwFrame = \count(\debug_backtrace(false));
+        $__pwFrame = \count(\debug_backtrace(0));
         if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult)) {
             return $__pwResult;
         }

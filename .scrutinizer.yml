@@ -11,11 +11,11 @@ coding_style:
     php:
         indentation:
             general:
-                use_tabs: true
+                use_tabs: false
         spaces:
             around_operators:
                 concatenation: true
-                negation: true
+                negation: false
 
 build:
     cache:
@@ -37,7 +37,7 @@ build:
             tests:
                 override:
                 - idle_timeout: 4800
-                  command: "./vendor/bin/phpunit --coverage-clover ./coverage.xml"
+                  command: "./vendor/bin/phpunit tests --coverage-clover coverage.xml"
                   coverage:
                       file: coverage.xml
                       format: php-clover
@@ -61,4 +61,4 @@ build:
     tests:
         override:
         - idle_timeout: 4800
-          command: "./vendor/bin/phpunit"
+          command: "./vendor/bin/phpunit tests"

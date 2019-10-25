@@ -26,18 +26,19 @@ function markPreprocessedFiles(&$target)
     };
 }
 
-function prependCodeToFunctions($code, $skipVoidTyped = true)
+function prependCodeToFunctions($code, $voidTypedVariant = null)
 {
-    return function(Source $s) use ($code, $skipVoidTyped) {
+	if ($voidTypedVariant === null) {
+		$voidTypedVariant = $code;
+	}
+    return function(Source $s) use ($code, $voidTypedVariant) {
         foreach ($s->all(T_FUNCTION) as $function) {
             # Skip "use function"
             $previous = $s->skipBack(Source::junk(), $function);
             if ($s->is(T_USE, $previous)) {
                 continue;
             }
-            if ($skipVoidTyped && isVoidTyped($s, $function)) {
-                continue;
-            }
+            $voidTyped = isVoidTyped($s, $function);
             $bracket = $s->next(LEFT_CURLY, $function);
             if (Utils\generatorsSupported()) {
                 # Skip generators
@@ -48,7 +49,7 @@ function prependCodeToFunctions($code, $skipVoidTyped = true)
             }
             $semicolon = $s->next(SEMICOLON, $function);
             if ($bracket < $semicolon) {
-                $s->splice($code, $bracket + 1);
+                $s->splice($voidTyped ? $voidTypedVariant : $code, $bracket + 1);
             }
         }
     };

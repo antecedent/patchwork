@@ -16,48 +16,32 @@ coding_style:
             around_operators:
                 concatenation: true
                 negation: false
-
 build:
     cache:
         directories:
         - vendor/
     nodes:
-
-        php-coding-standards:
+        php54:
             environment:
-                php: 7.1
-            tests:
-                override:
-                - idle_timeout: 4800
-                  command: "phpcs-run ./"
-
-        phpunit:
+                php: 5.4
+        php55:
+            environment:
+                php: 5.5
+        php56:
             environment:
                 php: 5.6
-            tests:
-                override:
-                - idle_timeout: 4800
-                  command: "./vendor/bin/phpunit tests --coverage-clover coverage.xml"
-                  coverage:
-                      file: coverage.xml
-                      format: php-clover
-
         php70:
             environment:
                 php: 7.0
-
         php71:
             environment:
                 php: 7.1
-
         php72:
             environment:
                 php: 7.2
-
         php73:
             environment:
                 php: 7.3
-
     tests:
         override:
         - idle_timeout: 4800

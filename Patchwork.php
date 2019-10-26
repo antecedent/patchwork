@@ -119,7 +119,6 @@ CodeManipulation\Stream::wrap();
 CodeManipulation\register([
     CodeManipulation\Actions\CodeManipulation\propagateThroughEval(),
     CodeManipulation\Actions\CallRerouting\injectCallInterceptionCode(),
-    CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
     CodeManipulation\Actions\RedefinitionOfInternals\spliceNamedFunctionCalls(),
     CodeManipulation\Actions\RedefinitionOfInternals\spliceDynamicCalls(),
     CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations,
@@ -142,6 +141,7 @@ require __DIR__ . '/src/Redefinitions/LanguageConstructs.php';
 
 CodeManipulation\register([
     CodeManipulation\Actions\RedefinitionOfLanguageConstructs\spliceAllConfiguredLanguageConstructs(),
+    CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
 ]);
 
 if (Utils\wasRunAsConsoleApp()) {

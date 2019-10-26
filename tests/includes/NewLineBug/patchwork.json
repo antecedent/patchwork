@@ -1,0 +1,6 @@
+{
+    "redefinable-internals": [
+        "time",
+        "include_once"
+    ]
+}

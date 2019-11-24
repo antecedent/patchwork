@@ -91,7 +91,7 @@ function isPatchworkFile($path)
 
 function isBlacklisted($path)
 {
-    return isPatchworkFile($path) || isListed($path, State::$blacklist);
+    return isListed($path, State::$blacklist);
 }
 
 function setWhitelist($data, $root)

@@ -127,7 +127,7 @@ function prime($file)
 
 function shouldTransform($file)
 {
-    return !Config\isBlacklisted($file) || Config\isWhitelisted($file);
+    return !Config\isPatchworkFile($file) && (!Config\isBlacklisted($file) || Config\isWhitelisted($file));
 }
 
 function register($actions)

@@ -7,13 +7,14 @@
  */
 namespace Patchwork;
 
-if (function_exists('Patchwork\replace')) {
+if (defined('Patchwork\PATCHWORK_ALREADY_RAN')) {
     return;
 }
 
+const PATCHWORK_ALREADY_RAN = true;
 
 // Load all class and function files if Composer is not running.
-if (! function_exists('Patchwork\CallRerouting\connect')) {
+if (! function_exists('Patchwork\replace')) {
     require_once __DIR__ . '/patchwork-composer/autoload.php';
 }
 

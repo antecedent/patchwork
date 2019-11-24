@@ -88,8 +88,3 @@ function allCalledClasses()
         return $calledClass;
     }, State::$items);
 }
-
-class State
-{
-    static $items = [];
-}

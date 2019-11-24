@@ -83,6 +83,12 @@ function isListed($path, array $list)
 	return false;
 }
 
+function isPatchworkFile($path)
+{
+    $root = dirname(__DIR__);
+    return \strpos($path, $root) !== false;
+}
+
 function isBlacklisted($path)
 {
     return isListed($path, State::$blacklist);
@@ -219,15 +225,4 @@ function merge(array &$target, $source)
 function getTimestamp()
 {
     return State::$timestamp;
-}
-
-class State
-{
-    static $blacklist = [];
-    static $whitelist = [];
-    static $cachePath;
-    static $redefinableInternals = [];
-    static $redefinableLanguageConstructs = [];
-    static $newKeywordRedefinable = false;
-    static $timestamp = 0;
 }

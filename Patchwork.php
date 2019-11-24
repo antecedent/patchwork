@@ -7,93 +7,17 @@
  */
 namespace Patchwork;
 
-if (function_exists('Patchwork\replace')) {
+if (defined('Patchwork\PATCHWORK_ALREADY_RAN')) {
     return;
 }
 
-require_once __DIR__ . '/src/Exceptions.php';
-require_once __DIR__ . '/src/CallRerouting.php';
-require_once __DIR__ . '/src/CodeManipulation.php';
-require_once __DIR__ . '/src/Utils.php';
-require_once __DIR__ . '/src/Stack.php';
-require_once __DIR__ . '/src/Config.php';
+const PATCHWORK_ALREADY_RAN = true;
 
-function redefine($subject, callable $content)
-{
-    $handle = null;
-    foreach (array_slice(func_get_args(), 1) as $content) {
-        $handle = CallRerouting\connect($subject, $content, $handle);
-    }
-    $handle->silence();
-    return $handle;
+// Load all class and function files if Composer is not running.
+if (! function_exists('Patchwork\replace')) {
+    require_once __DIR__ . '/patchwork-composer/autoload.php';
 }
 
-function relay(array $args = null)
-{
-    return CallRerouting\relay($args);
-}
-
-function fallBack()
-{
-    throw new Exceptions\NoResult;
-}
-
-function restore(CallRerouting\Handle $handle)
-{
-    $handle->expire();
-}
-
-function restoreAll()
-{
-    CallRerouting\disconnectAll();
-}
-
-function silence(CallRerouting\Handle $handle)
-{
-    $handle->silence();
-}
-
-function assertEventuallyDefined(CallRerouting\Handle $handle)
-{
-    $handle->unsilence();
-}
-
-function getClass()
-{
-    return Stack\top('class');
-}
-
-function getCalledClass()
-{
-    return Stack\topCalledClass();
-}
-
-function getFunction()
-{
-    return Stack\top('function');
-}
-
-function getMethod()
-{
-    return getClass() . '::' . getFunction();
-}
-
-function configure()
-{
-    Config\locate();
-}
-
-function hasMissed($callable)
-{
-    return Utils\callableWasMissed($callable);
-}
-
-function always($value)
-{
-    return function() use ($value) {
-        return $value;
-    };
-}
 
 Utils\alias('Patchwork', [
     'redefine'   => ['replace', 'replaceLater'],
@@ -137,13 +61,11 @@ register_shutdown_function('Patchwork\Utils\clearOpcodeCaches');
 CallRerouting\createStubsForInternals();
 CallRerouting\connectDefaultInternals();
 
-require __DIR__ . '/src/Redefinitions/LanguageConstructs.php';
-
 CodeManipulation\register([
     CodeManipulation\Actions\RedefinitionOfLanguageConstructs\spliceAllConfiguredLanguageConstructs(),
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
 ]);
 
 if (Utils\wasRunAsConsoleApp()) {
-    require __DIR__ . '/src/Console.php';
+    require __DIR__ . '/src/Console/console.php';
 }

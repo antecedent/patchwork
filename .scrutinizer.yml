@@ -6,6 +6,7 @@ checks:
 filter:
     excluded_paths:
     - "tests/"
+    - "patchwork-composer/"
     - "vendor/"
 coding_style:
     php:

@@ -184,8 +184,3 @@ function suspendFor(callable $function)
         throw $exception;
     }
 }
-
-class State
-{
-    static $enabled = true;
-}

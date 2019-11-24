@@ -8,7 +8,7 @@
  */
 namespace Patchwork\Console;
 
-use Patchwork\CodeManipulation as CM;
+use Patchwork\CodeManipulation;
 
 error_reporting(E_ALL | E_STRICT);
 
@@ -17,7 +17,7 @@ $argc > 2 && $argv[1] == 'prime'
               "       (to recursively prime all PHP files under given directories)\n\n");
 
 try {
-    CM\cacheEnabled()
+    CodeManipulation\cacheEnabled()
         or exit("\nError: no cache location set.\n\n");
 } catch (Patchwork\Exceptions\CachePathUnavailable $e) {
     exit("\nError: " . $e->getMessage() . "\n\n");
@@ -30,7 +30,7 @@ $files = [];
 foreach (array_slice($argv, 2) as $path) {
     $path = realpath($path);
     foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $file) {
-        if (substr($file, -4) == '.php' && !CM\internalToCache($file) && !CM\availableCached($file)) {
+        if (substr($file, -4) == '.php' && !CodeManipulation\internalToCache($file) && !CodeManipulation\availableCached($file)) {
             $files[] = $file;
         }
     }
@@ -47,7 +47,7 @@ const CONSOLE_WIDTH = 80;
 $progress = 0;
 
 for ($i = 0; $i < $count; $i++) {
-    CM\prime($files[$i]->getRealPath());
+    CodeManipulation\prime($files[$i]->getRealPath());
     while ((int) (($i + 1) / $count * CONSOLE_WIDTH) > $progress) {
         echo '.';
         $progress++;

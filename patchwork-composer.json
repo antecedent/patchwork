@@ -14,9 +14,6 @@
     "require": {
         "php": ">=5.4.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": ">=4"
-    },
     "autoload": {
         "files": [
             "src/functions.php",
@@ -34,9 +31,9 @@
             "src/Redefinitions/LanguageConstructs/functions.php",
             "src/Stack/functions.php",
             "src/Utils/functions.php"
-        ],
-        "psr-4": {
-            "Patchwork\\": "src/"
-        }
+        ]
+    },
+    "config": {
+        "vendor-dir": "patchwork-composer"
     }
 }

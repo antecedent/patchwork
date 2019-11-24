@@ -220,14 +220,3 @@ function getTimestamp()
 {
     return State::$timestamp;
 }
-
-class State
-{
-    static $blacklist = [];
-    static $whitelist = [];
-    static $cachePath;
-    static $redefinableInternals = [];
-    static $redefinableLanguageConstructs = [];
-    static $newKeywordRedefinable = false;
-    static $timestamp = 0;
-}

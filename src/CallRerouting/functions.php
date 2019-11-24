@@ -8,9 +8,6 @@
  */
 namespace Patchwork\CallRerouting;
 
-require __DIR__ . '/CallRerouting/Handle.php';
-require __DIR__ . '/CallRerouting/Decorator.php';
-
 use Patchwork\Utils;
 use Patchwork\Stack;
 use Patchwork\Config;
@@ -594,12 +591,4 @@ function getInstantiator($class, $calledClass)
     }
     $instantiator = "$namespace\\$adaptedName";
     return new $instantiator;
-}
-
-class State
-{
-    static $routes = [];
-    static $queue = [];
-    static $preprocessedFiles = [];
-    static $routeStack = [];
 }

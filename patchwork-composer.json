@@ -31,9 +31,13 @@
             "src/Redefinitions/LanguageConstructs/functions.php",
             "src/Stack/functions.php",
             "src/Utils/functions.php"
-        ]
+        ],
+        "psr-4": {
+            "Patchwork\\": "src/"
+        }
     },
     "config": {
-        "vendor-dir": "patchwork-composer"
+        "vendor-dir": "patchwork-composer",
+        "optimize-autoloader": true
     }
 }

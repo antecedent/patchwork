@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita41da282b90d213661e27c440aa04518
+class ComposerStaticInitb7de713a68964186ce39fad9ae1c996a
 {
     public static $files = array (
         '26db35d0498c3af7562af33227309219' => __DIR__ . '/../..' . '/src/functions.php',
@@ -24,9 +24,54 @@ class ComposerStaticInita41da282b90d213661e27c440aa04518
         '7335fc46393476f0de27165dc4aabd3c' => __DIR__ . '/../..' . '/src/Utils/functions.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'Patchwork\\' => 10,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Patchwork\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
+    );
+
+    public static $classMap = array (
+        'Patchwork\\CallRerouting\\Decorator' => __DIR__ . '/../..' . '/src/CallRerouting/Decorator.php',
+        'Patchwork\\CallRerouting\\Handle' => __DIR__ . '/../..' . '/src/CallRerouting/Handle.php',
+        'Patchwork\\CallRerouting\\State' => __DIR__ . '/../..' . '/src/CallRerouting/State.php',
+        'Patchwork\\CodeManipulation\\Actions\\RedefinitionOfNew\\State' => __DIR__ . '/../..' . '/src/CodeManipulation/Actions/RedefinitionOfNew/State.php',
+        'Patchwork\\CodeManipulation\\Source' => __DIR__ . '/../..' . '/src/CodeManipulation/Source.php',
+        'Patchwork\\CodeManipulation\\State' => __DIR__ . '/../..' . '/src/CodeManipulation/State.php',
+        'Patchwork\\CodeManipulation\\Stream' => __DIR__ . '/../..' . '/src/CodeManipulation/Stream.php',
+        'Patchwork\\Config\\State' => __DIR__ . '/../..' . '/src/Config/State.php',
+        'Patchwork\\Exceptions\\CachePathConflict' => __DIR__ . '/../..' . '/src/Exceptions/CachePathConflict.php',
+        'Patchwork\\Exceptions\\CachePathUnavailable' => __DIR__ . '/../..' . '/src/Exceptions/CachePathUnavailable.php',
+        'Patchwork\\Exceptions\\CallbackException' => __DIR__ . '/../..' . '/src/Exceptions/CallbackException.php',
+        'Patchwork\\Exceptions\\ConfigException' => __DIR__ . '/../..' . '/src/Exceptions/ConfigException.php',
+        'Patchwork\\Exceptions\\ConfigKeyNotRecognized' => __DIR__ . '/../..' . '/src/Exceptions/ConfigKeyNotRecognized.php',
+        'Patchwork\\Exceptions\\ConfigMalformed' => __DIR__ . '/../..' . '/src/Exceptions/ConfigMalformed.php',
+        'Patchwork\\Exceptions\\DefinedTooEarly' => __DIR__ . '/../..' . '/src/Exceptions/DefinedTooEarly.php',
+        'Patchwork\\Exceptions\\Exception' => __DIR__ . '/../..' . '/src/Exceptions/Exception.php',
+        'Patchwork\\Exceptions\\InternalMethodsNotSupported' => __DIR__ . '/../..' . '/src/Exceptions/InternalMethodsNotSupported.php',
+        'Patchwork\\Exceptions\\InternalsNotSupportedOnHHVM' => __DIR__ . '/../..' . '/src/Exceptions/InternalsNotSupportedOnHHVM.php',
+        'Patchwork\\Exceptions\\NewKeywordNotRedefinable' => __DIR__ . '/../..' . '/src/Exceptions/NewKeywordNotRedefinable.php',
+        'Patchwork\\Exceptions\\NoResult' => __DIR__ . '/../..' . '/src/Exceptions/NoResult.php',
+        'Patchwork\\Exceptions\\NonNullToVoid' => __DIR__ . '/../..' . '/src/Exceptions/NonNullToVoid.php',
+        'Patchwork\\Exceptions\\NotUserDefined' => __DIR__ . '/../..' . '/src/Exceptions/NotUserDefined.php',
+        'Patchwork\\Exceptions\\StackEmpty' => __DIR__ . '/../..' . '/src/Exceptions/StackEmpty.php',
+        'Patchwork\\Stack\\State' => __DIR__ . '/../..' . '/src/Stack/State.php',
+        'Patchwork\\Utils\\State' => __DIR__ . '/../..' . '/src/Utils/State.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInitb7de713a68964186ce39fad9ae1c996a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitb7de713a68964186ce39fad9ae1c996a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitb7de713a68964186ce39fad9ae1c996a::$classMap;
 
         }, null, ClassLoader::class);
     }

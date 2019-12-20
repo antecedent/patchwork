@@ -514,9 +514,12 @@ function connectDefaultInternals()
                         }
                         $class = $actualClass;
                     }
+
                     # When calling a parent constructor, the reference to the object being
-                    # constructed needs to be extracted from the stack info
-                    if (is_null($instance) && $method === '__construct') {
+                    # constructed needs to be extracted from the stack info.
+                    # Also turned out to be necessary to solve this, without any parent
+                    # constructors involved: https://github.com/antecedent/patchwork/issues/99
+                    if (is_null($instance) && isset($caller['object'])) {
                         $instance = $caller['object'];
                     }
                     try {

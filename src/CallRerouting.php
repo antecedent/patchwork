@@ -477,7 +477,7 @@ function connectDefaultInternals()
                 $offsets[] = $offset;
             }
         }
-        connect($function, function() use ($offsets) {
+        connect($function, function() use ($function, $offsets) {
             # This is the argument-inspecting patch.
             $args = Stack\top('args');
             $caller = Stack\all()[1];
@@ -534,8 +534,10 @@ function connectDefaultInternals()
                     }
                 }
             }
-            # Give the inspected arguments back to the callback-taking function
-            return relay($args);
+            # Give the inspected arguments back to the *original* definition of the
+            # callback-taking function, e.g. \array_map(). This works given that the
+            # present patch is the innermost.
+            return call_user_func_array($function, $args);
         });
     }
 }

@@ -120,7 +120,7 @@ function interpretCallable($callback)
             $instance = $class;
             $class = get_class($class);
         }
-        $class = ltrim($class, "\\");
+        $class = isset($class) ? ltrim($class, "\\") : '';
         return [$class, $method, $instance];
     }
     if (substr($callback, 0, 4) === 'new ') {

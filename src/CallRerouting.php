@@ -138,7 +138,7 @@ function applyWildcard($wildcard, callable $target, Handle $handle = null)
         connect($callable, $target, $handle, true);
         $handle->tag($callable);
     }
-    if (!class_exists($class, false)) {
+    if (!isset($class) || !class_exists($class, false)) {
         queueConnection($wildcard, $target, $handle);
     }
     return $handle;

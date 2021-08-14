@@ -30,8 +30,12 @@ class Babbler
     }
 }
 
-assert(FooTrait::speak() === "spam");
-assert(BarTrait::speak() === "bar");
+# Direct calls to static trait methods are silencing a PHP 8.1 deprecation
+$foospeak = @FooTrait::speak();
+$barspeak = @BarTrait::speak();
+
+assert($foospeak === "spam");
+assert($barspeak === "bar");
 assert(Babbler::sayFoo() === "foo");
 assert(Babbler::sayBar() === "bacon");
 assert(Babbler::speak() === "eggs");

@@ -227,6 +227,7 @@ class Source
 
     function match($offset)
     {
+        $offset = (string) $offset;
         return isset($this->matchingBrackets[$offset]) ? $this->matchingBrackets[$offset] : INF;
     }
 

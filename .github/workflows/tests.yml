@@ -1,0 +1,29 @@
+name: Tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: 
+        - '5.4'
+        - '5.5'
+        - '5.6'
+        - '7.0'
+        - '7.1'
+        - '7.2'
+        - '7.3'
+        - '7.4'
+        - '8.0'
+        - '8.1'
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        phpunit-version: latest
+        extensions: mbstring
+    - name: Run tests
+      run: phpunit tests

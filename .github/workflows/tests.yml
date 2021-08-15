@@ -23,7 +23,8 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
-        phpunit-version: latest
         extensions: mbstring
+    - name: Install dependencies
+      run: composer install
     - name: Run tests
       run: phpunit tests

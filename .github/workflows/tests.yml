@@ -26,6 +26,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring
+        ini-values: error_reporting=-1, display_errors=On, log_errors_max_len=0
 
     # Install dependencies and handle caching in one go.
     # @link https://github.com/marketplace/actions/install-composer-dependencies

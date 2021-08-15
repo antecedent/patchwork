@@ -17,7 +17,7 @@ require __DIR__ . "/includes/Inheritance.php";
 
 p\replace("Singleton::getInstance", function() {
 	print("One\n");
-	assert(p\callOriginal() instanceof Singleton);
+	assert(p\relay() instanceof Singleton);
 	print("Two\n");
 	return "booyah";
 });
@@ -28,7 +28,7 @@ foreach (range(1, 2) as $i) {
 
 p\replace("identity", function($x) {
 	print("Four\n");
-	assert(p\callOriginal([42]) === 42);
+	assert(p\relay([42]) === 42);
 	print("Five\n");
 	return $x + 1;
 });
@@ -37,14 +37,14 @@ assert(identity(15) === 16);
 
 p\replace("TeenageSingletonChild::getInstance", function() {
 	print("Six\n");
-	assert(p\callOriginal() === "Y'ain't gettin' no instance from me");
+	assert(p\relay() === "Y'ain't gettin' no instance from me");
 	print("Seven\n");
 });
 
 TeenageSingletonChild::getInstance();
 
 p\replace("FooObject::bah", function() {
-	return p\callOriginal() . " :)";
+	return p\relay() . " :)";
 });
 
 $foo = new FooObject;

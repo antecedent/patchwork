@@ -15,7 +15,7 @@ $foo = new NamedObject("foo");
 
 Patchwork\replace([$foo, "getName"], function() {
 	$this->name = "bar";
-	Patchwork\pass();
+	Patchwork\fallBack();
 });
 
 assert($foo->getName() === "bar");

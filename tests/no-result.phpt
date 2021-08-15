@@ -12,7 +12,7 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
 Patchwork\replace("getInteger", function() {
-    Patchwork\pass();
+    Patchwork\fallBack();
     echo "This should not be printed\n";
 });
 

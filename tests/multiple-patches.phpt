@@ -23,7 +23,7 @@ Patchwork\replace("getInteger", function() {
 
 Patchwork\replace("getInteger", function() {
     print("Patch #3\n");
-    Patchwork\pass();
+    Patchwork\fallBack();
 });
 
 echo "Calling getInteger()\n";

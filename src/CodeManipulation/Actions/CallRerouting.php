@@ -18,11 +18,13 @@ const CALL_INTERCEPTION_CODE = '
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
-        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, %s)) {
+        $__pwRefs = %s;
+        $__pwRefOffset = 0;
+        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, \array_merge(\array_slice($__pwRefs, $__pwRefOffset, \func_num_args()), \array_slice(\func_get_args(), \count($__pwRefs))))) {
             return $__pwResult;
         }
     }
-    unset($__pwClass, $__pwCalledClass, $__pwResult, $__pwClosureName, $__pwFrame);
+    unset($__pwClass, $__pwCalledClass, $__pwResult, $__pwClosureName, $__pwFrame, $__pwRefs, $__pwRefOffset);
 ';
 
 const CALL_INTERCEPTION_CODE_VOID_TYPED = '
@@ -31,14 +33,16 @@ const CALL_INTERCEPTION_CODE_VOID_TYPED = '
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
-        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, %s)) {
+        $__pwRefs = %s;
+        $__pwRefOffset = 0;
+        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, \array_merge(\array_slice($__pwRefs, $__pwRefOffset, \func_num_args()), \array_slice(\func_get_args(), \count($__pwRefs))))) {
 			if ($__pwResult !== null) {
 				throw new \Patchwork\Exceptions\NonNullToVoid;
 			}
 			return;
 		}
     }
-    unset($__pwClass, $__pwCalledClass, $__pwResult, $__pwClosureName, $__pwFrame);
+    unset($__pwClass, $__pwCalledClass, $__pwResult, $__pwClosureName, $__pwFrame, $__pwRefOffset);
 ';
 
 const QUEUE_DEPLOYMENT_CODE = '\Patchwork\CallRerouting\deployQueue()';

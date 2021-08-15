@@ -20,6 +20,14 @@ const LEFT_SQUARE = '[';
 const RIGHT_SQUARE = ']';
 const SEMICOLON = ';';
 
+foreach (['NAME_FULLY_QUALIFIED', 'NAME_QUALIFIED', 'NAME_RELATIVE'] as $constant) {
+    if (defined('T_' . $constant)) {
+        define(__NAMESPACE__ . '\\' . $constant, constant('T_' . $constant));
+    } else {
+        define(__NAMESPACE__ . '\\' . $constant, -1);
+    }
+}
+
 function markPreprocessedFiles(&$target)
 {
     return function($file) use (&$target) {

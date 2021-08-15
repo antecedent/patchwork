@@ -117,6 +117,9 @@ function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $ty
                 }
                 break;
             case T_STRING:
+            case Generic\NAME_FULLY_QUALIFIED:
+            case Generic\NAME_QUALIFIED:
+            case Generic\NAME_RELATIVE:
                 $lastPart = $s->tokens[$pos][Source::STRING_OFFSET];
                 $whole .= $lastPart;
                 break;
@@ -162,6 +165,9 @@ function scanQualifiedName(Source $s, $begin)
                 }
                 # fall through
             case T_STRING:
+            case Generic\NAME_FULLY_QUALIFIED:
+            case Generic\NAME_QUALIFIED:
+            case Generic\NAME_RELATIVE:
             case T_STATIC:
                 $result .= $s->tokens[$begin][Source::STRING_OFFSET];
                 break;

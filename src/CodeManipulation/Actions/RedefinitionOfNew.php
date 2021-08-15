@@ -95,6 +95,9 @@ function getInnerTokens()
         T_VARIABLE,
         T_ENCAPSED_AND_WHITESPACE,
         T_STATIC,
+        Generic\NAME_FULLY_QUALIFIED,
+        Generic\NAME_QUALIFIED,
+        Generic\NAME_RELATIVE,
     ];
 }
 
@@ -153,7 +156,10 @@ function hasExtraParentheses(Source $s, $new)
         T_WHILE,
         T_ARRAY,
         T_PRINT,
-        T_ECHO
+        T_ECHO,
+        Generic\NAME_FULLY_QUALIFIED,
+        Generic\NAME_QUALIFIED,
+        Generic\NAME_RELATIVE,
     ];
     $left = $s->skipBack(Source::junk(), $new);
     if (!$s->is(Generic\LEFT_ROUND, $left)) {

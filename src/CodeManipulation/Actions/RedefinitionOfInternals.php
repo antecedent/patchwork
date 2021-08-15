@@ -46,21 +46,26 @@ function spliceNamedFunctionCalls()
 
 function spliceNamedCallsWithin(Source $s, $begin, $end, array $names, array $aliases)
 {
-    foreach ($s->within(T_STRING, $begin, $end) as $string) {
+    foreach ($s->within([T_STRING, Generic\NAME_FULLY_QUALIFIED, Generic\NAME_QUALIFIED, Generic\NAME_RELATIVE], $begin, $end) as $string) {
         $original = strtolower($s->read($string));
+        if ($original[0] == '\\') {
+            $original = substr($original, 1);
+        }
         if (isset($names[$original]) || isset($aliases[$original])) {
             $previous = $s->skipBack(Source::junk(), $string);
             $hadBackslash = false;
-            if ($s->is(T_NS_SEPARATOR, $previous)) {
-                 if (!isset($names[$original])) {
+            if ($s->is(T_NS_SEPARATOR, $previous) || $s->is(Generic\NAME_FULLY_QUALIFIED, $string)) {
+                if (!isset($names[$original])) {
                     # use-aliased name cannot have a leading backslash
                     continue;
                 }
-                $s->splice('', $previous, 1);
-                $previous = $s->skipBack(Source::junk(), $previous);
+                if ($s->is(T_NS_SEPARATOR, $previous)) {
+                    $s->splice('', $previous, 1);
+                    $previous = $s->skipBack(Source::junk(), $previous);
+                }
                 $hadBackslash = true;
             }
-            if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW], $previous)) {
+            if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW, Generic\NAME_FULLY_QUALIFIED, Generic\NAME_QUALIFIED, Generic\NAME_RELATIVE], $previous)) {
                 continue;
             }
             $next = $s->skip(Source::junk(), $string);

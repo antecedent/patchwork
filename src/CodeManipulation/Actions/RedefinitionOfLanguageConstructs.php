@@ -69,6 +69,9 @@ function getInnerTokens()
         T_DOC_COMMENT,
         T_VARIABLE,
         T_ENCAPSED_AND_WHITESPACE,
+        Generic\NAME_FULLY_QUALIFIED,
+        Generic\NAME_QUALIFIED,
+        Generic\NAME_RELATIVE,
     ];
 }
 

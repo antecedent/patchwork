@@ -16,9 +16,9 @@ require __DIR__ . "/includes/Functions.php";
 require __DIR__ . "/includes/Inheritance.php";
 
 p\replace("Singleton::getInstance", function() {
-	echo "One", PHP_EOL;
+	print("One\n");
 	assert(p\callOriginal() instanceof Singleton);
-	echo "Two", PHP_EOL;
+	print("Two\n");
 	return "booyah";
 });
 
@@ -27,18 +27,18 @@ foreach (range(1, 2) as $i) {
 }
 
 p\replace("identity", function($x) {
-	echo "Four", PHP_EOL;
+	print("Four\n");
 	assert(p\callOriginal([42]) === 42);
-	echo "Five", PHP_EOL;
+	print("Five\n");
 	return $x + 1;
 });
 
 assert(identity(15) === 16);
 
 p\replace("TeenageSingletonChild::getInstance", function() {
-	echo "Six", PHP_EOL;
+	print("Six\n");
 	assert(p\callOriginal() === "Y'ain't gettin' no instance from me");
-	echo "Seven", PHP_EOL;
+	print("Seven\n");
 });
 
 TeenageSingletonChild::getInstance();

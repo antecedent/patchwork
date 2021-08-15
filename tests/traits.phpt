@@ -12,8 +12,11 @@ require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Traits.php";
 
 # Initial behavior
-assert(FooTrait::speak() === "foo");
-assert(BarTrait::speak() === "bar");
+# Direct calls to static trait methods are silencing a PHP 8.1 deprecation
+$foospeak = @FooTrait::speak();
+$barspeak = @BarTrait::speak();
+assert($foospeak === "foo");
+assert($barspeak === "bar");
 assert(Babbler::sayFoo() === "foo");
 assert(Babbler::sayBar() === "bar");
 assert(Babbler::speak() === "foobar");
@@ -23,10 +26,12 @@ Patchwork\replace("BarTrait::speak", function() {
 });
 
 # Replacement #1
-assert(BarTrait::speak() === "spam");
+$barspeak = @BarTrait::speak();
+assert($barspeak === "spam");
 
 # No change expected
-assert(FooTrait::speak() === "foo");
+$foospeak = @FooTrait::speak();
+assert($foospeak === "foo");
 assert(Babbler::sayFoo() === "foo");
 assert(Babbler::sayBar() === "bar");
 assert(Babbler::speak() === "foobar");
@@ -39,10 +44,12 @@ Patchwork\replace("Babbler::speak", function() {
 assert(Babbler::speak() === "eggs");
 
 # Replacement #1
-assert(BarTrait::speak() === "spam");
+$barspeak = @BarTrait::speak();
+assert($barspeak === "spam");
 
 # No change expected
-assert(FooTrait::speak() === "foo");
+$foospeak = @FooTrait::speak();
+assert($foospeak === "foo");
 assert(Babbler::sayFoo() === "foo");
 assert(Babbler::sayBar() === "bar");
 
@@ -57,10 +64,12 @@ assert(Babbler::sayFoo() === "bacon");
 assert(Babbler::speak() === "eggs");
 
 # Replacement #1
-assert(BarTrait::speak() === "spam");
+$barspeak = @BarTrait::speak();
+assert($barspeak === "spam");
 
 # No change expected
-assert(FooTrait::speak() === "foo");
+$foospeak = @FooTrait::speak();
+assert($foospeak === "foo");
 assert(Babbler::sayBar() === "bar");
 
 ?>

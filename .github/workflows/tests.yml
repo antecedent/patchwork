@@ -4,6 +4,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php-versions: 
         - '5.4'

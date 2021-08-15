@@ -8,6 +8,7 @@
  */
 namespace Patchwork\CodeManipulation\Actions\Generic;
 
+use Patchwork\CodeManipulation\Actions\Arguments;
 use Patchwork\CodeManipulation\Source;
 use Patchwork\Utils;
 
@@ -26,12 +27,12 @@ function markPreprocessedFiles(&$target)
     };
 }
 
-function prependCodeToFunctions($code, $voidTypedVariant = null)
+function prependCodeToFunctions($code, $voidTypedVariant = null, $fillArgRefs = false)
 {
 	if ($voidTypedVariant === null) {
 		$voidTypedVariant = $code;
 	}
-    return function(Source $s) use ($code, $voidTypedVariant) {
+    return function(Source $s) use ($code, $voidTypedVariant, $fillArgRefs) {
         foreach ($s->all(T_FUNCTION) as $function) {
             # Skip "use function"
             $previous = $s->skipBack(Source::junk(), $function);
@@ -39,6 +40,12 @@ function prependCodeToFunctions($code, $voidTypedVariant = null)
                 continue;
             }
             $voidTyped = isVoidTyped($s, $function);
+            $argRefs = null;
+            if ($fillArgRefs) {
+                $parenthesis = $s->next(LEFT_ROUND, $function);
+                $args = Arguments\readNames($s, $parenthesis);
+                $argRefs = Arguments\constructReferenceArray($args);
+            }
             $bracket = $s->next(LEFT_CURLY, $function);
             if (Utils\generatorsSupported()) {
                 # Skip generators
@@ -49,7 +56,11 @@ function prependCodeToFunctions($code, $voidTypedVariant = null)
             }
             $semicolon = $s->next(SEMICOLON, $function);
             if ($bracket < $semicolon) {
-                $s->splice($voidTyped ? $voidTypedVariant : $code, $bracket + 1);
+                $variant = $voidTyped ? $voidTypedVariant : $code;
+                if ($fillArgRefs) {
+                    $variant = sprintf($variant, $argRefs);
+                }
+                $s->splice($variant, $bracket + 1);
             }
         }
     };

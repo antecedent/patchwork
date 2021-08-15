@@ -18,7 +18,7 @@ const CALL_INTERCEPTION_CODE = '
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
-        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult)) {
+        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, %s)) {
             return $__pwResult;
         }
     }
@@ -31,7 +31,7 @@ const CALL_INTERCEPTION_CODE_VOID_TYPED = '
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
-        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult)) {
+        if (\Patchwork\CallRerouting\dispatch($__pwClass, $__pwCalledClass, __FUNCTION__, $__pwFrame, $__pwResult, %s)) {
 			if ($__pwResult !== null) {
 				throw new \Patchwork\Exceptions\NonNullToVoid;
 			}
@@ -52,7 +52,8 @@ function injectCallInterceptionCode()
 {
     return Generic\prependCodeToFunctions(
 		Utils\condense(CALL_INTERCEPTION_CODE),
-		Utils\condense(CALL_INTERCEPTION_CODE_VOID_TYPED)
+		Utils\condense(CALL_INTERCEPTION_CODE_VOID_TYPED),
+        true
 	);
 }
 

@@ -440,10 +440,15 @@ function createStubsForInternals()
             }
             $signature[] = $formal;
         }
+        $refs = sprintf(
+            '\array_merge([%s], \array_slice(\func_get_args(), %d))', 
+            join(', ', array_slice($signature, 1)), 
+            count($signature)
+        );
         eval(strtr(INTERNAL_STUB_CODE, [
             '@name' => $name,
             '@signature' => join(', ', $signature),
-            '@interceptor' => \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE,
+            '@interceptor' => sprintf(\Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE, $refs),
             '@ns_for_redefinitions' => INTERNAL_REDEFINITION_NAMESPACE,
         ]));
     }

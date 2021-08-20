@@ -24,6 +24,8 @@ function readNames(Source $s, $pos)
         } else {
             if ($s->is(T_VARIABLE, $pos)) {
                 $result[] = $s->read($pos);
+            } elseif ($s->is(Generic\ELLIPSIS, $pos)) {
+                break;
             }
             $pos++;
         }

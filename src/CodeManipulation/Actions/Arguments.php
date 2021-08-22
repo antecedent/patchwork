@@ -25,7 +25,8 @@ function readNames(Source $s, $pos)
             if ($s->is(T_VARIABLE, $pos)) {
                 $result[] = $s->read($pos);
             } elseif ($s->is(Generic\ELLIPSIS, $pos)) {
-                break;
+                $pos = $s->skip(Source::junk(), $pos);
+                $result[] = '...' . $s->read($pos);
             }
             $pos++;
         }
@@ -39,6 +40,9 @@ function readNames(Source $s, $pos)
 function constructReferenceArray(array $names)
 {
     $names = array_map(function($name) {
+        if ($name[0] === '.') {
+            return $name;
+        }
         return '&' . $name;
     }, $names);
     return '[' . join(', ', $names) . ']';

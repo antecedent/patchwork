@@ -41,9 +41,9 @@ function constructReferenceArray(array $names)
 {
     $names = array_map(function($name) {
         if ($name[0] === '.') {
-            return $name;
+            return '], ' . substr($name, 3) . ', [';
         }
         return '&' . $name;
     }, $names);
-    return '[' . join(', ', $names) . ']';
+    return 'array_merge([' . join(', ', $names) . '])';
 }

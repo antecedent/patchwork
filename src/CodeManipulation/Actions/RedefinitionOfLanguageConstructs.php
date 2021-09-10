@@ -83,6 +83,7 @@ function getBracketTokens()
         Generic\LEFT_CURLY,
         T_CURLY_OPEN,
         T_DOLLAR_OPEN_CURLY_BRACES,
+        Generic\ATTRIBUTE,
     ];
 }
 

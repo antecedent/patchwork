@@ -20,7 +20,7 @@ const LEFT_SQUARE = '[';
 const RIGHT_SQUARE = ']';
 const SEMICOLON = ';';
 
-foreach (['NAME_FULLY_QUALIFIED', 'NAME_QUALIFIED', 'NAME_RELATIVE', 'ELLIPSIS'] as $constant) {
+foreach (['NAME_FULLY_QUALIFIED', 'NAME_QUALIFIED', 'NAME_RELATIVE', 'ELLIPSIS', 'ATTRIBUTE'] as $constant) {
     if (defined('T_' . $constant)) {
         define(__NAMESPACE__ . '\\' . $constant, constant('T_' . $constant));
     } else {

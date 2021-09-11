@@ -8,6 +8,7 @@
  */
 namespace Patchwork\CodeManipulation;
 
+use Patchwork\CodeManipulation\Actions\Generic;
 use Patchwork\Utils;
 
 class Source
@@ -73,6 +74,7 @@ class Source
                 case '{':
                 case T_CURLY_OPEN:
                 case T_DOLLAR_OPEN_CURLY_BRACES:
+                case Generic\ATTRIBUTE:
                     $stack[] = $offset;
                     break;
                 case ')':
@@ -102,6 +104,7 @@ class Source
                 case '{':
                 case T_CURLY_OPEN:
                 case T_DOLLAR_OPEN_CURLY_BRACES:
+                case Generic\ATTRIBUTE:
                     $level++;
                     Utils\appendUnder($this->levelBeginnings, $level, $offset);
                     break;

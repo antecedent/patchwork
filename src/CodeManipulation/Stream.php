@@ -98,14 +98,21 @@ class Stream
 
     public function url_stat($path, $flags)
     {
+        $func = ($flags & STREAM_URL_STAT_LINK) ? 'lstat' : 'stat';
         $this->unwrap();
-        set_error_handler(function() {});
-        try {
-            $result = stat($path);
-        } catch (\Exception $e) {
-            $result = null;
+        clearstatcache();
+        if ($flags & STREAM_URL_STAT_QUIET) {
+            set_error_handler(function() {});
+            try {
+                $result = call_user_func($func, $path);
+            } catch (\Exception $e) {
+                $result = null;
+            }
+            restore_error_handler();
+        } else {
+            $result = call_user_func($func, $path);
         }
-        restore_error_handler();
+        clearstatcache();
         $this->wrap();
         if ($result) {
             $result[self::STAT_MTIME_ASSOC_OFFSET]++;

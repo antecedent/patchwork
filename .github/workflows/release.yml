@@ -83,21 +83,12 @@ jobs:
       - publish
     
     steps:
-      - name: Configure Git credentials
-        run: |
-          git config --global user.name antecedent
-          git config --global user.email ignas.rudaitis@gmail.com
-      
-      - name: Initialize Git directory
-        run: git init
+      - name: Checkout GH Pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
 
-      - name: Run `git remote add`
-        run: git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/antecedent/patchwork.git"
-      
-      - name: Run `git fetch`
-        run: git fetch gh-token && git fetch gh-token gh-pages:gh-pages
-      
       - name: Commit and push
         run: |
           git commit --allow-empty -m "Deploy version ${{ github.ref }}"
-          git push gh-token gh-pages
+          git push origin gh-pages

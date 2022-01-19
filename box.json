@@ -1,0 +1,16 @@
+{
+    "base-path": null,
+    "output": "patchwork.phar",
+    "check-requirements": false,
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php"
+    ],
+    "main": "Patchwork.php",
+    "directories": [
+        "src"
+    ],
+    "files": [
+        "Patchwork.php",
+        "LICENSE"
+    ]
+}

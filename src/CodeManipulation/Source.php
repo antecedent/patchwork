@@ -44,7 +44,7 @@ class Source
 
     function initialize()
     {
-        $this->tokens = token_get_all($this->code);
+        $this->tokens = Utils\tokenize($this->code);
         $this->tokens[] = [T_WHITESPACE, ""];
         $this->indexTokensByType();
         $this->collectBracketMatchings();
@@ -288,7 +288,7 @@ class Source
 
     function flush()
     {
-        $this->initialize(token_get_all($this));
+        $this->initialize(Utils\tokenize($this));
     }
 
     /**

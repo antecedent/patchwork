@@ -378,6 +378,14 @@ function args()
     return func_get_args();
 }
 
+function tokenize($string)
+{
+    if (defined('TOKEN_PARSE')) {
+        return token_get_all($string, TOKEN_PARSE);
+    }
+    return token_get_all($string);
+}
+
 class State
 {
     static $missedCallables = [];

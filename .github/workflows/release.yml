@@ -85,8 +85,8 @@ jobs:
     steps:
       - name: Push empty commit to gh-pages
         run: |
-          git config user.name antecedent
-          git config user.email ignas.rudaitis@gmail.com
+          git config --global user.name antecedent
+          git config --global user.email ignas.rudaitis@gmail.com
           git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/antecedent/patchwork.git"
           git fetch gh-token && git fetch gh-token gh-pages:gh-pages
           git commit --allow-empty -m "Deploy version ${{ github.ref }}"

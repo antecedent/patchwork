@@ -12,5 +12,6 @@
     "files": [
         "Patchwork.php",
         "LICENSE"
-    ]
+    ],
+    "dump-autoload": false
 }

@@ -89,5 +89,6 @@ jobs:
           git config --global user.email ignas.rudaitis@gmail.com
           git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/antecedent/patchwork.git"
           git fetch gh-token && git fetch gh-token gh-pages:gh-pages
+          cd patchwork
           git commit --allow-empty -m "Deploy version ${{ github.ref }}"
           git push gh-token gh-pages

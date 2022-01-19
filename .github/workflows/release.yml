@@ -83,12 +83,21 @@ jobs:
       - publish
     
     steps:
-      - name: Push empty commit to gh-pages
+      - name: Configure Git credentials
         run: |
           git config --global user.name antecedent
           git config --global user.email ignas.rudaitis@gmail.com
-          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/antecedent/patchwork.git"
-          git fetch gh-token && git fetch gh-token gh-pages:gh-pages
-          cd patchwork
+      
+      - name: Run `git remote add`
+        run: git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/antecedent/patchwork.git"
+      
+      - name: Run `git fetch`
+        run: git fetch gh-token && git fetch gh-token gh-pages:gh-pages
+      
+      - name: List directory
+        run: ls
+
+      - name: Commit and push
+        run: |
           git commit --allow-empty -m "Deploy version ${{ github.ref }}"
           git push gh-token gh-pages

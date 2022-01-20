@@ -42,6 +42,15 @@ class Stream
     {
         $this->unwrap();
         $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
+
+        // In PHP 7 and 8, `parse_ini_file()` also sets STREAM_OPEN_FOR_INCLUDE.
+        if ($including) {
+            $frame = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1];
+            if (empty($frame['class']) && $frame['function'] === 'parse_ini_file') {
+                $including = false;
+            }
+        }
+
         if ($including && shouldTransform($path)) {
             $this->resource = transformAndOpen($path);
             $this->wrap();

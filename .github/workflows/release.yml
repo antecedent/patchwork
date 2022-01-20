@@ -59,22 +59,15 @@ jobs:
           name: phar
 
       - name: Draft release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Version ${{ github.ref }}
-          draft: true
-          prerelease: false
-
-      - name: Upload PHAR as release asset
         id: upload-release-asset
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: patchwork.phar
+          draft: true
+          name: Version %{{ github.ref }}
+          generate_release_notes: true
 
   regenerate-pages:
     name: Trigger update of GitHub Pages branch

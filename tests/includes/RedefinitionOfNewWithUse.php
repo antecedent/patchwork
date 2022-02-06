@@ -4,7 +4,7 @@ namespace Foo
 {
     class TestClass
     {
-        public static function testMethod()
+        public function testMethod()
         {
             return 'test';
         }
@@ -19,5 +19,7 @@ namespace Bar
         return 'test2';
     });
 
-    assert(TestClass::testMethod() === 'test2');
+    $test = new TestClass;
+
+    assert($test->testMethod() === 'test2');
 }

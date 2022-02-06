@@ -120,8 +120,10 @@ function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $ty
             case Generic\NAME_FULLY_QUALIFIED:
             case Generic\NAME_QUALIFIED:
             case Generic\NAME_RELATIVE:
-                $lastPart = $s->tokens[$pos][Source::STRING_OFFSET];
-                $whole .= $lastPart;
+                $update = $s->tokens[$pos][Source::STRING_OFFSET];
+                $parts = explode('\\', $update);
+                $whole .= $update;
+                $lastPart = end($parts);
                 break;
             case T_AS:
                 $pos = $s->skip(Source::junk(), $pos);

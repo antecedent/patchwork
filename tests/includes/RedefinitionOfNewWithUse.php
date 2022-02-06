@@ -14,9 +14,8 @@ namespace Foo
 namespace Bar
 {
     use Foo\TestClass;
-    use Patchwork\redefine;
 
-    redefine('Foo\TestClass::testMethod', function() {
+    \Patchwork\redefine('Foo\TestClass::testMethod', function() {
         return 'test2';
     });
 

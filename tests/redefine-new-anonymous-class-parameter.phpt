@@ -1,6 +1,10 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/127
 
+--SKIPIF--
+<?php version_compare(PHP_VERSION, "7.0", ">=")
+      or die("skip because anonymous classes are only supported since PHP 7") ?>
+
 --FILE--
 <?php
 

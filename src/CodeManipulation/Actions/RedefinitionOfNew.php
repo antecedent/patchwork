@@ -158,6 +158,7 @@ function hasExtraParentheses(Source $s, $new)
         T_ARRAY,
         T_PRINT,
         T_ECHO,
+        T_CLASS,
         Generic\NAME_FULLY_QUALIFIED,
         Generic\NAME_QUALIFIED,
         Generic\NAME_RELATIVE,

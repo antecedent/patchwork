@@ -287,17 +287,16 @@ function dispatchTo(callable $target)
 
 function dispatch($class, $calledClass, $method, $frame, &$result, array $args = null)
 {
+    $trace = debug_backtrace();
     $isInternalStub = strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0;
     $isLanguageConstructStub = strpos($method, RedefinitionOfLanguageConstructs\LANGUAGE_CONSTRUCT_PREFIX) === 0;
     $isInstantiator = strpos($method, INSTANTIATOR_NAMESPACE) === 0;
     if ($isInternalStub && !$isLanguageConstructStub && $args === null) {
         # Mind the namespace-of-origin argument
-        $trace = debug_backtrace();
         $args = array_reverse($trace)[$frame - 1]['args'];
         array_shift($args);
     }
     if ($isInstantiator) {
-        $trace = debug_backtrace();
         $args = $args ?: array_reverse($trace)[$frame - 1]['args'];
         foreach ($args as $offset => $value) {
             if ($value === INSTANTIATOR_DEFAULT_ARGUMENT) {

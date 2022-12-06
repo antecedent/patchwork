@@ -118,8 +118,10 @@ function transformAndOpen($file)
     if (!internalToCache($file) && availableCached($file)) {
         return fopen(getCachedPath($file), 'r');
     }
-    $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
     $code = file_get_contents($file, true);
+    if ($code === false) {
+        return false;
+    }
     $source = new Source($code);
     $source->file = $file;
     transform($source);
@@ -127,8 +129,11 @@ function transformAndOpen($file)
         storeInCache($source);
         return transformAndOpen($file);
     }
-    fwrite($resource, $source);
-    rewind($resource);
+    $resource = fopen(OUTPUT_DESTINATION, OUTPUT_ACCESS_MODE);
+    if ($resource) {
+        fwrite($resource, $source);
+        rewind($resource);
+    }
     return $resource;
 }
 

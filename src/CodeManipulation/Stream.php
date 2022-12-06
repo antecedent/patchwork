@@ -54,7 +54,7 @@ class Stream
         if ($including && shouldTransform($path)) {
             $this->resource = transformAndOpen($path);
             $this->wrap();
-            return true;
+            return $this->resource !== false;
         }
         if (isset($this->context)) {
             $this->resource = fopen($path, $mode, $options, $this->context);

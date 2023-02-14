@@ -39,12 +39,16 @@ jobs:
     - name: "Install Composer dependencies (PHP < 8.2)"
       if: ${{ matrix.php-versions < '8.2' }}
       uses: "ramsey/composer-install@v2"
+      with:
+        # Bust the cache at least once a month - output format: YYYY-MM.
+        custom-cache-suffix: $(date -u "+%Y-%m")
 
     - name: "Install Composer dependencies (PHP 8.2)"
       if: ${{ matrix.php-versions >= '8.2' }}
       uses: "ramsey/composer-install@v2"
       with:
         composer-options: --ignore-platform-reqs
+        custom-cache-suffix: $(date -u "+%Y-%m")
 
     - name: Run tests
       run: vendor/bin/phpunit tests

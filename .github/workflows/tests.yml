@@ -18,9 +18,10 @@ jobs:
         - '8.0'
         - '8.1'
         - '8.2'
+        - '8.3'
     name: "PHP: ${{ matrix.php-versions }}"
 
-    continue-on-error: ${{ matrix.php-versions == '8.2' }}
+    continue-on-error: ${{ matrix.php-versions == '8.3' }}
 
     steps:
     - name: Checkout
@@ -36,15 +37,15 @@ jobs:
 
     # Install dependencies and handle caching in one go.
     # @link https://github.com/marketplace/actions/install-composer-dependencies
-    - name: "Install Composer dependencies (PHP < 8.2)"
-      if: ${{ matrix.php-versions < '8.2' }}
+    - name: "Install Composer dependencies (PHP < 8.3)"
+      if: ${{ matrix.php-versions < '8.3' }}
       uses: "ramsey/composer-install@v2"
       with:
         # Bust the cache at least once a month - output format: YYYY-MM.
         custom-cache-suffix: $(date -u "+%Y-%m")
 
-    - name: "Install Composer dependencies (PHP 8.2)"
-      if: ${{ matrix.php-versions >= '8.2' }}
+    - name: "Install Composer dependencies (PHP 8.3)"
+      if: ${{ matrix.php-versions >= '8.3' }}
       uses: "ramsey/composer-install@v2"
       with:
         composer-options: --ignore-platform-reqs

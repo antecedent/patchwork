@@ -30,17 +30,17 @@ echo "It did not throw/exit. This is wrong.\n";
 --EXPECTF--
 Including missing file...
 
-Warning: file_get_contents(%s/tests/includes/does-not-exist.php): failed to open stream: No such file or directory in %s/src/CodeManipulation.php on line %d
+Warning: file_get_contents(%s/includes/does-not-exist.php): failed to open stream: No such file or directory in %s%esrc%eCodeManipulation.php on line %d
 
-Warning: include(%s/tests/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 10
+Warning: include(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 10
 
-Warning: include(): Failed opening '%s/tests/includes/does-not-exist.php' for inclusion (include_path='%s') in %s on line 10
+Warning: include(): Failed opening '%s/includes/does-not-exist.php' for inclusion (include_path='%s') in %s on line 10
 Good, it did not throw/exit.
 
 Requiring missing file...
 
-Warning: file_get_contents(%s/tests/includes/does-not-exist.php): failed to open stream: No such file or directory in %s/src/CodeManipulation.php on line %d
+Warning: file_get_contents(%s/includes/does-not-exist.php): failed to open stream: No such file or directory in %s%esrc%eCodeManipulation.php on line %d
 
-Warning: require(%s/tests/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 14
+Warning: require(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 14
 
-Fatal error: require(): Failed opening required '%s/tests/includes/does-not-exist.php' (include_path='%s') in %s on line 14
+Fatal error: require(): Failed opening required '%s/includes/does-not-exist.php' (include_path='%s') in %s on line 14

@@ -8,6 +8,8 @@ class StreamWrapperForTesting
 
     public static $pathsOpened = [];
 
+    public $context;
+
     private $resource;
 
     public static function wrap()

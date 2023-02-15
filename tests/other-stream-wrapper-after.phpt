@@ -1,5 +1,6 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/138
+Case 1/2: the other stream wrapper is registered AFTER importing Patchwork.
 
 --FILE--
 <?php
@@ -10,10 +11,11 @@ error_reporting(E_ALL | E_STRICT);
 
 require __DIR__ . "/includes/StreamWrapperForTesting.php";
 
+require __DIR__ . "/../Patchwork.php";
+
 stream_wrapper_unregister('file');
 stream_wrapper_register('file', 'StreamWrapperForTesting');
 
-require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Functions.php";
 
 Patchwork\redefine('getInteger', function() {

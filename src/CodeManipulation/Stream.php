@@ -255,7 +255,8 @@ class Stream
 
     public function dir_opendir($path, $options)
     {
-        return static::alternate('opendir', null, __FUNCTION__, [$path], $this->context) !== false;
+        $this->resource = static::alternate('opendir', null, __FUNCTION__, [$path], $this->context);
+        return $this->resource !== false;
     }
 
     public function dir_readdir()

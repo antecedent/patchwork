@@ -146,6 +146,9 @@ class Stream
             return $result !== false ? $otherWrapper : false;
         }
         return static::bypass(function() use ($path, $mode, $options, $context) {
+            if ($context === null) {
+                return fopen($path, $mode, $options);
+            }
             return fopen($path, $mode, $options, $context);
         });
     }

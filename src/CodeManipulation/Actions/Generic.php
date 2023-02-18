@@ -163,7 +163,7 @@ function injectCodeAtEnd($code)
             $semicolon = $s->next(SEMICOLON, $namespaceKeyword);
             $leftBracket = $s->next(LEFT_CURLY, $namespaceKeyword);
             if ($leftBracket < $semicolon) {
-                $code = "; namespace { $code }";
+                $code = "namespace { $code }";
             }
         }
         if ($closeTag !== INF) {

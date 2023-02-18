@@ -159,17 +159,19 @@ function injectCodeAtEnd($code)
         $lastOpenTag = end($openTags);
         $closeTag = $s->next(T_CLOSE_TAG, $lastOpenTag);
         $namespaceKeyword = $s->next(T_NAMESPACE, 0);
+        $extraSemicolon = ';';
         if ($namespaceKeyword !== INF) {
             $semicolon = $s->next(SEMICOLON, $namespaceKeyword);
             $leftBracket = $s->next(LEFT_CURLY, $namespaceKeyword);
             if ($leftBracket < $semicolon) {
                 $code = "namespace { $code }";
+                $extraSemicolon = '';
             }
         }
         if ($closeTag !== INF) {
             $s->splice("<?php $code", count($s->tokens) - 1, 0, Source::APPEND);
         } else {
-            $s->splice("; $code", count($s->tokens) - 1, 0, Source::APPEND); 
+            $s->splice($extraSemicolon . $code, count($s->tokens) - 1, 0, Source::APPEND); 
         }
     };
 }

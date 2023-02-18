@@ -96,7 +96,7 @@ class Stream
             $shouldAddResourceArg = false;
         }
         if (is_object($resource)) {
-            $result = (function() use ($resource, $wrapped, $args) {
+            $ladder = function() use ($resource, $wrapped, $args) {
                 switch (count($args)) {
                     case 0:
                         return $resource->$wrapped();
@@ -107,7 +107,8 @@ class Stream
                     default:
                         return call_user_func_array([$resource, $wrapped], $args);
                 }
-            })();
+            };
+            $result = $ladder();
             static::unwrap();
             static::wrap();
         } else {

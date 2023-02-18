@@ -3,7 +3,7 @@
 /**
  * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2018 Ignas Rudaitis
+ * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
 namespace Patchwork\CodeManipulation;
@@ -17,9 +17,19 @@ class Stream
     const STAT_MTIME_ASSOC_OFFSET = 'mtime';
 
     protected static $protocols = ['file', 'phar'];
+    protected static $otherWrapperClass;
 
     public $context;
     public $resource;
+
+    public static function discoverOtherWrapper()
+    {
+        $handle = fopen(__FILE__, 'r');
+        $meta = stream_get_meta_data($handle);
+        if ($meta && isset($meta['wrapper_data']) && is_object($meta['wrapper_data']) && !($meta['wrapper_data'] instanceof self)) {
+            static::$otherWrapperClass = get_class($meta['wrapper_data']);
+        }
+    }
 
     public static function wrap()
     {
@@ -38,9 +48,15 @@ class Stream
         }
     }
 
+    public static function reinstateWrapper()
+    {
+        static::discoverOtherWrapper();
+        static::unwrap();
+        static::wrap();
+    }
+
     public function stream_open($path, $mode, $options, &$openedPath)
     {
-        $this->unwrap();
         $including = (bool) ($options & self::STREAM_OPEN_FOR_INCLUDE);
 
         // In PHP 7 and 8, `parse_ini_file()` also sets STREAM_OPEN_FOR_INCLUDE.
@@ -53,45 +69,134 @@ class Stream
 
         if ($including && shouldTransform($path)) {
             $this->resource = transformAndOpen($path);
-            $this->wrap();
             return $this->resource !== false;
         }
-        if (isset($this->context)) {
-            $this->resource = fopen($path, $mode, $options, $this->context);
-        } else {
-            $this->resource = fopen($path, $mode, $options);
-        }
-        $this->wrap();
+
+        $this->resource = static::fopen($path, $mode, $options, $this->context);
         return $this->resource !== false;
+    }
+
+    public static function getOtherWrapper($context)
+    {
+        if (isset(static::$otherWrapperClass)) {
+            $class = static::$otherWrapperClass;
+            $otherWrapper = new $class;
+            if ($context !== null) {
+                $otherWrapper->context = $context;
+            }
+            return $otherWrapper;
+        }
+    }
+
+    public static function alternate(callable $internal, $resource, $wrapped, array $args = [], $context = null, $shouldReturnResource = false)
+    {
+        $shouldAddResourceArg = true;
+        if ($resource === null) {
+            $resource = static::getOtherWrapper($context);
+            $shouldAddResourceArg = false;
+        }
+        if (is_object($resource)) {
+            $result = (function() use ($resource, $wrapped, $args) {
+                switch (count($args)) {
+                    case 0:
+                        return $resource->$wrapped();
+                    case 1:
+                        return $resource->$wrapped($args[0]);
+                    case 2:
+                        return $resource->$wrapped($args[0], $args[1]);
+                    default:
+                        return call_user_func_array([$resource, $wrapped], $args);
+                }
+            })();
+            static::unwrap();
+            static::wrap();
+        } else {
+            if ($shouldAddResourceArg) {
+                array_unshift($args, $resource);
+            }
+            if ($context !== null) {
+                $args[] = $context;
+            }
+            $result = static::bypass(function() use ($internal, $args) {
+                switch (count($args)) {
+                    case 0:
+                        return $internal();
+                    case 1:
+                        return $internal($args[0]);
+                    case 2:
+                        return $internal($args[0], $args[1]);
+                    default:
+                        return call_user_func_array($internal, $args);
+                }
+            });
+        }
+        if ($shouldReturnResource) {
+            return ($result !== false) ? $resource : false;
+        }
+        return $result;
+    } 
+
+    public static function fopen($path, $mode, $options, $context = null)
+    {
+        $otherWrapper = static::getOtherWrapper($context);
+        if ($otherWrapper !== null) {
+            $openedPath = null;
+            $result = $otherWrapper->stream_open($path, $mode, $options, $openedPath);
+            return $result !== false ? $otherWrapper : false;
+        }
+        return static::bypass(function() use ($path, $mode, $options, $context) {
+            return fopen($path, $mode, $options, $context);
+        });
     }
 
     public function stream_close()
     {
-        return fclose($this->resource);
+        return static::fclose($this->resource);
+    }
+
+    public static function fclose($resource)
+    {
+        return static::alternate('fclose', $resource, 'stream_close');
+    }
+
+    public static function fread($resource, $count)
+    {
+        return static::alternate('fread', $resource, 'stream_read', [$count]);
+    }
+
+    public static function feof($resource)
+    {
+        return static::alternate('feof', $resource, 'stream_eof');
     }
 
     public function stream_eof()
     {
-        return feof($this->resource);
+        return static::feof($this->resource);
     }
 
     public function stream_flush()
     {
-        return fflush($this->resource);
+        return static::alternate('fflush', $this->resource, 'stream_flush');
     }
 
     public function stream_read($count)
     {
-        return fread($this->resource, $count);
+        return static::fread($this->resource, $count);
     }
 
     public function stream_seek($offset, $whence = SEEK_SET)
     {
+        if (is_object($this->resource)) {
+            return $this->resource->stream_seek($offset, $whence);
+        }
         return fseek($this->resource, $offset, $whence) === 0;
     }
 
     public function stream_stat()
     {
+        if (is_object($this->resource)) {
+            return $this->resource->stream_stat();
+        }
         $result = fstat($this->resource);
         if ($result) {
             $result[self::STAT_MTIME_ASSOC_OFFSET]++;
@@ -102,102 +207,83 @@ class Stream
 
     public function stream_tell()
     {
-        return ftell($this->resource);
+        return static::alternate('ftell', $this->resource, 'stream_tell');
+    }
+
+    public static function bypass(callable $action)
+    {
+        static::unwrap();
+        $result = $action();
+        static::wrap();
+        return $result;
     }
 
     public function url_stat($path, $flags)
     {
-        $func = ($flags & STREAM_URL_STAT_LINK) ? 'lstat' : 'stat';
-        $this->unwrap();
-        clearstatcache();
-        if ($flags & STREAM_URL_STAT_QUIET) {
-            set_error_handler(function() {});
-            try {
+        $internal = function($path, $flags) {
+            $func = ($flags & STREAM_URL_STAT_LINK) ? 'lstat' : 'stat';
+            clearstatcache();
+            if ($flags & STREAM_URL_STAT_QUIET) {
+                set_error_handler(function() {});
+                try {
+                    $result = call_user_func($func, $path);
+                } catch (\Exception $e) {
+                    $result = null;
+                }
+                restore_error_handler();
+            } else {
                 $result = call_user_func($func, $path);
-            } catch (\Exception $e) {
-                $result = null;
             }
-            restore_error_handler();
-        } else {
-            $result = call_user_func($func, $path);
-        }
-        clearstatcache();
-        $this->wrap();
-        if ($result) {
-            $result[self::STAT_MTIME_ASSOC_OFFSET]++;
-            $result[self::STAT_MTIME_NUMERIC_OFFSET]++;
-        }
-        return $result;
+            clearstatcache();
+            if ($result) {
+                $result[self::STAT_MTIME_ASSOC_OFFSET]++;
+                $result[self::STAT_MTIME_NUMERIC_OFFSET]++;
+            }
+            return $result;
+        };
+        return static::alternate($internal, null, __FUNCTION__, [$path, $flags], $this->context);
     }
 
     public function dir_closedir()
     {
-        closedir($this->resource);
-        return true;
+        return static::alternate('closedir', $this->resource, 'dir_closedir') ?: true;
     }
 
     public function dir_opendir($path, $options)
     {
-        $this->unwrap();
-        if (isset($this->context)) {
-            $this->resource = opendir($path, $this->context);
-        } else {
-            $this->resource = opendir($path);
-        }
-        $this->wrap();
-        return $this->resource !== false;
+        return static::alternate('opendir', null, __FUNCTION__, [$path, $options], $this->context) !== false;
     }
 
     public function dir_readdir()
     {
-        return readdir($this->resource);
+        return static::alternate('readdir', $this->resource, __FUNCTION__);
     }
 
     public function dir_rewinddir()
     {
-        rewinddir($this->resource);
-        return true;
+        return static::alternate('rewinddir', $this->resource, __FUNCTION__);
     }
 
     public function mkdir($path, $mode, $options)
     {
-        $this->unwrap();
-        if (isset($this->context)) {
-            $result = mkdir($path, $mode, $options, $this->context);
-        } else {
-            $result = mkdir($path, $mode, $options);
-        }
-        $this->wrap();
-        return $result;
+        return static::alternate('mkdir', null, __FUNCTION__, [$path, $mode, $options]);
     }
 
-    public function rename($path_from, $path_to)
+    public function rename($pathFrom, $pathTo)
     {
-        $this->unwrap();
-        if (isset($this->context)) {
-            $result = rename($path_from, $path_to, $this->context);
-        } else {
-            $result = rename($path_from, $path_to);
-        }
-        $this->wrap();
-        return $result;
+        return static::alternate('rename', null, __FUNCTION__, [$pathFrom, $pathTo]);
     }
 
     public function rmdir($path, $options)
     {
-        $this->unwrap();
-        if (isset($this->context)) {
-            $result = rmdir($path, $this->context);
-        } else {
-            $result = rmdir($path);
-        }
-        $this->wrap();
-        return $result;
+        return static::alternate('rmdir', null, __FUNCTION__, [$path, $options]);
     }
 
-    public function stream_cast($cast_as)
+    public function stream_cast($castAs)
     {
-        return $this->resource;
+        return static::alternate(function() {
+            return $this->resource;
+        }, null, __FUNCTION__, [$castAs]);
     }
 
     public function stream_lock($operation)
@@ -205,69 +291,66 @@ class Stream
         if ($operation === '0' || $operation === 0) {
             $operation = LOCK_EX;
         }
-        return flock($this->resource, $operation);
+        return static::alternate('flock', $this->resource, __FUNCTION__, [$operation]);
     }
 
     public function stream_set_option($option, $arg1, $arg2)
     {
-        switch ($option) {
-            case STREAM_OPTION_BLOCKING:
-                return stream_set_blocking($this->resource, $arg1);
-            case STREAM_OPTION_READ_TIMEOUT:
-                return stream_set_timeout($this->resource, $arg1, $arg2);
-            case STREAM_OPTION_WRITE_BUFFER:
-                return stream_set_write_buffer($this->resource, $arg1);
-            case STREAM_OPTION_READ_BUFFER:
-                return stream_set_read_buffer($this->resource, $arg1);
-        }
+        $internal = function($option, $arg1, $arg2) {
+            switch ($option) {
+                case STREAM_OPTION_BLOCKING:
+                    return stream_set_blocking($this->resource, $arg1);
+                case STREAM_OPTION_READ_TIMEOUT:
+                    return stream_set_timeout($this->resource, $arg1, $arg2);
+                case STREAM_OPTION_WRITE_BUFFER:
+                    return stream_set_write_buffer($this->resource, $arg1);
+                case STREAM_OPTION_READ_BUFFER:
+                    return stream_set_read_buffer($this->resource, $arg1);
+            }
+        };
+        return static::alternate($internal, $this->resource, __FUNCTION__, [$option, $arg1, $arg2]);
     }
 
     public function stream_write($data)
     {
-        return fwrite($this->resource, $data);
+        return static::fwrite($this->resource, $data);
+    }
+
+    public static function fwrite($resource, $data)
+    {
+        return static::alternate('fwrite', $resource, 'stream_write', [$data]);
     }
 
     public function unlink($path)
     {
-        $this->unwrap();
-        if (isset($this->context)) {
-            $result = unlink($path, $this->context);
-        } else {
-            $result = unlink($path);
-        }
-        $this->wrap();
-        return $result;
+        return static::alternate('unlink', $this->resource, __FUNCTION__, [$path], $this->context);
     }
 
     public function stream_metadata($path, $option, $value)
     {
-        $this->unwrap();
-        switch ($option) {
-            case STREAM_META_TOUCH:
-                if (empty($value)) {
-                    $result = touch($path);
-                } else {
-                    $result = touch($path, $value[0], $value[1]);
-                }
-                break;
-            case STREAM_META_OWNER_NAME:
-            case STREAM_META_OWNER:
-                $result = chown($path, $value);
-                break;
-            case STREAM_META_GROUP_NAME:
-            case STREAM_META_GROUP:
-                $result = chgrp($path, $value);
-                break;
-            case STREAM_META_ACCESS:
-                $result = chmod($path, $value);
-                break;
-        }
-        $this->wrap();
-        return $result;
+        $internal = function($path, $option, $value) {
+            switch ($option) {
+                case STREAM_META_TOUCH:
+                    if (empty($value)) {
+                        return touch($path);
+                    } else {
+                        return touch($path, $value[0], $value[1]);
+                    }
+                case STREAM_META_OWNER_NAME:
+                case STREAM_META_OWNER:
+                    return chown($path, $value);
+                case STREAM_META_GROUP_NAME:
+                case STREAM_META_GROUP:
+                    return chgrp($path, $value);
+                case STREAM_META_ACCESS:
+                    return chmod($path, $value);
+            }
+        };
+        return static::alternate($internal, null, __FUNCTION__, [$path, $option, $value]);
     }
 
-    public function stream_truncate($new_size)
+    public function stream_truncate($newSize)
     {
-        return ftruncate($this->resource, $new_size);
+        return static::alternate('ftruncate', $this->resource, __FUNCTION__, [$newSize]);
     }
 }

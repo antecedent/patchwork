@@ -30,7 +30,7 @@ echo "It did not throw/exit. This is wrong.\n";
 --EXPECTF--
 Including missing file...
 
-Warning: file_get_contents(%s/includes/does-not-exist.php): Failed to open stream: No such file or directory in %s%esrc%eCodeManipulation.php on line %d
+Warning: fopen(%s/includes/does-not-exist.php): Failed to open stream: No such file or directory in %s%esrc%eCodeManipulation%eStream.php on line %d
 
 Warning: include(%s/includes/does-not-exist.php): Failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 10
 
@@ -39,7 +39,7 @@ Good, it did not throw/exit.
 
 Requiring missing file...
 
-Warning: file_get_contents(%s/includes/does-not-exist.php): Failed to open stream: No such file or directory in %s%esrc%eCodeManipulation.php on line %d
+Warning: fopen(%s/includes/does-not-exist.php): Failed to open stream: No such file or directory in %s%esrc%eCodeManipulation%eStream.php on line %d
 
 Warning: require(%s/includes/does-not-exist.php): Failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 14
 

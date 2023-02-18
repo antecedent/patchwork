@@ -152,6 +152,28 @@ function injectCodeAfterClassDefinitions($code)
     };
 }
 
+function injectCodeAtEnd($code)
+{
+    return function(Source $s) use ($code) {
+        $openTags = $s->all(T_OPEN_TAG);
+        $lastOpenTag = end($openTags);
+        $closeTag = $s->next(T_CLOSE_TAG, $lastOpenTag);
+        $namespaceKeyword = $s->next(T_NAMESPACE, 0);
+        if ($namespaceKeyword !== INF) {
+            $semicolon = $s->next(SEMICOLON, $namespaceKeyword);
+            $leftBracket = $s->next(LEFT_CURLY, $namespaceKeyword);
+            if ($leftBracket < $semicolon) {
+                $code = "; namespace { $code }";
+            }
+        }
+        if ($closeTag !== INF) {
+            $s->splice("<?php $code", count($s->tokens) - 1, 0, Source::APPEND);
+        } else {
+            $s->splice("; $code", count($s->tokens) - 1, 0, Source::APPEND); 
+        }
+    };
+}
+
 function chain(array $callbacks)
 {
     return function(Source $s) use ($callbacks) {

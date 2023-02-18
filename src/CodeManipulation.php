@@ -3,7 +3,7 @@
 /**
  * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2018 Ignas Rudaitis
+ * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
 namespace Patchwork\CodeManipulation;
@@ -21,7 +21,6 @@ require __DIR__ . '/CodeManipulation/Actions/RedefinitionOfNew.php';
 require __DIR__ . '/CodeManipulation/Actions/Arguments.php';
 
 use Patchwork\Exceptions;
-use Patchwork\Utils;
 use Patchwork\Config;
 
 const OUTPUT_DESTINATION = 'php://memory';
@@ -70,7 +69,7 @@ function getCachedPath($file)
                 State::$cacheIndex[$key] = $value;
             }
         }
-        State::$cacheIndexFile = fopen($indexPath, 'a');
+        State::$cacheIndexFile = Stream::fopen($indexPath, 'a', false);
     }
     $hash = md5($file);
     $key = $hash;
@@ -79,7 +78,7 @@ function getCachedPath($file)
         $key = $hash . '_' . $suffix++;
     }
     if (!isset(State::$cacheIndex[$key])) {
-        fputcsv(State::$cacheIndexFile, [$key, $file]);
+        Stream::fwrite(State::$cacheIndexFile, sprintf("%s,\"%s\"\n", $key, $file));
         State::$cacheIndex[$key] = $file;
     }
     return Config\getCachePath() . '/' . $key . '.php';
@@ -87,7 +86,9 @@ function getCachedPath($file)
 
 function storeInCache(Source $source)
 {
-    file_put_contents(getCachedPath($source->file), $source);
+    $handle = Stream::fopen(getCachedPath($source->file), 'w', false);
+    Stream::fwrite($handle, $source);
+    Stream::fclose($handle);
 }
 
 function availableCached($file)
@@ -110,15 +111,30 @@ function internalToCache($file)
         || strpos($file, Config\getCachePath() . DIRECTORY_SEPARATOR) === 0;
 }
 
+
+function getContents($file)
+{
+    $handle = Stream::fopen($file, 'r', true);
+    if ($handle === false) {
+        return false;
+    }
+    $contents = '';
+    while (!Stream::feof($handle)) {
+        $contents .= Stream::fread($handle, 8192);
+    }
+    Stream::fclose($handle);
+    return $contents;
+}
+
 function transformAndOpen($file)
 {
     foreach (State::$importListeners as $listener) {
         $listener($file);
     }
     if (!internalToCache($file) && availableCached($file)) {
-        return fopen(getCachedPath($file), 'r');
+        return Stream::fopen(getCachedPath($file), 'r', false);
     }
-    $code = file_get_contents($file, true);
+    $code = getContents($file);
     if ($code === false) {
         return false;
     }
@@ -139,7 +155,7 @@ function transformAndOpen($file)
 
 function prime($file)
 {
-    fclose(transformAndOpen($file));
+    Stream::fclose(transformAndOpen($file));
 }
 
 function shouldTransform($file)

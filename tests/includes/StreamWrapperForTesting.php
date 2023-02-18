@@ -98,4 +98,17 @@ class StreamWrapperForTesting
                 return stream_set_read_buffer($this->resource, $arg1);
         }
     }
+
+    public function stream_write($data)
+    {
+        return fwrite($this->resource, $data);
+    }
+
+    public function stream_flush()
+    {
+        return fflush($this->resource);
+    }
 }
+
+stream_wrapper_unregister('file');
+stream_wrapper_register('file', 'StreamWrapperForTesting');

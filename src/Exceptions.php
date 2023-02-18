@@ -3,7 +3,7 @@
 /**
  * @link       http://patchwork2.org/
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2018 Ignas Rudaitis
+ * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
 namespace Patchwork\Exceptions;
@@ -42,7 +42,7 @@ class DefinedTooEarly extends CallbackException
     function __construct($callback)
     {
         $this->message = "The file that defines %s() was included earlier than Patchwork. " .
-                         "This is likely a result of an improper setup; see readme for details.";
+                         "Please reverse this order to be able to redefine the function in question.";
         parent::__construct($callback);
     }
 }
@@ -62,7 +62,7 @@ class CachePathUnavailable extends Exception
     function __construct($location)
     {
         parent::__construct(sprintf(
-            "The specified cache path is inexistent or read-only: %s",
+            "The specified cache path is nonexistent or read-only: %s",
             $location
         ));
     }

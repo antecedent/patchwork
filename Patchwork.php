@@ -2,7 +2,7 @@
 
 /**
  * @author     Ignas Rudaitis <ignas.rudaitis@gmail.com>
- * @copyright  2010-2018 Ignas Rudaitis
+ * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
 namespace Patchwork;
@@ -114,6 +114,7 @@ if (Utils\runningOnHHVM()) {
     return;
 }
 
+CodeManipulation\Stream::discoverOtherWrapper();
 CodeManipulation\Stream::wrap();
 
 CodeManipulation\register([
@@ -142,6 +143,7 @@ require __DIR__ . '/src/Redefinitions/LanguageConstructs.php';
 CodeManipulation\register([
     CodeManipulation\Actions\RedefinitionOfLanguageConstructs\spliceAllConfiguredLanguageConstructs(),
     CodeManipulation\Actions\CallRerouting\injectQueueDeploymentCode(),
+    CodeManipulation\Actions\CodeManipulation\injectStreamWrapperReinstatementCode(),
 ]);
 
 if (Utils\wasRunAsConsoleApp()) {

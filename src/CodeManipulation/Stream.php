@@ -88,7 +88,7 @@ class Stream
         }
     }
 
-    public static function alternate(callable $internal, $resource, $wrapped, array $args = [], $context = null, $shouldReturnResource = false)
+    public static function alternate(callable $internal, $resource, $wrapped, array $args = [], array $extraArgs = [], $context = null, $shouldReturnResource = false)
     {
         $shouldAddResourceArg = true;
         if ($resource === null) {
@@ -96,6 +96,7 @@ class Stream
             $shouldAddResourceArg = false;
         }
         if (is_object($resource)) {
+            $args = array_merge($args, $extraArgs);
             $ladder = function() use ($resource, $wrapped, $args) {
                 switch (count($args)) {
                     case 0:
@@ -245,7 +246,7 @@ class Stream
             }
             return $result;
         };
-        return static::alternate($internal, null, __FUNCTION__, [$path, $flags], $this->context);
+        return static::alternate($internal, null, __FUNCTION__, [$path, $flags], [], $this->context);
     }
 
     public function dir_closedir()
@@ -255,7 +256,7 @@ class Stream
 
     public function dir_opendir($path, $options)
     {
-        $this->resource = static::alternate('opendir', null, __FUNCTION__, [$path], $this->context);
+        $this->resource = static::alternate('opendir', null, __FUNCTION__, [$path], [$options], $this->context);
         return $this->resource !== false;
     }
 
@@ -271,17 +272,17 @@ class Stream
 
     public function mkdir($path, $mode, $options)
     {
-        return static::alternate('mkdir', null, __FUNCTION__, [$path, $mode, $options]);
+        return static::alternate('mkdir', null, __FUNCTION__, [$path, $mode, $options], [], $this->context);
     }
 
     public function rename($pathFrom, $pathTo)
     {
-        return static::alternate('rename', null, __FUNCTION__, [$pathFrom, $pathTo]);
+        return static::alternate('rename', null, __FUNCTION__, [$pathFrom, $pathTo], [], $this->context);
     }
 
     public function rmdir($path, $options)
     {
-        return static::alternate('rmdir', null, __FUNCTION__, [$path, $options]);
+        return static::alternate('rmdir', null, __FUNCTION__, [$path], [$options], $this->context);
     }
 
     public function stream_cast($castAs)
@@ -328,7 +329,7 @@ class Stream
 
     public function unlink($path)
     {
-        return static::alternate('unlink', $this->resource, __FUNCTION__, [$path], $this->context);
+        return static::alternate('unlink', $this->resource, __FUNCTION__, [$path], [], $this->context);
     }
 
     public function stream_metadata($path, $option, $value)

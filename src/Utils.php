@@ -44,7 +44,7 @@ function runningOnHHVM()
 
 function condense($string)
 {
-    return preg_replace('/\s*/', '', $string);
+    return preg_replace('/\s+/', ' ', $string);
 }
 
 function indexOfFirstGreaterThan(array $array, $value)

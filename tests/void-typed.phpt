@@ -27,6 +27,18 @@ iAmNotVoidTyped();
 
 assert($n === 2);
 
+$returnValue = function() {
+    return 42;
+};
+Patchwork\redefine('iAmVoidTyped', $returnValue);
+Patchwork\redefine('iAmNotVoidTyped', $returnValue);
+try {
+    iAmVoidTyped();
+    echo "Did not throw expected \\Patchwork\\Exceptions\\NonNullToVoid exception\n";
+} catch(\Patchwork\Exceptions\NonNullToVoid $ex) {
+}
+iAmNotVoidTyped();
+
 ?>
 ===DONE===
 

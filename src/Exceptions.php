@@ -119,3 +119,8 @@ class NonNullToVoid extends Exception
 {
 	protected $message = 'A redefinition of a void-typed callable attempted to return a non-null result';
 }
+
+class ReturnFromNever extends Exception
+{
+	protected $message = 'A redefinition of a never-typed callable attempted to return';
+}

@@ -10,8 +10,7 @@ version_compare(PHP_VERSION, "8.0", "<") or die("skip PHP 5 version of the test 
 --FILE--
 <?php
 
-assert_options(ASSERT_ACTIVE, 1);
-assert_options(ASSERT_WARNING, 1);
+ini_set('zend.assertions', 1);
 error_reporting(E_ALL | E_STRICT);
 
 require __DIR__ . "/../Patchwork.php";

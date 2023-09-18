@@ -4,8 +4,7 @@ Compatibility with call_user_func calling parent constructor.
 --FILE--
 <?php
 
-assert_options(ASSERT_ACTIVE, 1);
-assert_options(ASSERT_WARNING, 1);
+ini_set('zend.assertions', 1);
 error_reporting(E_ALL | E_STRICT);
 
 $_SERVER['PHP_SELF'] = __FILE__;

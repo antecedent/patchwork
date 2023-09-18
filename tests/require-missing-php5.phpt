@@ -10,8 +10,7 @@ version_compare(PHP_VERSION, "8.0", "<") or die("skip PHP 5 version of the test 
 --FILE--
 <?php
 
-assert_options(ASSERT_ACTIVE, 1);
-assert_options(ASSERT_WARNING, 1);
+ini_set('zend.assertions', 1);
 error_reporting(E_ALL | E_STRICT);
 
 require __DIR__ . "/../Patchwork.php";
@@ -32,15 +31,15 @@ Including missing file...
 
 Warning: fopen(%s/includes/does-not-exist.php): failed to open stream: No such file or directory in %s%esrc%eCodeManipulation%eStream.php on line %d
 
-Warning: include(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 10
+Warning: include(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 9
 
-Warning: include(): Failed opening '%s/includes/does-not-exist.php' for inclusion (include_path='%s') in %s on line 10
+Warning: include(): Failed opening '%s/includes/does-not-exist.php' for inclusion (include_path='%s') in %s on line 9
 Good, it did not throw/exit.
 
 Requiring missing file...
 
 Warning: fopen(%s/includes/does-not-exist.php): failed to open stream: No such file or directory in %s%esrc%eCodeManipulation%eStream.php on line %d
 
-Warning: require(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 14
+Warning: require(%s/includes/does-not-exist.php): failed to open stream: "Patchwork\CodeManipulation\Stream::stream_open" call failed in %s on line 13
 
-Fatal error: require(): Failed opening required '%s/includes/does-not-exist.php' (include_path='%s') in %s on line 14
+Fatal error: require(): Failed opening required '%s/includes/does-not-exist.php' (include_path='%s') in %s on line 13

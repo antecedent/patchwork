@@ -35,19 +35,21 @@ function markPreprocessedFiles(&$target)
     };
 }
 
-function prependCodeToFunctions($code, $voidTypedVariant = null, $fillArgRefs = false)
+function prependCodeToFunctions($code, $typedVariants = array(), $fillArgRefs = false)
 {
-	if ($voidTypedVariant === null) {
-		$voidTypedVariant = $code;
-	}
-    return function(Source $s) use ($code, $voidTypedVariant, $fillArgRefs) {
+    if (!is_array($typedVariants)) {
+        $typedVariants = array(
+            'void' => $typedVariants,
+        );
+    }
+    return function(Source $s) use ($code, $typedVariants, $fillArgRefs) {
         foreach ($s->all(T_FUNCTION) as $function) {
             # Skip "use function"
             $previous = $s->skipBack(Source::junk(), $function);
             if ($s->is(T_USE, $previous)) {
                 continue;
             }
-            $voidTyped = isVoidTyped($s, $function);
+            $returnType = getDeclaredReturnType($s, $function);
             $argRefs = null;
             if ($fillArgRefs) {
                 $parenthesis = $s->next(LEFT_ROUND, $function);
@@ -64,7 +66,7 @@ function prependCodeToFunctions($code, $voidTypedVariant = null, $fillArgRefs = 
             }
             $semicolon = $s->next(SEMICOLON, $function);
             if ($bracket < $semicolon) {
-                $variant = $voidTyped ? $voidTypedVariant : $code;
+                $variant = $returnType && isset($typedVariants[$returnType]) ? $typedVariants[$returnType] : $code;
                 if ($fillArgRefs) {
                     $variant = sprintf($variant, $argRefs);
                 }
@@ -74,7 +76,7 @@ function prependCodeToFunctions($code, $voidTypedVariant = null, $fillArgRefs = 
     };
 }
 
-function isVoidTyped(Source $s, $function)
+function getDeclaredReturnType(Source $s, $function)
 {
     $parenthesis = $s->next(LEFT_ROUND, $function);
     $next = $s->skip(Source::junk(), $s->match($parenthesis));
@@ -82,7 +84,7 @@ function isVoidTyped(Source $s, $function)
         $next = $s->skip(Source::junk(), $s->match($s->next(LEFT_ROUND, $next)));
     }
     if ($s->is(':', $next)) {
-        return $s->read($s->skip(Source::junk(), $next), 1) === 'void';
+        return $s->read($s->skip(Source::junk(), $next), 1);
     }
     return false;
 }

@@ -57,6 +57,9 @@ function getInnerTokens()
     return [
         '$',
         ',',
+        '"',
+        T_START_HEREDOC,
+        T_END_HEREDOC,
         T_OBJECT_OPERATOR,
         T_DOUBLE_COLON,
         T_NS_SEPARATOR,

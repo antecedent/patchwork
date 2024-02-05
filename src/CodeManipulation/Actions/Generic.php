@@ -137,7 +137,7 @@ function injectCodeAfterClassDefinitions($code)
 {
     return function(Source $s) use ($code) {
         foreach ($s->all(T_CLASS) as $match) {
-            if ($s->is([T_DOUBLE_COLON, T_NEW, RIGHT_SQUARE], $s->skipBack(Source::junk(), $match))) {
+            if (!$s->is(T_STRING, $s->skip(Source::junk(), $match))) {
                 # Not a proper class definition: either ::class syntax or anonymous class (with or without attribute)
                 continue;
             }

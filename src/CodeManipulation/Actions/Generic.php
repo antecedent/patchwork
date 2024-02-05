@@ -137,8 +137,12 @@ function injectCodeAfterClassDefinitions($code)
 {
     return function(Source $s) use ($code) {
         foreach ($s->all(T_CLASS) as $match) {
-            if (!$s->is(T_STRING, $s->skip(Source::junk(), $match))) {
-                # Not a proper class definition: either ::class syntax or anonymous class (with or without attribute)
+            if ($s->is([LEFT_ROUND, LEFT_CURLY, T_EXTENDS, T_IMPLEMENTS], $s->skip(Source::junk(), $match))) {
+                # Not a proper class definition: anonymous class (with or without attribute)
+                continue;
+            }
+            if ($s->is(T_DOUBLE_COLON, $s->skipBack(Source::junk(), $match))) {
+                # Not a proper class definition: ::class syntax
                 continue;
             }
             $leftBracket = $s->next(LEFT_CURLY, $match);

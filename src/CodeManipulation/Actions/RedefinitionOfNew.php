@@ -30,7 +30,7 @@ function spliceAllInstantiations(Source $s)
     }
     foreach ($s->all(T_NEW) as $new) {
         $begin = $s->skip(Source::junk(), $new);
-        if ($s->is([T_CLASS, T_READONLY], $begin)) {
+        if ($s->is([T_CLASS, Generic\READONLY, Generic\ATTRIBUTE], $begin)) {
             # Anonymous class
             continue;
         }

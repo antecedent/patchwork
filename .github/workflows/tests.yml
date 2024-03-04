@@ -40,14 +40,14 @@ jobs:
     # @link https://github.com/marketplace/actions/install-php-dependencies-with-composer
     - name: "Install Composer dependencies (PHP < 8.4)"
       if: ${{ matrix.php-versions < '8.4' }}
-      uses: "ramsey/composer-install@v2"
+      uses: "ramsey/composer-install@v3"
       with:
         # Bust the cache at least once a month - output format: YYYY-MM.
         custom-cache-suffix: $(date -u "+%Y-%m")
 
     - name: "Install Composer dependencies (PHP 8.4)"
       if: ${{ matrix.php-versions >= '8.4' }}
-      uses: "ramsey/composer-install@v2"
+      uses: "ramsey/composer-install@v3"
       with:
         composer-options: --ignore-platform-reqs
         custom-cache-suffix: $(date -u "+%Y-%m")

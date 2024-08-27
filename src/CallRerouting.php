@@ -96,9 +96,6 @@ function connect($source, callable $target, Handle $handle = null, $partOfWildca
             }
         } else {
             $handle = queueConnection($source, $target, $handle);
-            if (Utils\runningOnHHVM()) {
-                connectOnHHVM("$class::$method", $handle);
-            }
         }
     }
     attachExistenceAssertion($handle, $source);
@@ -166,12 +163,6 @@ function validate($function, $partOfWildcard = false)
     if ($reflection->isInternal() && !in_array($name, Config\getRedefinableInternals())) {
         throw new Exceptions\NotUserDefined($function);
     }
-    if (Utils\runningOnHHVM()) {
-        if ($reflection->isInternal()) {
-            throw new Exceptions\InternalsNotSupportedOnHHVM($function);
-        }
-        return;
-    }
     if (!$reflection->isInternal() && !inPreprocessedFile($function) && !$partOfWildcard) {
         throw new Exceptions\DefinedTooEarly($function);
     }
@@ -179,9 +170,6 @@ function validate($function, $partOfWildcard = false)
 
 function inPreprocessedFile($callable)
 {
-    if (Utils\runningOnHHVM()) {
-        return true;
-    }
     if (Utils\isOwnName(Utils\callableToString($callable))) {
         return false;
     }
@@ -196,9 +184,6 @@ function connectFunction($function, callable $target, Handle $handle = null)
     $routes = &State::$routes[null][$function];
     $offset = Utils\append($routes, [$target, $handle]);
     $handle->addReference($routes[$offset]);
-    if (Utils\runningOnHHVM()) {
-        connectOnHHVM($function, $handle);
-    }
     return $handle;
 }
 
@@ -236,18 +221,13 @@ function connectMethod($function, callable $target, Handle $handle = null)
     $reflection = Utils\reflectCallable($function);
     $declaringClass = $reflection->getDeclaringClass();
     $class = $declaringClass->getName();
-    if (!Utils\runningOnHHVM()) {
-        $aliases = $declaringClass->getTraitAliases();
-        if (isset($aliases[$method])) {
-            list($trait, $method) = explode('::', $aliases[$method]);
-        }
+    $aliases = $declaringClass->getTraitAliases();
+    if (isset($aliases[$method])) {
+        list($trait, $method) = explode('::', $aliases[$method]);
     }
     $routes = &State::$routes[$class][$method];
     $offset = Utils\append($routes, [$target, $handle]);
     $handle->addReference($routes[$offset]);
-    if (Utils\runningOnHHVM()) {
-        connectOnHHVM("$class::$method", $handle);
-    }
     return $handle;
 }
 
@@ -361,6 +341,9 @@ function relay(array $args = null)
     return $result;
 }
 
+/**
+ * @deprecated 2.2.0
+ */
 function connectOnHHVM($function, Handle $handle)
 {
     fb_intercept($function, function($name, $obj, $args, $data, &$done) {
@@ -380,6 +363,9 @@ function connectOnHHVM($function, Handle $handle)
     $handle->addExpirationHandler(getHHVMExpirationHandler($function));
 }
 
+/**
+ * @deprecated 2.2.0
+ */
 function getHHVMExpirationHandler($function)
 {
     return function() use ($function) {

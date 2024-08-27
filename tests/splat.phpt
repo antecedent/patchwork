@@ -7,9 +7,6 @@ https://github.com/antecedent/patchwork/issues/56
 version_compare(PHP_VERSION, "5.6", ">=")
     or die("skip because this bug only occurs in PHP 5.6 and up");
 
-!defined('HHVM_VERSION')
-    or die('skip because the redefinition of internals is not yet implemented for HHVM');
-
 ?>
 
 --FILE--

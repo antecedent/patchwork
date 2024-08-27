@@ -1,5 +1,5 @@
 --TEST--
-Inheriting method patches + delayed redefinition (suspected HHVM issue)
+Inheriting method patches + delayed redefinition
 
 --FILE--
 <?php

@@ -1,10 +1,6 @@
 --TEST--
 Redefinition of internal functions
 
---SKIPIF--
-<?php !defined('HHVM_VERSION')
-      or die('skip because the redefinition of internals is not yet implemented for HHVM') ?>
-
 --FILE--
 <?php
 

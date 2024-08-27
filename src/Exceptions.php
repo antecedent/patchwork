@@ -52,6 +52,9 @@ class InternalMethodsNotSupported extends CallbackException
     protected $message = "Methods of internal classes (such as %s) are not yet redefinable in Patchwork 2.1.";
 }
 
+/**
+ * @deprecated 2.2.0
+ */
 class InternalsNotSupportedOnHHVM extends CallbackException
 {
     protected $message = "As of version 2.1, Patchwork cannot redefine internal functions and methods (such as %s) on HHVM.";

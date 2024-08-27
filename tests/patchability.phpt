@@ -18,20 +18,16 @@ function functionThatIsNotPreprocessed()
 
 assert(Patchwork\hasMissed('functionThatIsNotPreprocessed'));
 
-if (!Patchwork\Utils\runningOnHHVM()) {
-	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
-	    Patchwork\replace("functionThatIsNotPreprocessed", Patchwork\always(null));
-	});
-}
+expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
+    Patchwork\replace("functionThatIsNotPreprocessed", Patchwork\always(null));
+});
 
 $h = Patchwork\replace("functionThatIsNotDefined", Patchwork\always(null));
 Patchwork\assertEventuallyDefined($h);
 
-if (!Patchwork\Utils\runningOnHHVM()) {
-	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
-	    Patchwork\replaceLater("functionThatIsNotPreprocessed", Patchwork\always(null));
-	});
-}
+expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
+    Patchwork\replaceLater("functionThatIsNotPreprocessed", Patchwork\always(null));
+});
 
 Patchwork\replaceLater("getInteger", function() {
     return 42;
@@ -43,11 +39,9 @@ assert(getInteger() === 42);
 
 require __DIR__ . "/includes/Singleton.php";
 
-if (!Patchwork\Utils\runningOnHHVM()) {
-	expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
-	    Patchwork\replace("Singleton::getInstance", Patchwork\always(null));
-	});
-}
+expectException('Patchwork\Exceptions\DefinedTooEarly', function() {
+    Patchwork\replace("Singleton::getInstance", Patchwork\always(null));
+});
 
 $h = Patchwork\replace('anotherUndefinedFunction', Patchwork\always(null));
 Patchwork\assertEventuallyDefined($h);

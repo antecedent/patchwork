@@ -1,10 +1,6 @@
 --TEST--
 Redefining language constructs like die(), echo, require_once etc. (https://github.com/antecedent/patchwork/issues/59)
 
---SKIPIF--
-<?php !defined('HHVM_VERSION')
-      or die('skip because the redefinition of language constructs is not yet implemented for HHVM') ?>
-
 --FILE--
 <?php
 

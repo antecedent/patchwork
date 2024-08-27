@@ -67,7 +67,7 @@ const INSTANTIATOR_CODE = '
     }
 ';
 
-function connect($source, callable $target, Handle $handle = null, $partOfWildcard = false)
+function connect($source, callable $target, ?Handle $handle = null, $partOfWildcard = false)
 {
     $source = translateIfLanguageConstruct($source);
     $handle = $handle ?: new Handle;
@@ -109,7 +109,7 @@ function constitutesWildcard($source)
     return strcspn($source, '*{,}') != strlen($source);
 }
 
-function applyWildcard($wildcard, callable $target, Handle $handle = null)
+function applyWildcard($wildcard, callable $target, ?Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
@@ -178,7 +178,7 @@ function inPreprocessedFile($callable)
     return $evaluated || !empty(State::$preprocessedFiles[$file]);
 }
 
-function connectFunction($function, callable $target, Handle $handle = null)
+function connectFunction($function, callable $target, ?Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
     $routes = &State::$routes[null][$function];
@@ -187,7 +187,7 @@ function connectFunction($function, callable $target, Handle $handle = null)
     return $handle;
 }
 
-function queueConnection($source, callable $target, Handle $handle = null)
+function queueConnection($source, callable $target, ?Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
     $offset = Utils\append(State::$queue, [$source, $target, $handle]);
@@ -210,7 +210,7 @@ function deployQueue()
     }
 }
 
-function connectMethod($function, callable $target, Handle $handle = null)
+function connectMethod($function, callable $target, ?Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
     list($class, $method, $instance) = Utils\interpretCallable($function);
@@ -231,7 +231,7 @@ function connectMethod($function, callable $target, Handle $handle = null)
     return $handle;
 }
 
-function connectInstantiation($class, callable $target, Handle $handle = null)
+function connectInstantiation($class, callable $target, ?Handle $handle = null)
 {
     if (!Config\isNewKeywordRedefinable()) {
         throw new Exceptions\NewKeywordNotRedefinable;
@@ -265,7 +265,7 @@ function dispatchTo(callable $target)
     return call_user_func_array($target, Stack\top('args'));
 }
 
-function dispatch($class, $calledClass, $method, $frame, &$result, array $args = null)
+function dispatch($class, $calledClass, $method, $frame, &$result, ?array $args = null)
 {
     $trace = debug_backtrace();
     $isInternalStub = strpos($method, INTERNAL_REDEFINITION_NAMESPACE) === 0;
@@ -308,7 +308,7 @@ function dispatch($class, $calledClass, $method, $frame, &$result, array $args =
     return $success;
 }
 
-function relay(array $args = null)
+function relay(?array $args = null)
 {
     list($class, $method, $offset) = end(State::$routeStack);
     $route = &State::$routes[$class][$method][$offset];

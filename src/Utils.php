@@ -347,7 +347,7 @@ function wasRunAsConsoleApp()
     );
 }
 
-function getParameterAndArgumentLists(\ReflectionMethod $reflection = null)
+function getParameterAndArgumentLists(?\ReflectionMethod $reflection = null)
 {
     $parameters = [];
     $arguments = [];

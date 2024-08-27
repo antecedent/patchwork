@@ -28,7 +28,7 @@ function redefine($subject, callable $content)
     return $handle;
 }
 
-function relay(array $args = null)
+function relay(?array $args = null)
 {
     return CallRerouting\relay($args);
 }

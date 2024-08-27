@@ -57,12 +57,10 @@ function prependCodeToFunctions($code, $typedVariants = array(), $fillArgRefs = 
                 $argRefs = Arguments\constructReferenceArray($args);
             }
             $bracket = $s->next(LEFT_CURLY, $function);
-            if (Utils\generatorsSupported()) {
-                # Skip generators
-                $yield = $s->next(T_YIELD, $bracket);
-                if ($yield < $s->match($bracket)) {
-                    continue;
-                }
+            # Skip generators
+            $yield = $s->next(T_YIELD, $bracket);
+            if ($yield < $s->match($bracket)) {
+                continue;
             }
             $semicolon = $s->next(SEMICOLON, $function);
             if ($bracket < $semicolon) {

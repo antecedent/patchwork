@@ -1,10 +1,6 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/147
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "7.0", ">=")
-      or die("skip because this bug only occurs in PHP 7+") ?>
-
 --FILE--
 <?php
 

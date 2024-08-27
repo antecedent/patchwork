@@ -1,10 +1,6 @@
 --TEST--
 Generator support is currently excluded: https://github.com/antecedent/patchwork/issues/15
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "5.5", ">=")
-      or die("skip because generators are not supported in this version of PHP") ?>
-
 --FILE--
 <?php
 

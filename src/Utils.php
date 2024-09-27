@@ -37,6 +37,9 @@ function generatorsSupported()
     return version_compare(PHP_VERSION, "5.5", ">=");
 }
 
+/**
+ * @deprecated 2.2.0
+ */
 function runningOnHHVM()
 {
     return defined("HHVM_VERSION");
@@ -235,18 +238,8 @@ function getUserDefinedMethods()
     static $traitCount = 0;
     $classes = getUserDefinedClasses();
     $traits = getUserDefinedTraits();
-    if (runningOnHHVM()) {
-        # cannot rely on the order of get_declared_classes()
-        static $previousClasses = [];
-        static $previousTraits = [];
-        $newClasses = array_diff($classes, $previousClasses);
-        $newTraits = array_diff($traits, $previousTraits);
-        $previousClasses = $classes;
-        $previousTraits = $traits;
-    } else {
-        $newClasses = array_slice($classes, $classCount);
-        $newTraits = array_slice($traits, $traitCount);
-    }
+    $newClasses = array_slice($classes, $classCount);
+    $newTraits = array_slice($traits, $traitCount);
     foreach (array_merge($newClasses, $newTraits) as $newClass) {
         foreach (get_class_methods($newClass) as $method) {
             $result[] = $newClass . '::' . $method;

@@ -10,7 +10,7 @@ namespace Patchwork\Console;
 
 use Patchwork\CodeManipulation as CM;
 
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 $argc > 2 && $argv[1] == 'prime'
     or exit("\nUsage: php patchwork.phar prime DIR1 DIR2 ... DIRn\n" .

@@ -5,7 +5,7 @@ https://github.com/antecedent/patchwork/issues/94
 <?php
 
 ini_set('zend.assertions', 1);
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
 

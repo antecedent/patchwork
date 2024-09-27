@@ -9,7 +9,7 @@ Test url_stat implementation - https://github.com/antecedent/patchwork/issues/11
 <?php
 
 ini_set('zend.assertions', 1);
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 require __DIR__ . "/../Patchwork.php";
 

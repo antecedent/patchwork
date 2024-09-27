@@ -1,10 +1,6 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/95
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "7.1", ">=")
-      or die("skip because this bug only occurs in PHP 7.1") ?>
-
 --FILE--
 <?php
 ini_set('zend.assertions', 1);

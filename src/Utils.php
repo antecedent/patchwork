@@ -32,6 +32,9 @@ function clearOpcodeCaches()
     }
 }
 
+/**
+ * @deprecated 2.2.0
+ */
 function generatorsSupported()
 {
     return version_compare(PHP_VERSION, "5.5", ">=");

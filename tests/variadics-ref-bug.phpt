@@ -1,10 +1,6 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/115
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "5.6", ">=")
-      or die("skip because variadics are not available until PHP 5.6") ?>
-
 --FILE--
 <?php
 ini_set('zend.assertions', 1);

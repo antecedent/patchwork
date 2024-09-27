@@ -1,14 +1,6 @@
 --TEST--
 https://github.com/antecedent/patchwork/issues/56
 
---SKIPIF--
-<?php
-
-version_compare(PHP_VERSION, "5.6", ">=")
-    or die("skip because this bug only occurs in PHP 5.6 and up");
-
-?>
-
 --FILE--
 <?php
 

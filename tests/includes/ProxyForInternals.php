@@ -52,9 +52,7 @@ p\redefine('sort', function(&$array) {
 assert(isset($array['original']));
 
 # Aliases
-if (version_compare(PHP_VERSION, "7.0", ">=")) {
-    eval('use function strtolower as toLower; assert(toLower("X") === "X, but in lowercase");');
-}
+eval('use function strtolower as toLower; assert(toLower("X") === "X, but in lowercase");');
 
 p\restoreAll();
 

@@ -1,10 +1,6 @@
 --TEST--
 Compatibility with ::class syntax (https://github.com/antecedent/patchwork/issues/14)
 
---SKIPIF--
-<?php version_compare(PHP_VERSION, "5.5", ">=")
-      or die("skip because ::class syntax is unsupported in this version of PHP") ?>
-
 --FILE--
 <?php
 

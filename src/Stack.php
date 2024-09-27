@@ -10,7 +10,7 @@ namespace Patchwork\Stack;
 
 use Patchwork\Exceptions;
 
-function push($offset, $calledClass, array $argsOverride = null)
+function push($offset, $calledClass, ?array $argsOverride = null)
 {
     State::$items[] = [$offset, $calledClass, $argsOverride];
 }
@@ -20,7 +20,7 @@ function pop()
     array_pop(State::$items);
 }
 
-function pushFor($offset, $calledClass, $callback, array $argsOverride = null)
+function pushFor($offset, $calledClass, $callback, ?array $argsOverride = null)
 {
     push($offset, $calledClass, $argsOverride);
     try {

@@ -8,7 +8,7 @@ Attribute declared in anonymous class
 --FILE--
 <?php
 
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/AnonymousClassAttribute.php";

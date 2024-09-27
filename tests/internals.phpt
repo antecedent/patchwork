@@ -5,7 +5,7 @@ Redefinition of internal functions
 <?php
 
 ini_set('zend.assertions', 1);
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 $_SERVER['PHP_SELF'] = __FILE__;
 

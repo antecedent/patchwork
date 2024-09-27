@@ -5,7 +5,7 @@ https://github.com/antecedent/patchwork/issues/63
 <?php
 
 ini_set('zend.assertions', 1);
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/Php7UseFunction.php";

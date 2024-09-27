@@ -5,7 +5,7 @@ Patching methods imported from traits using Patchwork\replaceLater (https://gith
 <?php
 
 ini_set('zend.assertions', 1);
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 require __DIR__ . "/../Patchwork.php";
 

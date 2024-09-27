@@ -8,7 +8,7 @@ Redefinition of new in anonymous class with attribute
 --FILE--
 <?php
 
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 $_SERVER['PHP_SELF'] = __FILE__;
 

@@ -3,7 +3,9 @@ https://github.com/antecedent/patchwork/issues/140
 
 --SKIPIF--
 <?php
-if (!version_compare(PHP_VERSION, "8.1", ">=")) echo "skip because this bug only occurs in PHP 8.1";
+if (!version_compare(PHP_VERSION, "8.1", ">=")) {
+    echo "skip because this bug only occurs in PHP 8.1";
+}
 --FILE--
 <?php
 ini_set('zend.assertions', 1);

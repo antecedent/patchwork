@@ -65,7 +65,6 @@ function getCachedPath($file)
         if (file_exists($indexPath)) {
             $table = array_map(
 				static function($line) {
-					/** @noinspection PhpRedundantOptionalArgumentInspection */
 					return str_getcsv($line, ',', '"', '\\');
 				},
 				file($indexPath)

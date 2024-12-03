@@ -2,8 +2,9 @@
 Test url_stat implementation - https://github.com/antecedent/patchwork/issues/116
 
 --SKIPIF--
-<?php substr(PHP_OS, 0, 3) !== 'WIN'
-    or die('skip because no symlinks on Windows');
+<?php if (substr(PHP_OS, 0, 3) === 'WIN') {
+    echo 'skip because no symlinks on Windows';
+}
 
 --FILE--
 <?php

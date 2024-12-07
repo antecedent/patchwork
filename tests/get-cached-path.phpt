@@ -12,6 +12,10 @@ $cachePath = str_replace('\\', '/', __DIR__ . '/cache');
 Patchwork\CodeManipulation\State::$cacheIndexFile = null;
 Patchwork\Config\State::$cachePath = $cachePath;
 
+if ( ! is_dir($cachePath)) {
+    mkdir($cachePath);
+}
+
 // Test getCachedPath function
 $file = 'test-file.php';
 $hash = md5($file);

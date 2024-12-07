@@ -1,4 +1,5 @@
 composer.lock
+tests/cache
 vendor/
 composer.phar
 .DS_Store

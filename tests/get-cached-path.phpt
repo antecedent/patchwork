@@ -1,5 +1,5 @@
 --TEST--
-Test getCachedPath function
+Test getCachedPath function (https://github.com/antecedent/patchwork/pull/170)
 
 --FILE--
 <?php
@@ -16,7 +16,7 @@ if ( ! is_dir($cachePath)) {
     mkdir($cachePath);
 }
 
-// Test getCachedPath function
+// The expected path depends on the current implementation of getCachedPath().
 $file = 'test-file.php';
 $hash = md5($file);
 

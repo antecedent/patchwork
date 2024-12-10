@@ -14,6 +14,8 @@ Patchwork\Config\State::$cachePath = $cachePath;
 
 if ( ! is_dir($cachePath)) {
     mkdir($cachePath);
+} else {
+    echo "The cache directory should not exist in advance.\n";
 }
 
 // The expected path depends on the current implementation of getCachedPath().
@@ -34,6 +36,13 @@ $actualPath = \Patchwork\CodeManipulation\getCachedPath($file);
 echo $actualPath === $expectedPath ? 'PASS' : 'FAIL';
 ?>
 
+--CLEAN--
+<?php
+
+unlink(__DIR__ . '/cache/index.csv');
+rmdir(__DIR__ . '/cache');
+
+?>
 --EXPECT--
 PASS
 PASS

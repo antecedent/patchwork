@@ -63,7 +63,12 @@ function getCachedPath($file)
     if (State::$cacheIndexFile === null) {
         $indexPath = Config\getCachePath() . '/index.csv';
         if (file_exists($indexPath)) {
-            $table = array_map('str_getcsv', file($indexPath));
+            $table = array_map(
+                static function($line) {
+                    return str_getcsv($line, ',', '"', '\\');
+                },
+                file($indexPath)
+            );
             foreach ($table as $row) {
                 list($key, $value) = $row;
                 State::$cacheIndex[$key] = $value;

@@ -64,9 +64,9 @@ function getCachedPath($file)
         $indexPath = Config\getCachePath() . '/index.csv';
         if (file_exists($indexPath)) {
             $table = array_map(
-        		static function($line) {
+                static function($line) {
                     return str_getcsv($line, ',', '"', '\\');
-        		},
+                },
                 file($indexPath)
             );
             foreach ($table as $row) {

@@ -34,7 +34,27 @@ echo "\n";
 $actualPath = \Patchwork\CodeManipulation\getCachedPath($file);
 
 echo $actualPath === $expectedPath ? 'PASS' : 'FAIL';
+echo "\n";
+
+// Third pass - index.csv file exists, different file being passed.
+// This test would hit a PHP 8.4 deprecation without the fix from PR #170.
+
+// Reset the state to ensure we hit the code which would cause the deprecation
+// notice without the fix from #170.
+Patchwork\CodeManipulation\State::$cacheIndexFile = null;
+Patchwork\Config\State::$cachePath = $cachePath;
+
+$file = 'another-file.php';
+$hash = md5($file);
+
+$expectedPath = $cachePath . '/' . $hash . '.php';
+
+$actualPath = \Patchwork\CodeManipulation\getCachedPath($file);
+
+echo $actualPath === $expectedPath ? 'PASS' : 'FAIL';
+echo "\n";
 ?>
+===DONE===
 
 --CLEAN--
 <?php
@@ -46,3 +66,5 @@ rmdir(__DIR__ . '/cache');
 --EXPECT--
 PASS
 PASS
+PASS
+===DONE===

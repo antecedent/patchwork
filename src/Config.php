@@ -23,11 +23,11 @@ function locate()
     foreach ($paths as $path) {
         while (dirname($path) !== $path) {
             $file = $path . DIRECTORY_SEPARATOR . FILE_NAME;
-            if (is_file($file) && !isset($alreadyRead[$file])) {
+            if (!array_key_exists($file, $alreadyRead) && is_file($file))) {
                 read($file);
                 State::$timestamp = max(filemtime($file), State::$timestamp);
-                $alreadyRead[$file] = true;
             }
+            $alreadyRead[$file] = true;
             $path = dirname($path);
         }
     }

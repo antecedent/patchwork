@@ -16,18 +16,18 @@ const FILE_NAME = 'patchwork.json';
 
 function locate()
 {
-    $alreadyRead = [];
+    $alreadyChecked = [];
     $paths = array_map('dirname', get_included_files());
     $paths[] = dirname($_SERVER['PHP_SELF']);
     $paths[] = getcwd();
     foreach ($paths as $path) {
         while (dirname($path) !== $path) {
             $file = $path . DIRECTORY_SEPARATOR . FILE_NAME;
-            if (!array_key_exists($file, $alreadyRead) && is_file($file))) {
+            if (!isset($alreadyChecked[$file]) && is_file($file))) {
                 read($file);
                 State::$timestamp = max(filemtime($file), State::$timestamp);
             }
-            $alreadyRead[$file] = true;
+            $alreadyChecked[$file] = true;
             $path = dirname($path);
         }
     }

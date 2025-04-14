@@ -23,7 +23,7 @@ function locate()
     foreach ($paths as $path) {
         while (dirname($path) !== $path) {
             $file = $path . DIRECTORY_SEPARATOR . FILE_NAME;
-            if (!isset($alreadyChecked[$file]) && is_file($file))) {
+            if (!isset($alreadyChecked[$file]) && is_file($file)) {
                 read($file);
                 State::$timestamp = max(filemtime($file), State::$timestamp);
             }

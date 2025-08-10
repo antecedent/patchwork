@@ -326,7 +326,7 @@ function relay(?array $args = null)
     try {
         if (isset($top['class'])) {
             $reflection = new \ReflectionMethod(Stack\topCalledClass(), $top['function']);
-            $reflection->setAccessible(true);
+            (\PHP_VERSION_ID < 80100) && $reflection->setAccessible(true);
             $result = $reflection->invokeArgs(Stack\top('object'), $args);
         } else {
             $result = call_user_func_array($top['function'], $args);
@@ -518,7 +518,7 @@ function connectDefaultInternals()
                     }
                     try {
                         $reflection = new \ReflectionMethod($class, $method);
-                        $reflection->setAccessible(true);
+                        (\PHP_VERSION_ID < 80100) && $reflection->setAccessible(true);
                         $args[$offset] = function() use ($reflection, $instance) {
                             return $reflection->invokeArgs($instance, func_get_args());
                         };

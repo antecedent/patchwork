@@ -30,7 +30,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring
-        ini-values: zend.assertions=1, error_reporting=-1, display_errors=On, log_errors_max_len=0
+        ini-values: zend.assertions=1, error_reporting=-1, display_errors=On, display_startup_errors=On, log_errors_max_len=0
         coverage: none
 
     # Install dependencies and handle caching in one go.

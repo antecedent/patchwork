@@ -28,7 +28,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-versions }}
+        php-version: ${{ matrix.php-versions == '8.5' && '8.4' || matrix.php-versions }}
         extensions: mbstring
         ini-values: zend.assertions=1, error_reporting=-1, display_errors=On, display_startup_errors=On, log_errors_max_len=0
         coverage: none
@@ -48,6 +48,15 @@ jobs:
       with:
         composer-options: --ignore-platform-reqs
         custom-cache-suffix: $(date -u "+%Y-%m")
+
+    - name: "Setup PHP again (PHP 8.5)"
+      if: ${{ matrix.php-versions == '8.5' }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: mbstring
+        ini-values: zend.assertions=1, error_reporting=-1, display_errors=On, display_startup_errors=On, log_errors_max_len=0
+        coverage: none
 
     - name: Run tests
       run: vendor/bin/phpunit tests

@@ -181,7 +181,7 @@ function inPreprocessedFile($callable)
 function connectFunction($function, callable $target, ?Handle $handle = null)
 {
     $handle = $handle ?: new Handle;
-    $routes = &State::$routes[null][$function];
+    $routes = &State::$routes[''][$function];
     $offset = Utils\append($routes, [$target, $handle]);
     $handle->addReference($routes[$offset]);
     return $handle;
@@ -311,6 +311,10 @@ function dispatch($class, $calledClass, $method, $frame, &$result, ?array $args 
 function relay(?array $args = null)
 {
     list($class, $method, $offset) = end(State::$routeStack);
+    $class  = $class ?? '';
+    $method = $method ?? '';
+    $offset = $offset ?? '';
+
     $route = &State::$routes[$class][$method][$offset];
     $backup = $route;
     $route = ['Patchwork\fallBack', new Handle];
@@ -387,6 +391,9 @@ function getHHVMExpirationHandler($function)
 
 function getRoutesFor($class, $method)
 {
+    $class  = $class ?? '';
+    $method = $method ?? '';
+
     if (!isset(State::$routes[$class][$method])) {
         return [];
     }
@@ -431,7 +438,7 @@ function createStubsForInternals()
                 '$__pwRefOffset = 0;',
                 '$__pwRefOffset = 1;',
                 \Patchwork\CodeManipulation\Actions\CallRerouting\CALL_INTERCEPTION_CODE
-            ), 
+            ),
             $refs
         );
         eval(strtr(INTERNAL_STUB_CODE, [

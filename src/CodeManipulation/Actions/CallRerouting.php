@@ -14,7 +14,7 @@ use Patchwork\Utils;
 
 const CALL_INTERCEPTION_CODE = '
     $__pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}";
-    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
+    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : "";
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
@@ -29,7 +29,7 @@ const CALL_INTERCEPTION_CODE = '
 
 const CALL_INTERCEPTION_CODE_VOID_TYPED = '
     $__pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}";
-    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
+    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : "";
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));
@@ -47,7 +47,7 @@ const CALL_INTERCEPTION_CODE_VOID_TYPED = '
 
 const CALL_INTERCEPTION_CODE_NEVER_TYPED = '
     $__pwClosureName = __NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}";
-    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : null;
+    $__pwClass = (__CLASS__ && __FUNCTION__ !== $__pwClosureName) ? __CLASS__ : "";
     if (!empty(\Patchwork\CallRerouting\State::$routes[$__pwClass][__FUNCTION__])) {
         $__pwCalledClass = $__pwClass ? \get_called_class() : null;
         $__pwFrame = \count(\debug_backtrace(0));

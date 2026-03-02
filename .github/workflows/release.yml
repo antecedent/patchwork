@@ -42,7 +42,7 @@ jobs:
       - name: Display PHAR info via Box
         run: box info -l patchwork.phar
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: phar
           path: ./patchwork.phar

@@ -24,10 +24,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # 2.37.0
       with:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring
@@ -37,7 +37,7 @@ jobs:
     # Install dependencies and handle caching in one go.
     # @link https://github.com/marketplace/actions/install-php-dependencies-with-composer
     - name: Install Composer dependencies
-      uses: "ramsey/composer-install@v3"
+      uses: "ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f" # 3.2.1
       with:
         # For PHP "nightly", we need to install with ignore platform reqs as not all dependencies may allow it yet.
         composer-options: ${{ matrix.php == '8.6' && '--ignore-platform-req=php+' || '' }}

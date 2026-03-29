@@ -385,5 +385,5 @@ function tokenize($string)
 
 class State
 {
-    static $missedCallables = [];
+    public static $missedCallables = [];
 }

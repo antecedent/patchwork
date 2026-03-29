@@ -92,5 +92,5 @@ function allCalledClasses()
 
 class State
 {
-    static $items = [];
+    public static $items = [];
 }

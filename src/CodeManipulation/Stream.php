@@ -13,9 +13,9 @@ use Patchwork\Utils;
 
 class Stream
 {
-    const STREAM_OPEN_FOR_INCLUDE = 128;
-    const STAT_MTIME_NUMERIC_OFFSET = 9;
-    const STAT_MTIME_ASSOC_OFFSET = 'mtime';
+    public const STREAM_OPEN_FOR_INCLUDE = 128;
+    public const STAT_MTIME_NUMERIC_OFFSET = 9;
+    public const STAT_MTIME_ASSOC_OFFSET = 'mtime';
 
     protected static $protocols = ['file', 'phar'];
     protected static $otherWrapperClass;

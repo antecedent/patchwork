@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CallRerouting;
 
 require __DIR__ . '/CallRerouting/Handle.php';
@@ -143,7 +144,7 @@ function applyWildcard($wildcard, callable $target, ?Handle $handle = null)
 
 function attachExistenceAssertion(Handle $handle, $function)
 {
-    $handle->addExpirationHandler(function() use ($function) {
+    $handle->addExpirationHandler(function () use ($function) {
         if (!Utils\callableDefined($function)) {
             # Not using exceptions because this might happen during PHP shutdown
             $message = '%s() was never defined during the lifetime of its redefinition';
@@ -285,7 +286,7 @@ function dispatch($class, $calledClass, $method, $frame, &$result, ?array $args 
         }
     }
     $success = false;
-    Stack\pushFor($frame, $calledClass, function() use ($class, $method, &$result, &$success) {
+    Stack\pushFor($frame, $calledClass, function () use ($class, $method, &$result, &$success) {
         foreach (getRoutesFor($class, $method) as $offset => $route) {
             if (empty($route)) {
                 unset(State::$routes[$class][$method][$offset]);
@@ -350,7 +351,7 @@ function relay(?array $args = null)
  */
 function connectOnHHVM($function, Handle $handle)
 {
-    fb_intercept($function, function($name, $obj, $args, $data, &$done) {
+    fb_intercept($function, function ($name, $obj, $args, $data, &$done) {
         deployQueue();
         list($class, $method) = Utils\interpretCallable($name);
         $calledClass = null;
@@ -372,7 +373,7 @@ function connectOnHHVM($function, Handle $handle)
  */
 function getHHVMExpirationHandler($function)
 {
-    return function() use ($function) {
+    return function () use ($function) {
         list($class, $method) = Utils\interpretCallable($function);
         $empty = true;
         foreach (getRoutesFor($class, $method) as $offset => $route) {
@@ -478,7 +479,7 @@ function connectDefaultInternals()
                 $offsets[] = $offset;
             }
         }
-        connect($function, function() use ($function, $offsets) {
+        connect($function, function () use ($function, $offsets) {
             # This is the argument-inspecting patch.
             $args = Stack\top('args');
             $caller = Stack\all()[1];
@@ -495,7 +496,7 @@ function connectDefaultInternals()
                 list($class, $method, $instance) = Utils\interpretCallable($callable);
                 if (empty($class)) {
                     # Callback is global function, which might be internal too.
-                    $args[$offset] = function() use ($callable) {
+                    $args[$offset] = function () use ($callable) {
                         return dispatchDynamic($callable, func_get_args());
                     };
                 }
@@ -526,7 +527,7 @@ function connectDefaultInternals()
                     try {
                         $reflection = new \ReflectionMethod($class, $method);
                         (\PHP_VERSION_ID < 80100) && $reflection->setAccessible(true);
-                        $args[$offset] = function() use ($reflection, $instance) {
+                        $args[$offset] = function () use ($reflection, $instance) {
                             return $reflection->invokeArgs($instance, func_get_args());
                         };
                     } catch (\ReflectionException $e) {
@@ -594,7 +595,7 @@ function getInstantiator($class, $calledClass)
             '@class'        => $class,
             '@parameters'   => $parameters,
         ]);
-        RedefinitionOfNew\suspendFor(function() use ($code) {
+        RedefinitionOfNew\suspendFor(function () use ($code) {
             eval(CodeManipulation\transformForEval($code));
         });
     }

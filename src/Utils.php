@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\Utils;
 
 use Patchwork\Config;
@@ -366,7 +367,7 @@ function getParameterAndArgumentLists(?\ReflectionMethod $reflection = null)
             $arguments[] = '$' . $p->name;
         }
     }
-    return [join(', ' , $parameters), join(', ', $arguments)];
+    return [join(', ', $parameters), join(', ', $arguments)];
 }
 
 function args()

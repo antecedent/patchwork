@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\RedefinitionOfLanguageConstructs;
 
 use Patchwork\CodeManipulation\Source;
@@ -92,7 +93,7 @@ function getBracketTokens()
 
 function spliceLanguageConstruct($token)
 {
-    return function(Source $s) use ($token) {
+    return function (Source $s) use ($token) {
         foreach ($s->all($token) as $pos) {
             $s->splice('\\' . LANGUAGE_CONSTRUCT_PREFIX, $pos, 0, Source::PREPEND);
             if (lacksParentheses($s, $pos)) {

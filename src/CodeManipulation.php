@@ -6,6 +6,7 @@
  * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation;
 
 require __DIR__ . '/CodeManipulation/Source.php';
@@ -64,7 +65,7 @@ function getCachedPath($file)
         $indexPath = Config\getCachePath() . '/index.csv';
         if (file_exists($indexPath)) {
             $table = array_map(
-                static function($line) {
+                static function ($line) {
                     return str_getcsv($line, ',', '"', '\\');
                 },
                 file($indexPath)

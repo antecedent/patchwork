@@ -90,8 +90,15 @@ class Stream
         }
     }
 
-    public static function alternate(callable $internal, $resource, $wrapped, array $args = [], array $extraArgs = [], $context = null, $shouldReturnResource = false)
-    {
+    public static function alternate(
+        callable $internal,
+        $resource,
+        $wrapped,
+        array $args = [],
+        array $extraArgs = [],
+        $context = null,
+        $shouldReturnResource = false
+    ) {
         $shouldAddResourceArg = true;
         if ($resource === null) {
             $resource = static::getOtherWrapper($context);

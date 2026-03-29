@@ -4,7 +4,7 @@ class Foo
 {
     public $check = false;
 
-    public function bar() : void
+    public function bar(): void
     {
         $this->check = true;
     }

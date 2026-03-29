@@ -55,7 +55,7 @@ class Second extends First
 
 assert((new First(5))->increase(5) === 10);
 
-p\redefine('Tests\First::new', function($factor = 0) {
+p\redefine('Tests\First::new', function ($factor = 0) {
     return new Second($factor);
 });
 

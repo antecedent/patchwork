@@ -19,7 +19,7 @@ namespace Bar
         return 'test2';
     });
 
-    $test = new TestClass;
+    $test = new TestClass();
 
     assert($test->testMethod() === 'test2');
 }

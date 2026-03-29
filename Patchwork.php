@@ -36,7 +36,7 @@ function relay(?array $args = null)
 
 function fallBack()
 {
-    throw new Exceptions\NoResult;
+    throw new Exceptions\NoResult();
 }
 
 function restore(CallRerouting\Handle $handle)

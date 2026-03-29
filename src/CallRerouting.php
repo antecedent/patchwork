@@ -71,7 +71,7 @@ const INSTANTIATOR_CODE = '
 function connect($source, callable $target, ?Handle $handle = null, $partOfWildcard = false)
 {
     $source = translateIfLanguageConstruct($source);
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     list($class, $method) = Utils\interpretCallable($source);
     if (constitutesWildcard($source)) {
         return applyWildcard($source, $target, $handle);
@@ -112,7 +112,7 @@ function constitutesWildcard($source)
 
 function applyWildcard($wildcard, callable $target, ?Handle $handle = null)
 {
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     list($class, $method, $instance) = Utils\interpretCallable($wildcard);
     if (!empty($instance)) {
         foreach (Utils\matchWildcard($method, get_class_methods($instance)) as $item) {
@@ -181,7 +181,7 @@ function inPreprocessedFile($callable)
 
 function connectFunction($function, callable $target, ?Handle $handle = null)
 {
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     $routes = &State::$routes[''][$function];
     $offset = Utils\append($routes, [$target, $handle]);
     $handle->addReference($routes[$offset]);
@@ -190,7 +190,7 @@ function connectFunction($function, callable $target, ?Handle $handle = null)
 
 function queueConnection($source, callable $target, ?Handle $handle = null)
 {
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     $offset = Utils\append(State::$queue, [$source, $target, $handle]);
     $handle->addReference(State::$queue[$offset]);
     return $handle;
@@ -213,7 +213,7 @@ function deployQueue()
 
 function connectMethod($function, callable $target, ?Handle $handle = null)
 {
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     list($class, $method, $instance) = Utils\interpretCallable($function);
     $target = new Decorator($target);
     $target->superclass = $class;
@@ -235,9 +235,9 @@ function connectMethod($function, callable $target, ?Handle $handle = null)
 function connectInstantiation($class, callable $target, ?Handle $handle = null)
 {
     if (!Config\isNewKeywordRedefinable()) {
-        throw new Exceptions\NewKeywordNotRedefinable;
+        throw new Exceptions\NewKeywordNotRedefinable();
     }
-    $handle = $handle ?: new Handle;
+    $handle = $handle ?: new Handle();
     $class = strtr($class, ['\\' => '__']);
     $routes = &State::$routes["Patchwork\\Instantiators\\$class"]['instantiate'];
     $offset = Utils\append($routes, [$target, $handle]);
@@ -318,7 +318,7 @@ function relay(?array $args = null)
 
     $route = &State::$routes[$class][$method][$offset];
     $backup = $route;
-    $route = ['Patchwork\fallBack', new Handle];
+    $route = ['Patchwork\fallBack', new Handle()];
     $top = Stack\top();
     if ($args === null) {
         $args = $top['args'];
@@ -600,7 +600,7 @@ function getInstantiator($class, $calledClass)
         });
     }
     $instantiator = "$namespace\\$adaptedName";
-    return new $instantiator;
+    return new $instantiator();
 }
 
 class State

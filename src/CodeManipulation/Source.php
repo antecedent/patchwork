@@ -303,7 +303,7 @@ class Source
         $result = &$this->cache;
         foreach (array_merge([$location], $args) as $step) {
             if (!is_scalar($step)) {
-                throw new \LogicException;
+                throw new \LogicException();
             }
             if (!isset($result[$step])) {
                 $result[$step] = [];

@@ -52,7 +52,7 @@ function top($property = null)
 function topOffset()
 {
     if (empty(State::$items)) {
-        throw new Exceptions\StackEmpty;
+        throw new Exceptions\StackEmpty();
     }
     list($offset, $calledClass) = end(State::$items);
     return $offset;
@@ -61,7 +61,7 @@ function topOffset()
 function topCalledClass()
 {
     if (empty(State::$items)) {
-        throw new Exceptions\StackEmpty;
+        throw new Exceptions\StackEmpty();
     }
     list($offset, $calledClass) = end(State::$items);
     return $calledClass;
@@ -70,7 +70,7 @@ function topCalledClass()
 function topArgsOverride()
 {
     if (empty(State::$items)) {
-        throw new Exceptions\StackEmpty;
+        throw new Exceptions\StackEmpty();
     }
     list($offset, $calledClass, $argsOverride) = end(State::$items);
     return $argsOverride;

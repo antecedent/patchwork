@@ -6,7 +6,7 @@ class Singleton
     {
         static $instance = null;
         if (!isset($instance)) {
-            $instance = new self;
+            $instance = new self();
         }
         return $instance;
     }

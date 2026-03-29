@@ -37,7 +37,7 @@ class BazObject extends BarObject
 Patchwork\CallRerouting\deployQueue();
 
 $foo = new FooObject;
-$bar = new BarObject;
+$bar = new BarObject();
 $baz = new BazObject;
 
 assert($foo->getFoo() === "foo");

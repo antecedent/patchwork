@@ -52,6 +52,7 @@ function getNamespaceAt(Source $s, $pos)
 
 function collectNamespaceBoundaries(Source $s)
 {
+    // phpcs:disable PHPCompatibility.FunctionDeclarations.NewClosure.ThisFoundOutsideClass -- Using $this is okay. Source::cache() binds the closure.
     return $s->cache([], function () {
         if (!$this->has(T_NAMESPACE)) {
             return ['' => [[0, INF]]];
@@ -71,6 +72,7 @@ function collectNamespaceBoundaries(Source $s)
         }
         return $result;
     });
+    // phpcs:enable
 }
 
 function collectUseDeclarations(Source $s, $begin)
@@ -84,6 +86,8 @@ function collectUseDeclarations(Source $s, $begin)
             }
         }
     }
+
+    // phpcs:disable PHPCompatibility.FunctionDeclarations.NewClosure.ThisFoundOutsideClass -- Using $this is okay. Source::cache() binds the closure.
     return $s->cache([$begin], function ($begin) {
         $result = ['class' => [], 'function' => [], 'const' => []];
         # only tokens that are siblings bracket-wise are considered,
@@ -98,6 +102,7 @@ function collectUseDeclarations(Source $s, $begin)
         }
         return $result;
     });
+    // phpcs:enable
 }
 
 function parseUseDeclaration(Source $s, $pos, array &$aliases, $prefix = '', $type = 'class')

@@ -198,5 +198,5 @@ function suspendFor(callable $function)
 
 class State
 {
-    static $enabled = true;
+    public static $enabled = true;
 }

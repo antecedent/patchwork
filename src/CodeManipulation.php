@@ -181,8 +181,8 @@ function onImport($listeners)
 
 class State
 {
-    static $actions = [];
-    static $importListeners = [];
-    static $cacheIndex = [];
-    static $cacheIndexFile;
+    public static $actions = [];
+    public static $importListeners = [];
+    public static $cacheIndex = [];
+    public static $cacheIndexFile;
 }

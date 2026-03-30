@@ -605,8 +605,8 @@ function getInstantiator($class, $calledClass)
 
 class State
 {
-    static $routes = [];
-    static $queue = [];
-    static $preprocessedFiles = [];
-    static $routeStack = [];
+    public static $routes = [];
+    public static $queue = [];
+    public static $preprocessedFiles = [];
+    public static $routeStack = [];
 }

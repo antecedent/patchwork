@@ -14,14 +14,14 @@ use Patchwork\Utils;
 
 class Source
 {
-    const TYPE_OFFSET = 0;
-    const STRING_OFFSET = 1;
+    public const TYPE_OFFSET = 0;
+    public const STRING_OFFSET = 1;
 
-    const PREPEND = 'PREPEND';
-    const APPEND = 'APPEND';
-    const OVERWRITE = 'OVERWRITE';
+    public const PREPEND = 'PREPEND';
+    public const APPEND = 'APPEND';
+    public const OVERWRITE = 'OVERWRITE';
 
-    const ANY = null;
+    public const ANY = null;
 
     public $tokens;
     public $tokensByType;
@@ -37,13 +37,13 @@ class Source
     public $tokensByLevelAndType;
     public $cache;
 
-    function __construct($string)
+    public function __construct($string)
     {
         $this->code = $string;
         $this->initialize();
     }
 
-    function initialize()
+    public function initialize()
     {
         $this->tokens = Utils\tokenize($this->code);
         $this->tokens[] = [T_WHITESPACE, ""];
@@ -55,7 +55,7 @@ class Source
         $this->cache = [];
     }
 
-    function indexTokensByType()
+    public function indexTokensByType()
     {
         $this->tokensByType = [];
         foreach ($this->tokens as $offset => $token) {
@@ -63,7 +63,7 @@ class Source
         }
     }
 
-    function collectBracketMatchings()
+    public function collectBracketMatchings()
     {
         $this->matchingBrackets = [];
         $stack = [];
@@ -89,7 +89,7 @@ class Source
         }
     }
 
-    function collectLevelInfo()
+    public function collectLevelInfo()
     {
         $level = 0;
         $this->levels = [];
@@ -123,7 +123,7 @@ class Source
         Utils\appendUnder($this->levelEndings, 0, count($this->tokens) - 1);
     }
 
-    function has($types)
+    public function has($types)
     {
         foreach ((array) $types as $type) {
             if ($this->all($type) !== []) {
@@ -133,7 +133,7 @@ class Source
         return false;
     }
 
-    function is($types, $offset)
+    public function is($types, $offset)
     {
         foreach ((array) $types as $type) {
             if ($this->tokens[$offset][self::TYPE_OFFSET] === $type) {
@@ -143,7 +143,7 @@ class Source
         return false;
     }
 
-    function skip($types, $offset, $direction = 1)
+    public function skip($types, $offset, $direction = 1)
     {
         $offset += $direction;
         $types = (array) $types;
@@ -156,12 +156,12 @@ class Source
         return ($direction > 0) ? INF : -1;
     }
 
-    function skipBack($types, $offset)
+    public function skipBack($types, $offset)
     {
         return $this->skip($types, $offset, -1);
     }
 
-    function within($types, $low, $high)
+    public function within($types, $low, $high)
     {
         $result = [];
         foreach ((array) $types as $type) {
@@ -171,7 +171,7 @@ class Source
         return $result;
     }
 
-    function read($offset, $count = 1)
+    public function read($offset, $count = 1)
     {
         $result = '';
         $pos = $offset;
@@ -186,7 +186,7 @@ class Source
         return $result;
     }
 
-    function siblings($types, $offset)
+    public function siblings($types, $offset)
     {
         $level = $this->levels[$offset];
         $begin = Utils\lastNotGreaterThan(Utils\access($this->levelBeginnings, $level, []), $offset);
@@ -203,7 +203,7 @@ class Source
         }
     }
 
-    function next($types, $offset)
+    public function next($types, $offset)
     {
         if (!is_array($types)) {
             $candidates = Utils\access($this->tokensByType, $types, []);
@@ -216,7 +216,7 @@ class Source
         return $result;
     }
 
-    function all($types)
+    public function all($types)
     {
         if (!is_array($types)) {
             return Utils\access($this->tokensByType, $types, []);
@@ -229,13 +229,13 @@ class Source
         return $result;
     }
 
-    function match($offset)
+    public function match($offset)
     {
         $offset = (string) $offset;
         return isset($this->matchingBrackets[$offset]) ? $this->matchingBrackets[$offset] : INF;
     }
 
-    function splice($splice, $offset, $length = 0, $policy = self::OVERWRITE)
+    public function splice($splice, $offset, $length = 0, $policy = self::OVERWRITE)
     {
         if ($policy === self::OVERWRITE) {
             $this->splices[$offset] = $splice;
@@ -256,7 +256,7 @@ class Source
         $this->code = null;
     }
 
-    function createCodeFromTokens()
+    public function createCodeFromTokens()
     {
         $splices = $this->splices;
         $code = "";
@@ -274,12 +274,12 @@ class Source
         $this->code = $code;
     }
 
-    static function junk()
+    public static function junk()
     {
         return [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT];
     }
 
-    function __toString()
+    public function __toString()
     {
         if ($this->code === null) {
             $this->createCodeFromTokens();
@@ -287,7 +287,7 @@ class Source
         return (string) $this->code;
     }
 
-    function flush()
+    public function flush()
     {
         $this->initialize(Utils\tokenize($this));
     }
@@ -295,7 +295,7 @@ class Source
     /**
      * @since 2.1.0
      */
-    function cache(array $args, \Closure $function)
+    public function cache(array $args, \Closure $function)
     {
         $found = true;
         $trace = debug_backtrace()[1];

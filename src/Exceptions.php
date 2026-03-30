@@ -26,7 +26,7 @@ class StackEmpty extends Exception
 
 abstract class CallbackException extends Exception
 {
-    function __construct($callback)
+    public function __construct($callback)
     {
         parent::__construct(sprintf($this->message, Utils\callableToString($callback)));
     }
@@ -39,7 +39,7 @@ class NotUserDefined extends CallbackException
 
 class DefinedTooEarly extends CallbackException
 {
-    function __construct($callback)
+    public function __construct($callback)
     {
         $this->message = "The file that defines %s() was included earlier than Patchwork. " .
                          "Please reverse this order to be able to redefine the function in question.";
@@ -62,7 +62,7 @@ class InternalsNotSupportedOnHHVM extends CallbackException
 
 class CachePathUnavailable extends Exception
 {
-    function __construct($location)
+    public function __construct($location)
     {
         parent::__construct(sprintf(
             "The specified cache path is nonexistent or read-only: %s",
@@ -77,7 +77,7 @@ class ConfigException extends Exception
 
 class ConfigMalformed extends ConfigException
 {
-    function __construct($file, $message)
+    public function __construct($file, $message)
     {
         parent::__construct(sprintf(
             'The configuration file %s is malformed: %s',
@@ -89,7 +89,7 @@ class ConfigMalformed extends ConfigException
 
 class ConfigKeyNotRecognized extends ConfigException
 {
-    function __construct($key, $list, $file)
+    public function __construct($key, $list, $file)
     {
         parent::__construct(sprintf(
             "The key '%s' in the configuration file %s was not recognized. " .
@@ -103,7 +103,7 @@ class ConfigKeyNotRecognized extends ConfigException
 
 class CachePathConflict extends ConfigException
 {
-    function __construct($first, $second)
+    public function __construct($first, $second)
     {
         parent::__construct(sprintf(
             "Detected configuration files provide conflicting cache paths: %s and %s",

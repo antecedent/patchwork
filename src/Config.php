@@ -224,11 +224,11 @@ function getTimestamp()
 
 class State
 {
-    static $blacklist = [];
-    static $whitelist = [];
-    static $cachePath;
-    static $redefinableInternals = [];
-    static $redefinableLanguageConstructs = [];
-    static $newKeywordRedefinable = false;
-    static $timestamp = 0;
+    public static $blacklist = [];
+    public static $whitelist = [];
+    public static $cachePath;
+    public static $redefinableInternals = [];
+    public static $redefinableLanguageConstructs = [];
+    public static $newKeywordRedefinable = false;
+    public static $timestamp = 0;
 }

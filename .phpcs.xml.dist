@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    name="Patchwork"
+    xsi:noNamespaceSchemaLocation="./vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+    <description>Patchwork rules for PHP_CodeSniffer</description>
+
+    <!--
+    #############################################################################
+    COMMAND LINE ARGUMENTS
+    https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki/Annotated-Ruleset
+    #############################################################################
+    -->
+
+    <!-- Scan all files. -->
+    <file>.</file>
+
+    <!-- Third party files and build files don't need to comply with these coding standards. -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Test fixtures don't need to comply with these coding standards
+         as we may be specifically testing a variation in how syntax can be written.
+    -->
+    <exclude-pattern>*/tests/includes/*</exclude-pattern>
+
+    <!-- Only check PHP files.
+         Note: at this time PHPCS can not scan .phpt files.
+         There is a feature request open to change this.
+         https://github.com/PHPCSStandards/PHP_CodeSniffer/issues/1363
+    -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Show progress, show the error codes for each message (source). -->
+    <arg value="ps"/>
+
+    <!-- Strip the filepaths down to the relevant bit. -->
+    <arg name="basepath" value="./"/>
+
+    <!-- Check up to 8 files simultaneously. -->
+    <arg name="parallel" value="8"/>
+
+
+    <!--
+    #############################################################################
+    CHECK FOR PHP CROSS-VERSION COMPATIBILITY
+    #############################################################################
+    -->
+
+    <config name="testVersion" value="7.1-"/>
+    <rule ref="PHPCompatibility"/>
+
+
+    <!--
+    #############################################################################
+    FOLLOW PSR12 for CODING STYLE
+    #############################################################################
+    -->
+
+    <rule ref="PSR12">
+        <!-- Re-organising the files should be a separate consideration and needs discussion
+             about whether or not to adopt PSR-4 or another convention.
+        -->
+        <exclude name="PSR1.Files.SideEffects"/>
+        <exclude name="PSR1.Classes.ClassDeclaration.MultipleClasses"/>
+    </rule>
+
+
+    <!--
+    #############################################################################
+    SNIFF SPECIFIC CONFIGURATION
+    #############################################################################
+    -->
+
+    <!-- Allow for slightly longer line length than PSR12 (120) allows for. -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="140" />
+        </properties>
+    </rule>
+
+
+    <!--
+    #############################################################################
+    SELECTIVE EXCLUSIONS
+    Exclude specific files for specific sniffs.
+    #############################################################################
+    -->
+
+    <!-- Renaming these methods from snake_case to camelCaps would be a BC-break. -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>/src/CodeManipulation/Stream\.php$</exclude-pattern>
+    </rule>
+
+    <!-- Renaming these constants from camelCaps to ALL_CAPPS would be a BC-break. -->
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
+        <exclude-pattern>/src/CodeManipulation/Actions/RedefinitionOfNew\.php$</exclude-pattern>
+    </rule>
+
+</ruleset>

@@ -16,6 +16,7 @@ use Patchwork\Config;
 
 const STATIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(\'%s\', %s)->instantiate(%s)';
 const DYNAMIC_INSTANTIATION_REPLACEMENT = '\Patchwork\CallRerouting\getInstantiator(%s, %s)->instantiate(%s)';
+// phpcs:ignore Generic.Files.LineLength.TooLong
 const CALLED_CLASS = '((__CLASS__ && __FUNCTION__ !== (__NAMESPACE__ ? __NAMESPACE__ . "\\\\{closure}" : "\\\\{closure}")) ? \get_called_class() : null)';
 
 const spliceAllInstantiations = 'Patchwork\CodeManipulation\Actions\RedefinitionOfNew\spliceAllInstantiations';

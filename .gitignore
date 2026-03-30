@@ -3,6 +3,8 @@ tests/cache
 vendor/
 composer.phar
 .DS_Store
+.phpcs.xml
+phpcs.xml
 
 # Ignore PhpStorm project related files.
 .idea

@@ -360,6 +360,7 @@ function connectOnHHVM($function, Handle $handle)
         } elseif (is_object($obj)) {
             $calledClass = get_class($obj);
         }
+        // phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection -- Verified okay.
         $frame = count(debug_backtrace(0)) - 1;
         $result = null;
         $done = dispatch($class, $calledClass, $method, $frame, $result, $args);

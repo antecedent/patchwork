@@ -48,6 +48,17 @@ function spliceNamedFunctionCalls()
 
 function spliceNamedCallsWithin(Source $s, $begin, $end, array $names, array $aliases)
 {
+    $tokenList = [
+        T_FUNCTION,
+        T_OBJECT_OPERATOR,
+        T_DOUBLE_COLON,
+        T_STRING,
+        T_NEW,
+        Generic\NAME_FULLY_QUALIFIED,
+        Generic\NAME_QUALIFIED,
+        Generic\NAME_RELATIVE,
+    ];
+
     foreach ($s->within([T_STRING, Generic\NAME_FULLY_QUALIFIED, Generic\NAME_QUALIFIED, Generic\NAME_RELATIVE], $begin, $end) as $string) {
         $original = strtolower($s->read($string));
         if ($original[0] == '\\') {
@@ -67,7 +78,7 @@ function spliceNamedCallsWithin(Source $s, $begin, $end, array $names, array $al
                 }
                 $hadBackslash = true;
             }
-            if ($s->is([T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_STRING, T_NEW, Generic\NAME_FULLY_QUALIFIED, Generic\NAME_QUALIFIED, Generic\NAME_RELATIVE], $previous)) {
+            if ($s->is($tokenList, $previous)) {
                 continue;
             }
             $next = $s->skip(Source::junk(), $string);

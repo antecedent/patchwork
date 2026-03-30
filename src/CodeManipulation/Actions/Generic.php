@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\Generic;
 
 use Patchwork\CodeManipulation\Actions\Arguments;
@@ -30,7 +31,7 @@ foreach (['NAME_FULLY_QUALIFIED', 'NAME_QUALIFIED', 'NAME_RELATIVE', 'ELLIPSIS',
 
 function markPreprocessedFiles(&$target)
 {
-    return function($file) use (&$target) {
+    return function ($file) use (&$target) {
         $target[$file] = true;
     };
 }
@@ -42,7 +43,7 @@ function prependCodeToFunctions($code, $typedVariants = array(), $fillArgRefs = 
             'void' => $typedVariants,
         );
     }
-    return function(Source $s) use ($code, $typedVariants, $fillArgRefs) {
+    return function (Source $s) use ($code, $typedVariants, $fillArgRefs) {
         foreach ($s->all(T_FUNCTION) as $function) {
             # Skip "use function"
             $previous = $s->skipBack(Source::junk(), $function);
@@ -89,7 +90,7 @@ function getDeclaredReturnType(Source $s, $function)
 
 function wrapUnaryConstructArguments($construct, $wrapper)
 {
-    return function(Source $s) use ($construct, $wrapper) {
+    return function (Source $s) use ($construct, $wrapper) {
         foreach ($s->all($construct) as $match) {
             $pos = $s->next(LEFT_ROUND, $match);
             $s->splice($wrapper . LEFT_ROUND, $pos + 1);
@@ -100,14 +101,16 @@ function wrapUnaryConstructArguments($construct, $wrapper)
 
 function injectFalseExpressionAtBeginnings($expression)
 {
-    return function(Source $s) use ($expression) {
+    return function (Source $s) use ($expression) {
         $openingTags = $s->all(T_OPEN_TAG);
         $openingTagsWithEcho = $s->all(T_OPEN_TAG_WITH_ECHO);
         if (empty($openingTags) && empty($openingTagsWithEcho)) {
             return;
         }
-        if (!empty($openingTags) &&
-            (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho))) {
+        if (
+            !empty($openingTags) &&
+            (empty($openingTagsWithEcho) || reset($openingTags) < reset($openingTagsWithEcho))
+        ) {
             $pos = reset($openingTags);
             # Skip initial declare() statements
             while ($s->read($s->skip(Source::junk(), $pos)) === 'declare') {
@@ -133,7 +136,7 @@ function injectFalseExpressionAtBeginnings($expression)
 
 function injectCodeAfterClassDefinitions($code)
 {
-    return function(Source $s) use ($code) {
+    return function (Source $s) use ($code) {
         foreach ($s->all(T_CLASS) as $match) {
             if ($s->is([LEFT_ROUND, LEFT_CURLY, T_EXTENDS, T_IMPLEMENTS], $s->skip(Source::junk(), $match))) {
                 # Not a proper class definition: anonymous class (with or without attribute)
@@ -158,7 +161,7 @@ function injectCodeAfterClassDefinitions($code)
 
 function injectCodeAtEnd($code)
 {
-    return function(Source $s) use ($code) {
+    return function (Source $s) use ($code) {
         $openTags = $s->all(T_OPEN_TAG);
         $lastOpenTag = end($openTags);
         $closeTag = $s->next(T_CLOSE_TAG, $lastOpenTag);
@@ -175,14 +178,14 @@ function injectCodeAtEnd($code)
         if ($closeTag !== INF) {
             $s->splice("<?php $code", count($s->tokens) - 1, 0, Source::APPEND);
         } else {
-            $s->splice($extraSemicolon . $code, count($s->tokens) - 1, 0, Source::APPEND); 
+            $s->splice($extraSemicolon . $code, count($s->tokens) - 1, 0, Source::APPEND);
         }
     };
 }
 
 function chain(array $callbacks)
 {
-    return function(Source $s) use ($callbacks) {
+    return function (Source $s) use ($callbacks) {
         foreach ($callbacks as $callback) {
             $callback($s);
         }

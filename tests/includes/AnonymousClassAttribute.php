@@ -1,7 +1,8 @@
 <?php
 
 #[\Attribute]
-class SomeAttribute {
+class SomeAttribute
+{
     public function __construct($value) {}
 }
 

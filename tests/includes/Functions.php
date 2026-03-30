@@ -17,11 +17,10 @@ function getInteger()
 
 function identity($x)
 {
-	return $x;
+    return $x;
 }
 
 function getClosure()
 {
-	return function() {};
+    return function () {};
 }
-

@@ -12,7 +12,7 @@ p\restoreAll();
 assert(time() > 10);
 
 # Indirect calls
-p\redefine('strtolower', function($str) {
+p\redefine('strtolower', function ($str) {
     return sprintf('%s, but in lowercase', $str);
 });
 assert(array_map('strtolower', ['Foo', 'BAR', 'baz']) === [
@@ -45,7 +45,7 @@ assert($function('test') === '?!');
 
 # Leading backslashes
 $array = [2, 1, 3];
-p\redefine('sort', function(&$array) {
+p\redefine('sort', function (&$array) {
     $array = ['original' => [2, 1, 3], 'sorted' => [1, 2, 3]];
 });
 \sort($array);

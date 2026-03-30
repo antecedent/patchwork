@@ -1,6 +1,6 @@
 <?php
 
-function iAmVoidTyped() : void
+function iAmVoidTyped(): void
 {
 }
 

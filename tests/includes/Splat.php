@@ -8,13 +8,13 @@ $arrays[] = ['foo', 'bar', 'baz'];
 $arrays[] = [':', ':', ':'];
 $arrays[] = [1, 2, 3];
 
-$concatenate = function(...$args) {
+$concatenate = function (...$args) {
     return join('', $args);
 };
 
 $counter = 0;
 
-redefine('array_map', function() use (&$counter) {
+redefine('array_map', function () use (&$counter) {
     $counter++;
     return relay();
 });

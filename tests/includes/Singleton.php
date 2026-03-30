@@ -14,8 +14,8 @@ class Singleton
 
 class TeenageSingletonChild extends Singleton
 {
-	static function getInstance()
-	{
-		return "Y'ain't gettin' no instance from me";
-	}
+    static function getInstance()
+    {
+        return "Y'ain't gettin' no instance from me";
+    }
 }

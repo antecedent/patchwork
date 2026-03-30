@@ -2,7 +2,7 @@
 
 function f()
 {
-    return function(X $x) {
+    return function (X $x) {
         assert($x instanceof X);
     };
 }

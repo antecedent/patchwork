@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\Config;
 
 use Patchwork\Utils;
@@ -71,16 +72,16 @@ function setBlacklist($data, $root)
 
 function isListed($path, array $list)
 {
-	$path = rtrim($path, '\\/');
-	foreach ($list as $item) {
-		if (!is_string($item)) {
-			$item = chr($item);
-		}
-		if (strpos($path, $item) === 0) {
-			return true;
-		}
-	}
-	return false;
+    $path = rtrim($path, '\\/');
+    foreach ($list as $item) {
+        if (!is_string($item)) {
+            $item = chr($item);
+        }
+        if (strpos($path, $item) === 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function isBlacklisted($path)

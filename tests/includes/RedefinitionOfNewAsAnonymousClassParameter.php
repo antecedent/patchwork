@@ -14,7 +14,7 @@ namespace Bar
 
     \Patchwork\redefine('new Foo\TestClass', \Patchwork\always(new stdClass));
 
-    $test = new class(new TestClass()) {
+    $test = new class (new TestClass()) {
         public $object;
 
         public function __construct($object)

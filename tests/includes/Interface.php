@@ -4,8 +4,8 @@ namespace A\B\C;
 
 interface D
 {
-	/**
-	 * A doc comment.
-	 */
-	public function e();
+    /**
+     * A doc comment.
+     */
+    public function e();
 }

@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\Namespaces;
 
 use Patchwork\CodeManipulation\Source;
@@ -51,7 +52,7 @@ function getNamespaceAt(Source $s, $pos)
 
 function collectNamespaceBoundaries(Source $s)
 {
-    return $s->cache([], function() {
+    return $s->cache([], function () {
         if (!$this->has(T_NAMESPACE)) {
             return ['' => [[0, INF]]];
         }
@@ -83,7 +84,7 @@ function collectUseDeclarations(Source $s, $begin)
             }
         }
     }
-    return $s->cache([$begin], function($begin) {
+    return $s->cache([$begin], function ($begin) {
         $result = ['class' => [], 'function' => [], 'const' => []];
         # only tokens that are siblings bracket-wise are considered,
         # so trait-use instances are not an issue

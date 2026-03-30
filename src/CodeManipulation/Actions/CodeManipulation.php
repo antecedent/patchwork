@@ -6,6 +6,7 @@
  * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\CodeManipulation;
 
 use Patchwork\CodeManipulation\Actions\Generic;
@@ -27,7 +28,7 @@ function injectStreamWrapperReinstatementCode()
 
 function flush()
 {
-    return function(Source $s) {
+    return function (Source $s) {
         $s->flush();
     };
 }

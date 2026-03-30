@@ -15,7 +15,7 @@ namespace Bar
 {
     use Foo\TestClass;
 
-    \Patchwork\redefine('Foo\TestClass::testMethod', function() {
+    \Patchwork\redefine('Foo\TestClass::testMethod', function () {
         return 'test2';
     });
 

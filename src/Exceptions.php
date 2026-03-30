@@ -6,6 +6,7 @@
  * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\Exceptions;
 
 use Patchwork\Utils;
@@ -38,7 +39,6 @@ class NotUserDefined extends CallbackException
 
 class DefinedTooEarly extends CallbackException
 {
-
     function __construct($callback)
     {
         $this->message = "The file that defines %s() was included earlier than Patchwork. " .
@@ -120,10 +120,10 @@ class NewKeywordNotRedefinable extends ConfigException
 
 class NonNullToVoid extends Exception
 {
-	protected $message = 'A redefinition of a void-typed callable attempted to return a non-null result';
+    protected $message = 'A redefinition of a void-typed callable attempted to return a non-null result';
 }
 
 class ReturnFromNever extends Exception
 {
-	protected $message = 'A redefinition of a never-typed callable attempted to return';
+    protected $message = 'A redefinition of a never-typed callable attempted to return';
 }

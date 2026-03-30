@@ -5,6 +5,7 @@
  * @copyright  2010-2023 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork;
 
 if (function_exists('Patchwork\replace')) {
@@ -90,7 +91,7 @@ function hasMissed($callable)
 
 function always($value)
 {
-    return function() use ($value) {
+    return function () use ($value) {
         return $value;
     };
 }

@@ -20,7 +20,7 @@ class StreamWrapperForTesting
 
     public static function unwrap()
     {
-        set_error_handler(function() {});
+        set_error_handler(function () {});
         stream_wrapper_restore(self::PROTOCOL);
         restore_error_handler();
     }
@@ -66,7 +66,7 @@ class StreamWrapperForTesting
         $this->unwrap();
         clearstatcache();
         if ($flags & STREAM_URL_STAT_QUIET) {
-            set_error_handler(function() {});
+            set_error_handler(function () {});
             try {
                 $result = call_user_func($func, $path);
             } catch (\Exception $e) {

@@ -6,6 +6,7 @@
  * @copyright  2010-2018 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\ConflictPrevention;
 
 use Patchwork\CodeManipulation\Source;
@@ -17,7 +18,7 @@ use Patchwork\CodeManipulation\Source;
  */
 function preventImportingOtherCopiesOfPatchwork()
 {
-    return function(Source $s) {
+    return function (Source $s) {
         $namespaceKeyword = $s->next(T_NAMESPACE, -1);
         if ($namespaceKeyword === INF || $namespaceKeyword < 2) {
             return;

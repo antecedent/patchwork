@@ -6,6 +6,7 @@
  * @copyright  2010-2021 Ignas Rudaitis
  * @license    http://www.opensource.org/licenses/mit-license.html
  */
+
 namespace Patchwork\CodeManipulation\Actions\Arguments;
 
 use Patchwork\CodeManipulation\Source;
@@ -39,7 +40,7 @@ function readNames(Source $s, $pos)
  */
 function constructReferenceArray(array $names)
 {
-    $names = array_map(function($name) {
+    $names = array_map(function ($name) {
         if ($name[0] === '.') {
             return '], ' . substr($name, 3) . ', [';
         }

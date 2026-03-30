@@ -82,7 +82,7 @@ class Stream
     {
         if (isset(static::$otherWrapperClass)) {
             $class = static::$otherWrapperClass;
-            $otherWrapper = new $class;
+            $otherWrapper = new $class();
             if ($context !== null) {
                 $otherWrapper->context = $context;
             }

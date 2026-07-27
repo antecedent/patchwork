@@ -78,6 +78,10 @@ function prependCodeToFunctions($code, $typedVariants = array(), $fillArgRefs = 
 function getDeclaredReturnType(Source $s, $function)
 {
     $parenthesis = $s->next(LEFT_ROUND, $function);
+    $name = $s->next(T_STRING, $function);
+    if ($name < $parenthesis && $s->read($name) === '__construct') {
+        return 'void';
+    }
     $next = $s->skip(Source::junk(), $s->match($parenthesis));
     if ($s->is(T_USE, $next)) {
         $next = $s->skip(Source::junk(), $s->match($s->next(LEFT_ROUND, $next)));

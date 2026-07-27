@@ -31,6 +31,8 @@ jobs:
           extensions: exif, phar, openssl
           coverage: none
           ini-values: phar.readonly=Off, error_reporting=-1, display_errors=On, display_startup_errors=On, zend.assertions=1
+        env:
+          fail-fast: true
 
       - name: Install Box
         run: composer global require humbug/box

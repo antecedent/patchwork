@@ -34,10 +34,10 @@
             "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf"
         ],
         "test": [
-            "@php ./vendor/phpunit/phpunit/phpunit --no-coverage"
+            "@php ./vendor/phpunit/phpunit/phpunit tests --no-coverage"
         ],
         "coverage": [
-            "@php ./vendor/phpunit/phpunit/phpunit"
+            "@php ./vendor/phpunit/phpunit/phpunit tests"
         ]
     },
     "scripts-descriptions": {

@@ -1,5 +1,5 @@
 --TEST--
-Return from constructor / antecedent/patchwork#213
+Return from destructor / antecedent/patchwork#213
 
 --FILE--
 <?php
@@ -14,8 +14,8 @@ $_SERVER['PHP_SELF'] = __FILE__;
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/NamedObject.php";
 
-redefine('NamedObject::__construct', function ($name) {
-   return $name; 
+redefine('NamedObject::__destruct', function () {
+   return __CLASS__; 
 });
 
 try {

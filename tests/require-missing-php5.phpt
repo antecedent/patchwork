@@ -1,12 +1,12 @@
 --TEST--
-Include and require of nonexistent files
+Include and require of nonexistent files (PHP < 8.0)
 
 --SKIPIF--
 <?php
 // PHP 8.0 changed require failing from a fatal error to a thrown exception. That's too much of a difference
 // to handle easily in EXPECTF, easier to just copy the file.
-if (!version_compare(PHP_VERSION, "8.0", "<")) {
-    echo "skip PHP 5 version of the test in PHP 8+";
+if (version_compare(PHP_VERSION_ID, "80000", ">=")) {
+    echo "skip PHP 7 version of the test on PHP 8+";
 }
 --FILE--
 <?php

@@ -4,13 +4,17 @@ class NamedObject
 {
     private $name;
 
-    function __construct($name)
+    public function __construct($name)
     {
         $this->name = $name;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
+    }
+
+    public function __destruct()
+    {
     }
 }

@@ -13,8 +13,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions should be configured at the job level.
+permissions: {}
+
 jobs:
   bundle:
+    permissions:
+      contents: read # To clone the repo.
+
     name: Bundle PHAR
     runs-on: ubuntu-latest
 
@@ -52,10 +58,14 @@ jobs:
           path: ./patchwork.phar
 
   publish:
-    name: Add PHAR to release
-    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To draft the release.
+
     needs:
       - bundle
+
+    name: Add PHAR to release
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -74,11 +84,15 @@ jobs:
           generate_release_notes: true
 
   regenerate-pages:
-    name: Trigger update of GitHub Pages branch
-    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To clone the repo and commit the changes.
+
     needs:
       - publish
-    
+
+    name: Trigger update of GitHub Pages branch
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout GH Pages branch
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

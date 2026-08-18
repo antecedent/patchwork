@@ -13,8 +13,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions should be configured at the job level.
+permissions: {}
+
 jobs:
   actionlint:
+    permissions:
+      contents: read # To clone the repo.
+
     name: 'Check GHA workflows'
     runs-on: ubuntu-latest
 
@@ -37,6 +43,9 @@ jobs:
           args: -color
 
   phpcs:
+    permissions:
+      contents: read # To clone the repo.
+
     name: 'PHPCS'
     runs-on: ubuntu-latest
 

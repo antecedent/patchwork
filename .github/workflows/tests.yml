@@ -12,9 +12,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions should be configured at the job level.
+permissions: {}
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    permissions:
+      contents: read # To clone the repo.
+
     strategy:
       fail-fast: false
       matrix:
@@ -30,9 +35,10 @@ jobs:
         - '8.4'
         - '8.5'
         - '8.6'
-    name: "PHP: ${{ matrix.php-versions }}"
-
     continue-on-error: ${{ matrix.php-versions == '8.6' }}
+
+    name: "PHP: ${{ matrix.php-versions }}"
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout

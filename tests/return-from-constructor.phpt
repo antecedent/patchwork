@@ -38,10 +38,9 @@ try {
     echo get_class($e), "\n";
 }
 
-echo "(has its own constructor that is not redefinable using Patchwork)\n";
-
-assert($classes === ['NamedObject']);
-
+assert(count($classes) === 2);
+assert($classes[0] === 'NamedObject');
+assert($classes[1] !== 'NamedObject');
 ?>
 ===DONE===
 
@@ -49,5 +48,5 @@ assert($classes === ['NamedObject']);
 Named class:
 Patchwork\Exceptions\NonNullToVoid
 Anonymous subclass:
-(has its own constructor that is not redefinable using Patchwork)
+Patchwork\Exceptions\NonNullToVoid
 ===DONE===

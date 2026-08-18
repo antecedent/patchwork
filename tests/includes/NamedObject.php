@@ -31,3 +31,5 @@ class NamedObject
         };
     }
 }
+
+NamedObject::createAnonymousSubclassInstance();

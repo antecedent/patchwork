@@ -17,4 +17,17 @@ class NamedObject
     public function __destruct()
     {
     }
+
+    public static function createAnonymousSubclassInstance()
+    {
+        return new class extends NamedObject {
+            public function __construct()
+            {
+            }
+
+            public function __destruct()
+            {
+            }
+        };
+    }
 }

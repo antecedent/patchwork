@@ -14,9 +14,15 @@ $_SERVER['PHP_SELF'] = __FILE__;
 require __DIR__ . "/../Patchwork.php";
 require __DIR__ . "/includes/NamedObject.php";
 
-redefine('NamedObject::__destruct', function () {
-   return __CLASS__; 
+$classes = [];
+
+redefine('*::__destruct', function () use (&$classes) {
+    $class = get_class($this);
+    $classes[] = $class;
+    return $class;
 });
+
+echo "Named class:\n";
 
 try {
     new NamedObject('foo');
@@ -24,9 +30,24 @@ try {
     echo get_class($e), "\n";
 }
 
+echo "Anonymous subclass:\n";
+
+try {
+    NamedObject::createAnonymousSubclassInstance();
+} catch (Exception $e) {
+    echo get_class($e), "\n";
+}
+
+echo "(has its own destructor that is not redefinable using Patchwork)\n";
+
+assert($classes === ['NamedObject']);
+
 ?>
 ===DONE===
 
 --EXPECT--
+Named class:
 Patchwork\Exceptions\NonNullToVoid
+Anonymous subclass:
+(has its own destructor that is not redefinable using Patchwork)
 ===DONE===

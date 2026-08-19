@@ -8,6 +8,11 @@ Include and require of nonexistent files (PHP >= 8.6)
 if (version_compare(PHP_VERSION_ID, "80600", "<")) {
     echo "skip PHP 8.6+ version of the test on PHP <8.6";
 }
+?>
+
+--INI--
+display_error_function_args=On
+
 --FILE--
 <?php
 

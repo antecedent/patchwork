@@ -4,13 +4,32 @@ class NamedObject
 {
     private $name;
 
-    function __construct($name)
+    public function __construct($name)
     {
         $this->name = $name;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
+
+    public function __destruct()
+    {
+    }
+
+    public static function createAnonymousSubclassInstance()
+    {
+        return new class extends NamedObject {
+            public function __construct()
+            {
+            }
+
+            public function __destruct()
+            {
+            }
+        };
+    }
 }
+
+NamedObject::createAnonymousSubclassInstance();

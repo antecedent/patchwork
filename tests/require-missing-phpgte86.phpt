@@ -11,7 +11,7 @@ if (version_compare(PHP_VERSION_ID, "80600", "<")) {
 ?>
 
 --INI--
-display_error_function_args=On
+error_include_args=On
 
 --FILE--
 <?php

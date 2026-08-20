@@ -10,10 +10,6 @@ if (version_compare(PHP_VERSION_ID, "80600", "<")) {
 }
 ?>
 
---INI--
-error_include_args=On
-zend.exception_string_param_max_len=1000
-
 --FILE--
 <?php
 

@@ -528,6 +528,10 @@ function connectDefaultInternals()
                     try {
                         $reflection = new \ReflectionMethod($class, $method);
                         (\PHP_VERSION_ID < 80100) && $reflection->setAccessible(true);
+                        if ($reflection->isStatic()) {
+                            // PHP 8.6 complains if invokeArgs() is passed an instance for a static method.
+                            $instance = null;
+                        }
                         $args[$offset] = function () use ($reflection, $instance) {
                             return $reflection->invokeArgs($instance, func_get_args());
                         };

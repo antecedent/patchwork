@@ -1,15 +1,23 @@
 {
     "name": "antecedent/patchwork",
-    "homepage": "https://antecedent.github.io/patchwork/",
     "description": "Method redefinition (monkey-patching) functionality for PHP.",
-    "keywords": ["testing", "redefinition", "runkit", "monkeypatching", "interception", "aop", "aspect"],
     "license": "MIT",
+    "keywords": [
+        "testing",
+        "redefinition",
+        "runkit",
+        "monkeypatching",
+        "interception",
+        "aop",
+        "aspect"
+    ],
     "authors": [
         {
             "name": "Ignas Rudaitis",
             "email": "ignas.rudaitis@gmail.com"
         }
     ],
+    "homepage": "https://antecedent.github.io/patchwork/",
     "require": {
         "php": ">=7.1.0"
     },

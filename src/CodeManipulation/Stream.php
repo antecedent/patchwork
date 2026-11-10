@@ -45,6 +45,8 @@ class Stream
         foreach (static::$protocols as $protocol) {
             set_error_handler(function () {
             });
+            // `stream_wrapper_restore()` alone never frees the user wrapper's resource.
+            stream_wrapper_unregister($protocol);
             stream_wrapper_restore($protocol);
             restore_error_handler();
         }

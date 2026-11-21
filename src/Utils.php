@@ -131,7 +131,7 @@ function interpretCallable($callback)
         return [$class, $method, $instance];
     }
     if (substr($callback, 0, 4) === 'new ') {
-        return [ltrim(substr($callback, 4)), 'new', null];
+        return [ltrim(substr($callback, 4), " \f\n\r\t\v\x00"), 'new', null];
     }
     $callback = ltrim($callback, "\\");
     if (strpos($callback, "::")) {

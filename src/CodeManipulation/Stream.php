@@ -143,7 +143,7 @@ class Stream
                 }
             });
         }
-        if ($shouldReturnResource) {
+        if ($shouldReturnResource && is_object($resource)) {
             return ($result !== false) ? $resource : false;
         }
         return $result;
@@ -268,7 +268,7 @@ class Stream
 
     public function dir_opendir($path, $options)
     {
-        $this->resource = static::alternate('opendir', null, __FUNCTION__, [$path], [$options], $this->context);
+        $this->resource = static::alternate('opendir', null, __FUNCTION__, [$path], [$options], $this->context, true);
         return $this->resource !== false;
     }
 

@@ -89,15 +89,17 @@ function spliceNamedCallsWithin(Source $s, $begin, $end, array $names, array $al
                 $original = $aliases[$original];
             }
             $secondNext = $s->skip(Source::junk(), $next);
-            $splice = '\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\';
-            $splice .= $original . Generic\LEFT_ROUND;
+            # replace the name and the left parenthesis only, so any whitespace and comments
+            # around them stay, and with them the file's line numbers
+            $s->splice('\\' . CallRerouting\INTERNAL_REDEFINITION_NAMESPACE . '\\' . $original, $string, 1);
+            $splice = Generic\LEFT_ROUND;
             # prepend a namespace-of-origin argument to handle cases like Acme\time() vs time()
             $splice .= !$hadBackslash ? '__NAMESPACE__' : '""';
             if (!$s->is(Generic\RIGHT_ROUND, $secondNext)) {
                 # right parenthesis doesn't follow immediately => there are arguments
                 $splice .= ', ';
             }
-            $s->splice($splice, $string, $secondNext - $string);
+            $s->splice($splice, $next, 1);
         }
     }
 }

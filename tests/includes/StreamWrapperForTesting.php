@@ -8,6 +8,8 @@ class StreamWrapperForTesting
 
     public static $pathsOpened = [];
 
+    public static $directoriesClosed = 0;
+
     public $context;
 
     private $resource;
@@ -97,6 +99,32 @@ class StreamWrapperForTesting
             case STREAM_OPTION_READ_BUFFER:
                 return stream_set_read_buffer($this->resource, $arg1);
         }
+    }
+
+    public function dir_opendir($path, $options)
+    {
+        $this->unwrap();
+        $this->resource = opendir($path);
+        $this->wrap();
+        return $this->resource !== false;
+    }
+
+    public function dir_readdir()
+    {
+        return readdir($this->resource);
+    }
+
+    public function dir_rewinddir()
+    {
+        rewinddir($this->resource);
+        return true;
+    }
+
+    public function dir_closedir()
+    {
+        self::$directoriesClosed++;
+        closedir($this->resource);
+        return true;
     }
 
     public function stream_write($data)
